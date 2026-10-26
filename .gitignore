@@ -1,0 +1,36 @@
+# Secrets: never commit
+.env
+.env.*
+*.key
+*.pem
+secrets/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+
+# Node
+node_modules/
+dist/
+build/
+
+# Large data / models (keep only small fixtures in data/fixtures/)
+data/raw/
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.onnx
+
+# SLURM job logs
+job.*.out
+job.*.err
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.claude/settings.local.json
