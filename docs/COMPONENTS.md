@@ -1,40 +1,71 @@
 # Components: progress tracker (single source of truth)
 
 > Update this file at the end of every task. A new session must be able to continue from here alone.
+> Full plan, timeline, and reasoning: `docs/PLAN.md`.
 
 ## Project
 
-- **Problem statement:** _not yet provided. Paste the hackathon brief here, then run `/hackathon-ai-chief-engineer`._
-- **One-line pitch:** _TBD_
-- **Team & time left:** _TBD_
-- **Demo date/time:** _TBD_
+- **Problem statement:** Case 1: Multilingual Citizen Services Assistant. Answer scheme eligibility/procedure
+  questions in English, Hindi + one more Indian language (text or speech) from 20–30 scheme documents,
+  reply in the user's language, show the source passage, refuse clearly when the documents don't contain the answer.
+  Bonus: voice in/out, Hinglish, eligibility checklist via follow-up questions.
+- **Working name / pitch:** Yojana Saathi. *Ask in your language, get the answer with proof, or an honest "I don't know".*
+- **Third language:** Gujarati (default). **Switch if the organisers' 100 sample questions use another one.**
+- **Team & time:** 4 people, 5–6 hours. Stack: Option 1 (FastAPI + BM25/BGE-M3 hybrid + Claude + HTML/JS).
+- **Data rule:** myScheme pages are collected **by hand** (Terms of Use ban bots/scrapers). Agents never fetch them.
 
 ## Status legend
 `TODO` → `IN PROGRESS` → `WORKING (tested)` → `DEMO-READY`
 
 ## Component registry
 
-| # | Component | Folder | Status | Owner (agent/person) | Next step |
-|---|-----------|--------|--------|----------------------|-----------|
-| 0 | Planning (problem, users, architecture) | `docs/` | TODO | — | Paste brief, run `/hackathon-ai-chief-engineer` |
-| 1 | _e.g. API / backend_ | `src/api/` | TODO | — | _defined after planning_ |
-| 2 | _e.g. AI / model module_ | `src/model/` | TODO | — | |
-| 3 | _e.g. UI / frontend_ | `src/ui/` | TODO | — | |
-| 4 | _e.g. Data & fixtures_ | `data/fixtures/` | TODO | — | |
-| 5 | Tests & evaluation | `tests/` | TODO | — | |
-| 6 | Demo & pitch | `docs/pitch/` | TODO | — | Run `/pitch-evaluation-coach` once 1–3 are WORKING |
+| # | Component | Folders | Owner | Status | Next step |
+|---|-----------|---------|-------|--------|-----------|
+| 0 | Planning | `docs/` | A. Vandan | WORKING | Confirm 3rd language from the 100 sample questions; freeze interfaces at 0:45 |
+| 1 | Data + ingestion | `data/schemes/`, `src/ingest/`, `config/ingest.py` | B | TODO | Pick 25 schemes from the sample questions; everyone hand-collects 6–8 into the JSON template (PLAN §4.4) |
+| 2 | Language detection | `src/lang/`, `config/lang.py` | C | TODO | Unicode script rules (Deva/Gujr/Latn) + Hinglish word list + tests |
+| 3 | Retrieval | `src/retrieval/`, `config/retrieval.py` | C | TODO | BM25 + BGE-M3 + RRF over `data/processed/`; MOCK chunks until ingest is ready |
+| 4 | Answer engine | `src/answer/`, `config/answer.py` | A. Vandan | TODO | Prompt → JSON {answer, citations, answerable}; citation check; refusal templates en/hi/gu/Hinglish |
+| 5 | API | `src/api/` | A. Vandan | TODO | FastAPI `/api/ask`, `/api/eligibility`, `/api/health` returning MOCKs first |
+| 6 | UI + voice | `src/ui/`, `config/ui.js` | D | TODO | Chat + passage cards + language badge against MOCK API; Web Speech mic/TTS as bonus |
+| 7 | Eligibility checklist | `src/eligibility/`, `config/eligibility.py` | D | TODO | Rules engine over `criteria` in scheme JSON; next-question logic |
+| 8 | Evaluation | `scripts/eval.py`, `data/eval/` | C | TODO | Label sample questions with scheme ids; 20 unanswerable questions; metrics table (PLAN §6) |
+| 9 | Demo & pitch | `docs/pitch/` | D + A | TODO | Deck draft; 90-s demo script (PLAN §9); offline mode + backup video |
 
-## Interfaces (contracts between components)
+## Interfaces (contracts between components): freeze at 0:45
 
-> Changing anything here = stop and ask the user, and update in the same commit.
+> Changing anything here = stop and ask Vandan, and update in the same commit.
 
-_Define after planning, e.g.:_
+```python
+# src/lang/detect.py
+detect_language(text: str) -> {"lang": "en"|"hi"|"gu", "script": "Latn"|"Deva"|"Gujr",
+                               "code_mixed": bool, "confidence": float}
+
+# src/retrieval/search.py
+search(query: str, lang: str, k: int = 5) -> list[{"chunk_id", "scheme_id", "scheme_name", "section",
+                                                    "text", "lang", "source_url", "score"}]
+
+# src/answer/generate.py
+answer(query: str, lang_info: dict, chunks: list) -> {"answer", "lang", "refused", "refusal_reason",
+    "citations": [{"id": "S1", "chunk_id", "scheme_name", "passage", "source_url"}], "confidence"}
+
+# src/eligibility/rules.py
+next_question(scheme_id: str, answers: dict) -> {"question": {"field", "text", "options"} | None,
+    "checklist": [{"criterion", "status": "met"|"not_met"|"unknown", "source"}],
+    "verdict": "likely_eligible"|"not_eligible"|"need_more_info"}
 ```
-POST /api/<thing>   request: {...}   200: {...}   4xx: {"error": "..."}
 ```
+POST /api/ask          {"query", "session_id"}                      → {"answer","lang","code_mixed","refused","citations","confidence","latency_ms"}
+POST /api/eligibility  {"scheme_id","answers","lang"}               → {"question","checklist","verdict"}
+GET  /api/health                                                    → {"ok","index_chunks","llm","offline_mode"}
+Errors: 400 {"error":"empty_query"} · 503 {"error":"llm_unavailable","fallback_passages":[...]}
+```
+Data files: `data/schemes/<id>.json` (template in PLAN §4.4) · `data/processed/chunks.jsonl` (one chunk per line, fields as `search()` output minus `score`).
 
 ## Honest disclosure (what is mocked / estimated / not built)
 
-| Item | Type (MOCK / Estimated / Hypothesized / Not built) | Where |
-|------|-----------------------------------------------------|-------|
-| | | |
+| Item | Type | Where |
+|------|------|-------|
+| Market stats in pitch | Sourced (links in PLAN.md) | docs/PLAN.md §1 |
+| Cost per 1,000 questions | Estimated (formula; prices filled on the day) | docs/PLAN.md §4.5 |
+| All accuracy/latency numbers | Not measured yet | scripts/eval.py |

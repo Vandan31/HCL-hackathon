@@ -1,19 +1,21 @@
 # Team workflow: branches, pushing, and no-clash rules
 
-Vandan (integrator) + 4 teammates, each with their own AI agent. Everyone works on **their own branch and their own
-folder**, so two people never edit the same file. Then `main` only ever receives clean merges.
+A team of 4 (Vandan as integrator + 3 teammates), each with their own AI agent. Everyone works on
+**their own branch and their own folder**, so two people never edit the same file. Then `main`
+only ever receives clean merges. Full plan and timeline: `docs/PLAN.md`.
 
 ---
 
-## 1. Who owns what (fill this in once the components are decided)
+## 1. Who owns what (Case 1: Multilingual Citizen Services Assistant)
 
-| Teammate | GitHub username | Component | Branch | Folder they own |
-|----------|-----------------|-----------|--------|-----------------|
-| Vandan (integrator) | Vandan31 | Planning, integration, GPU jobs | `comp/integration` | `docs/`, root config, `requirements.txt` |
-| Member 2 | | e.g. Backend / API | `comp/api` | `src/api/`, `tests/api/` |
-| Member 3 | | e.g. AI / model | `comp/model` | `src/model/`, `tests/model/` |
-| Member 4 | | e.g. UI | `comp/ui` | `src/ui/`, `tests/ui/` |
-| Member 5 | | e.g. Data, tests, pitch | `comp/data` | `data/fixtures/`, `docs/pitch/` |
+| Person | GitHub username | Component | Branch | Folders they own |
+|--------|-----------------|-----------|--------|------------------|
+| A. Vandan (integrator) | Vandan31 | API + answer engine (LLM, citations, refusal) | `comp/api` | `src/api/`, `src/answer/`, `config/answer.py`, `docs/`, root files |
+| B. Member 2 | | Data + ingestion | `comp/data` | `data/schemes/`, `src/ingest/`, `config/ingest.py` |
+| C. Member 3 | | Language detection + retrieval + eval | `comp/retrieval` | `src/lang/`, `src/retrieval/`, `scripts/eval.py`, `data/eval/`, `config/lang.py`, `config/retrieval.py` |
+| D. Member 4 | | UI + voice + eligibility + pitch | `comp/ui` | `src/ui/`, `src/eligibility/`, `config/ui.js`, `config/eligibility.py`, `docs/pitch/` |
+
+Tests live next to the owner: `tests/<component>/`.
 
 **Golden rule:** you only edit files inside *your* folder. Need a change somewhere else? Write it
 on `docs/BOARD.md` under "Shared-file change notices" and the owner makes it.

@@ -99,15 +99,16 @@ failure, and every magic number. Don't comment trivial lines like `i += 1`.
 
 Find them during the presentation:
 ```bash
-grep -rn "DEMO-KNOB:" src/      # everything we can tweak live
+grep -rn "DEMO-KNOB:" config/ src/   # everything we can tweak live
 grep -rn "PANEL:" src/          # cheat-sheet of judge answers
 grep -rn "MOCK:" src/           # honest disclosure list
 ```
 
 ### 2.4 Keep live-change points in one place
 All `DEMO-KNOB` values (thresholds, model name, prompt text, timeouts, feature flags, sample data
-path) live in **one config file** (e.g. `src/config.py` or `config.yaml`) so a change during the
-demo is a one-line edit plus a restart. Don't scatter them across modules.
+path) live in the **`config/` folder, one file per component** (`config/retrieval.py`,
+`config/answer.py`, `config/ui.js`, ...). That's one place to look during the demo, and no two
+people ever edit the same config file. Code imports from there; never hard-code a knob in `src/`.
 
 ---
 
