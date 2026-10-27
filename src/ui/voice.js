@@ -9,11 +9,12 @@
 
 import { CONFIG } from "../../config/ui.js";
 
-const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+// WHY looked up on each use (not once at load): works if the engine appears late, and lets tests swap in a fake.
+const getRecognition = () => window.SpeechRecognition || window.webkitSpeechRecognition;
 
 /** True if this browser can turn speech into text. */
 export function sttSupported() {
-  return Boolean(Recognition);
+  return Boolean(getRecognition());
 }
 
 /** True if this browser can read text aloud. */
@@ -22,18 +23,62 @@ export function ttsSupported() {
 }
 
 /**
- * Start listening once. Calls onResult(text) with the final transcript, onEnd() when the mic stops,
- * onError(code) on failure (e.g. "not-allowed" when mic permission is denied). Returns a stop() function.
+ * Make sure we may use the microphone BEFORE starting recognition.
+ * Returns "granted" | "denied" | "no_device" | "unsupported".
+ * WHY: started directly, Chrome silently waits on its small "Allow microphone?" bubble while the page looks
+ * frozen (measured: no event at all for 6 s). Asking first lets the UI tell the user what to do.
  */
-export function startListening(langKey, { onResult, onEnd, onError }) {
+export async function ensureMicPermission() {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return "unsupported";
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    stream.getTracks().forEach((t) => t.stop());   // only checking access; recognition opens its own stream
+    return "granted";
+  } catch (e) {
+    if (e.name === "NotAllowedError" || e.name === "SecurityError") return "denied";
+    if (e.name === "NotFoundError" || e.name === "OverconstrainedError") return "no_device";
+    return "denied";
+  }
+}
+
+/**
+ * Listen once in `langKey`. Callbacks:
+ *   onAudioStart()      the mic is really capturing (only now show "Listening…")
+ *   onInterim(text)     words so far, while the person is still speaking
+ *   onResult(text)      the final transcript
+ *   onError(code)       "no-speech" | "audio-capture" | "not-allowed" | "network" | "language-not-supported" | "start-timeout" | ...
+ *   onEnd()             the mic has stopped (always called last)
+ * Returns stop(), which ends listening and keeps what was heard so far.
+ */
+export function startListening(langKey, { onAudioStart, onInterim, onResult, onError, onEnd }) {
+  const Recognition = getRecognition();
   const rec = new Recognition();
   rec.lang = CONFIG.SPEECH_LANG[langKey] || "en-IN";
-  rec.interimResults = false;   // WHY: only the final text; partial guesses would flicker in the box
+  // WHY interim results: people need to SEE that they are being heard; words appear as they speak.
+  rec.interimResults = true;
   rec.maxAlternatives = 1;
-  rec.onresult = (e) => onResult(e.results[0][0].transcript);
-  // FALLBACK: any recognition error -> caller shows a message and the text box still works.
-  rec.onerror = (e) => onError(e.error);
-  rec.onend = () => onEnd();
+  let started = false, finalText = "";
+  rec.onaudiostart = () => { started = true; onAudioStart && onAudioStart(); };
+  rec.onresult = (e) => {
+    let interim = "";
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      const r = e.results[i];
+      if (r.isFinal) finalText += r[0].transcript;
+      else interim += r[0].transcript;
+    }
+    if (interim && onInterim) onInterim((finalText + " " + interim).trim());
+  };
+  // FALLBACK: any recognition error -> the caller shows a clear message; the text box always still works.
+  rec.onerror = (e) => onError && onError(e.error);
+  rec.onend = () => {
+    clearTimeout(timer);
+    if (finalText.trim()) onResult(finalText.trim());
+    onEnd && onEnd();
+  };
+  // WHY: if audio never starts (blocked device, stuck prompt), stop instead of looking frozen forever.
+  const timer = setTimeout(() => {
+    if (!started) { onError && onError("start-timeout"); try { rec.abort(); } catch (e) { /* already stopped */ } }
+  }, CONFIG.MIC_START_TIMEOUT_MS);
   rec.start();
   return () => rec.stop();
 }

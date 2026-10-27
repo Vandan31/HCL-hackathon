@@ -11,7 +11,7 @@
 
 import { CONFIG } from "../../config/ui.js";
 import { ask, eligibility, health, ApiError } from "./api.js";
-import { sttSupported, ttsSupported, startListening, speak } from "./voice.js";
+import { ensureMicPermission, sttSupported, ttsSupported, startListening, speak } from "./voice.js";
 import { startLanding3D } from "./landing3d.js";   // small; Three.js itself loads only when the landing page shows
 
 const $ = (id) => document.getElementById(id);
@@ -30,6 +30,7 @@ let uiLang = null;        // language picked on the opening page: "en" | "hi" | 
 let statusKey = null;     // which server-status text the pill shows (re-translated when the language changes)
 let answerCount = 0;      // gives each answer's passage cards unique element ids
 let busy = false;
+let lastInputWasVoice = false;   // true when the current question came from the mic (its answer will be spoken)
 
 function newSessionId() {
   return (crypto.randomUUID && crypto.randomUUID()) || String(Date.now());
@@ -490,26 +491,68 @@ function setupLargeText() {
   });
 }
 
+// Recognition error code -> message key in CONFIG.STRINGS[lang].errors.
+const MIC_ERRORS = {
+  "not-allowed": "micDenied", "service-not-allowed": "micDenied", "audio-capture": "micNoDevice",
+  "network": "micNetwork", "no-speech": "micNoSpeech", "start-timeout": "micTimeout",
+  "language-not-supported": "micLanguage",
+};
+
+/** Show the mic's state: "idle" | "asking" (waiting for permission) | "starting" (allowed, mic warming up)
+ *  | "listening" (really capturing audio). */
+function setMicState(state) {
+  els.micBtn.dataset.state = state;
+  els.micBtn.setAttribute("aria-pressed", String(state !== "idle"));
+  const text = { asking: S().micAsk, starting: S().micStarting, listening: S().listening };
+  els.query.placeholder = text[state] || S().placeholder;
+}
+
 function setupMic() {
-  // FALLBACK: no speech recognition (e.g. Firefox) or switched off -> hide the mic; typing always works.
-  if (!CONFIG.ENABLE_VOICE_INPUT || !sttSupported()) { els.micGroup.hidden = true; return; }
-  let stop = null;
-  els.micBtn.addEventListener("click", () => {
-    if (stop) { stop(); return; }   // second click stops listening
-    els.micBtn.setAttribute("aria-pressed", "true");
-    els.query.placeholder = S().listening;
-    announce(S().listening);   // WHY: a placeholder change is silent for screen-reader users
+  if (!CONFIG.ENABLE_VOICE_INPUT) { els.micGroup.hidden = true; return; }
+  let stop = null, busyMic = false;
+
+  const showMicError = (key) => { els.log.append(renderError(key)); scrollToBottom(); };
+
+  els.micBtn.addEventListener("click", async () => {
+    if (stop) { stop(); return; }    // second press = stop listening and keep what was heard
+    if (busyMic) return;             // already asking for permission
+    // FALLBACK: browser without speech recognition (e.g. Firefox) -> say so instead of a dead button.
+    if (!sttSupported()) { showMicError("micUnsupported"); return; }
+
+    busyMic = true;
+    setMicState("asking");
+    announce(S().micAsk);            // WHY: tell screen-reader users too, not only the placeholder
+    const permission = await ensureMicPermission();
+    if (permission !== "granted") {
+      busyMic = false;
+      setMicState("idle");
+      showMicError(permission === "no_device" ? "micNoDevice" : permission === "unsupported" ? "micUnsupported" : "micDenied");
+      return;
+    }
+
+    // WHY: the real mic took over a second to start after permission (measured); don't keep saying "allow it".
+    setMicState("starting");
+    const before = els.query.value;  // restored if nothing is heard, so typed text is never lost
     stop = startListening(els.micLang.value, {
-      // WHY: show the transcript in the box first, so a wrong recognition can be fixed before sending.
-      onResult: (text) => { els.query.value = text; autoGrow(); els.query.focus(); announce(text); },
-      onError: (code) => {
-        els.log.append(renderError(code === "not-allowed" ? "micDenied" : "micFailed"));
-        scrollToBottom();
+      onAudioStart: () => { setMicState("listening"); announce(S().listening); },
+      // WHY: words appear while the person speaks, greyed until final, so they can see they are heard.
+      onInterim: (text) => { els.query.value = text; els.query.classList.add("interim"); autoGrow(); },
+      onResult: (text) => {
+        els.query.classList.remove("interim");
+        els.query.value = text;
+        autoGrow();
+        announce(text);
+        lastInputWasVoice = true;    // the answer to a spoken question will be spoken too (UI wiring, component 10)
+        // DEMO-KNOB VOICE_AUTO_SEND: by default the person checks the text and presses Ask (wrong words can be fixed).
+        if (CONFIG.VOICE_AUTO_SEND) submitQuestion(text); else els.query.focus();
       },
+      onError: (code) => { if (code !== "aborted") showMicError(MIC_ERRORS[code] || "micFailed"); },
       onEnd: () => {
         stop = null;
-        els.micBtn.setAttribute("aria-pressed", "false");
-        els.query.placeholder = S().placeholder;
+        busyMic = false;
+        els.query.classList.remove("interim");
+        if (!els.query.value.trim()) els.query.value = before;
+        setMicState("idle");
       },
     });
   });
@@ -534,7 +577,7 @@ async function setupStatus() {
 }
 
 els.form.addEventListener("submit", (e) => { e.preventDefault(); submitQuestion(els.query.value); });
-els.query.addEventListener("input", autoGrow);
+els.query.addEventListener("input", () => { lastInputWasVoice = false; autoGrow(); });   // typing = not a spoken question
 // WHY: Enter sends (like a chat app); Shift+Enter adds a new line.
 els.query.addEventListener("keydown", (e) => {
   if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); submitQuestion(els.query.value); }

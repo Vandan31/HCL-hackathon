@@ -247,7 +247,19 @@ body:not(.picking) .lang-picker { display: none; }
   background: var(--surface); color: var(--ink); min-height: 44px; padding: 0 0.3rem;
 }
 .btn-mic { padding: 0; display: inline-grid; place-items: center; }
-.btn-mic[aria-pressed="true"] { background: var(--bad); color: #fff; border-color: var(--bad); }
+/* Mic states (set in app.js): asking = waiting for the browser's permission; listening = really capturing audio. */
+.btn-mic[data-state="asking"], .btn-mic[data-state="starting"] { background: var(--warn-tint); color: var(--warn); border-color: var(--warn); }
+.btn-mic[data-state="listening"] {
+  background: var(--bad); color: #fff; border-color: var(--bad);
+  animation: mic-pulse 1.2s ease-out infinite;   /* WHY: a moving cue that the mic is live, besides the colour */
+}
+@keyframes mic-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(161, 38, 43, 0.55); }
+  100% { box-shadow: 0 0 0 12px rgba(161, 38, 43, 0); }
+}
+@media (prefers-reduced-motion: reduce) { .btn-mic[data-state="listening"] { animation: none; } }
+/* Words still being recognised: softer and italic until the final text arrives. */
+.query.interim { color: var(--ink-soft); font-style: italic; }
 
 @media (max-width: 560px) {
   .topbar { flex-direction: column; }
