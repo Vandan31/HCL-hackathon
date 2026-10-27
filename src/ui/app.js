@@ -19,6 +19,7 @@ const els = {
   chips: $("sample-chips"), pill: $("status-pill"), largeText: $("large-text-toggle"),
   micGroup: $("mic-group"), micBtn: $("mic-btn"), micLang: $("mic-lang"),
   pickerOptions: $("picker-options"), changeLang: $("change-lang"), currentLang: $("current-lang"),
+  picker: $("lang-picker"), srStatus: $("sr-status"),
 };
 
 // WHY: the API contract asks for a session_id so follow-up questions can share context later.
@@ -67,8 +68,36 @@ function formatDate(iso) {
   }
 }
 
+// WHY: people who turn on "reduce motion" (vestibular disorders) get instant jumps instead of smooth scrolling.
+const scrollBehavior = () =>
+  (window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth");
+
 function scrollToBottom() {
-  window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+  window.scrollTo({ top: document.body.scrollHeight, behavior: scrollBehavior() });
+}
+
+/** A decorative symbol (emoji/arrow) that screen readers skip, so they don't read "speaker high volume". */
+const icon = (ch) => el("span", { "aria-hidden": "true" }, ch);
+
+/** Link that opens in a new tab, with a hidden "opens in a new tab" note for screen-reader users. */
+function externalLink(href, text, cls) {
+  return el("a", { href, target: "_blank", rel: "noopener noreferrer", ...(cls ? { class: cls } : {}) },
+    text, " ", icon("↗"), el("span", { class: "visually-hidden" }, ` (${S().newTab})`));
+}
+
+/** Guess the HTML lang of a piece of text from its script, so screen readers use the right voice. */
+function textLang(text) {
+  if (/[઀-૿]/.test(text)) return "gu";
+  if (/[ऀ-ॿ]/.test(text)) return "hi";
+  // Latin script on a Hindi or Gujarati page is almost always Hinglish (romanised Hindi).
+  return uiLang === "en" ? "en" : "hi-Latn";
+}
+
+/** Say something to screen-reader users only (through the hidden live region in index.html). */
+function announce(message) {
+  // WHY: clear first, so repeating the same message ("Listening…" twice) is still announced.
+  els.srStatus.textContent = "";
+  setTimeout(() => { els.srStatus.textContent = message; }, 50);
 }
 
 // ---------------------------------------------------------------------------
@@ -88,10 +117,12 @@ function applyLanguage() {
     }
   });
   els.currentLang.textContent = CONFIG.LANG_LABELS[uiLang];
+  // WHY: the spoken name must contain the visible text ("ગુજરાતી"), so voice-control users can say what they see.
+  els.changeLang.setAttribute("aria-label", `${s.changeLanguage}: ${CONFIG.LANG_LABELS[uiLang]}`);
 
-  // Example questions in the picked language.
+  // Example questions in the picked language (lang per chip: some are Hinglish on a Hindi page).
   els.chips.replaceChildren(...(CONFIG.SAMPLE_QUESTIONS[uiLang] || []).map((q) =>
-    el("button", { class: "chip", type: "button", onclick: () => submitQuestion(q) }, q)));
+    el("button", { class: "chip", type: "button", lang: textLang(q), onclick: () => submitQuestion(q) }, q)));
 
   // WHY: people usually speak the language they picked, so the mic starts there (they can still switch).
   els.micLang.value = uiLang;
@@ -101,6 +132,7 @@ function applyLanguage() {
 /** Show the opening page with one big button per language. */
 function showPicker() {
   document.body.classList.add("picking");
+  els.picker.hidden = false;
   els.pickerOptions.replaceChildren(...CONFIG.UI_LANGUAGES.map((lang) =>
     el("button", { class: "picker-btn", type: "button", lang, onclick: () => chooseLanguage(lang) },
       CONFIG.LANG_LABELS[lang])));
@@ -117,7 +149,13 @@ function chooseLanguage(lang) {
   uiLang = lang;
   try { localStorage.setItem("ys-lang", lang); } catch {}
   applyLanguage();
+  closePicker();
+}
+
+/** Hide the picker and return to the app (the `hidden` attribute keeps only one <main> in the page at a time). */
+function closePicker() {
   document.body.classList.remove("picking");
+  els.picker.hidden = true;
   autoGrow();   // WHY: the box can only be measured once visible; sizes it to one line (no needless scrollbar)
   els.query.focus();
 }
@@ -127,6 +165,13 @@ function setupLanguage() {
   els.micLang.replaceChildren(...["en", "hi", "gu"].map((l) =>
     el("option", { value: l, lang: l }, CONFIG.LANG_LABELS[l])));
   els.changeLang.addEventListener("click", showPicker);
+  // WHY: keyboard users can leave the picker with Escape and keep their current language and conversation.
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && uiLang && document.body.classList.contains("picking")) {
+      closePicker();
+      els.changeLang.focus();
+    }
+  });
 
   let saved = null;
   if (CONFIG.REMEMBER_LANGUAGE) {
@@ -153,7 +198,8 @@ function renderAnswerText(text, prefix, lang) {
       onclick: () => {
         const card = document.getElementById(`${prefix}-${m[1]}`);
         if (!card) return;
-        card.scrollIntoView({ behavior: "smooth", block: "center" });
+        card.scrollIntoView({ behavior: scrollBehavior(), block: "center" });
+        card.focus({ preventScroll: true });   // WHY: keyboard/screen-reader users land on the passage too, not just sighted users
         card.classList.add("flash");
         setTimeout(() => card.classList.remove("flash"), 1500);
       },
@@ -169,9 +215,7 @@ function renderPassage(c, prefix) {
       c.id ? el("span", { class: "passage-id" }, `[${c.id}]`) : null,
       el("span", {}, c.scheme_name || "")),
     el("p", { class: "passage-text" }, c.passage || c.text || ""),
-    c.source_url
-      ? el("a", { href: c.source_url, target: "_blank", rel: "noopener noreferrer" }, `${S().openPage} ↗`)
-      : null);
+    c.source_url ? externalLink(c.source_url, S().openPage) : null);
 }
 
 /** "Listen" button that reads the answer aloud in the answer's language. */
@@ -190,7 +234,7 @@ function renderListenButton(text, lang) {
         note.hidden = false;
       }
     },
-  }, `🔊 ${S().listen}`);
+  }, icon("🔊 "), S().listen);
   return el("div", {}, btn, note);
 }
 
@@ -208,7 +252,7 @@ function renderAnswer(resp) {
 
   if (refused) {
     // WHY: icon + title + colour, so a refusal is never mistaken for an answer (colour alone isn't enough).
-    card.append(el("p", { class: "state-title" }, "⚠️ ", s.refusedTitle));
+    card.append(el("p", { class: "state-title" }, icon("⚠️"), s.refusedTitle));
   }
   card.append(renderAnswerText(resp.answer || "", prefix, lang));
 
@@ -235,7 +279,7 @@ function renderAnswer(resp) {
 function renderFallbackPassages(body) {
   const prefix = `a${++answerCount}`;
   const card = el("article", { class: "card card-refused" },
-    el("p", { class: "state-title" }, "⚠️ ", S().aiUnavailable));
+    el("p", { class: "state-title" }, icon("⚠️"), S().aiUnavailable));
   const box = el("section", { class: "sources" });
   (body.fallback_passages || []).forEach((p, i) =>
     box.append(renderPassage({ ...p, id: p.id || `S${i + 1}` }, prefix)));
@@ -247,7 +291,7 @@ function renderFallbackPassages(body) {
 function renderError(kindOrMessage) {
   const text = S().errors[kindOrMessage] || kindOrMessage;
   return el("article", { class: "card card-error", role: "alert" },
-    el("p", { class: "state-title" }, "✖ ", text));
+    el("p", { class: "state-title" }, icon("✖"), text));
 }
 
 // ---------------------------------------------------------------------------
@@ -286,7 +330,8 @@ const STATUS_ICON = { met: "✅", not_met: "❌", unknown: "❓" };
 /** Draw the checklist card for one engine response; onAnswer(field, value) is called when the user answers. */
 function renderChecklist(card, res, schemeName, onAnswer) {
   const s = S();
-  card.replaceChildren(el("h3", { class: "elig-title" }, `${s.eligibilityTitle}: ${schemeName}`));
+  // WHY h2: the page's only h1 is the app name, so h2 keeps the heading outline without a skipped level.
+  card.replaceChildren(el("h2", { class: "elig-title" }, `${s.eligibilityTitle}: ${schemeName}`));
   let firstControl = null;
 
   if (res.question) {
@@ -313,8 +358,10 @@ function renderChecklist(card, res, schemeName, onAnswer) {
     card.append(box);
   } else {
     // WHY: words + icon, not colour alone, so the verdict is clear to colour-blind users and screen readers.
-    card.append(el("p", { class: `verdict verdict-${res.verdict}`, role: "status" },
-      s.verdict[res.verdict] || res.verdict));
+    // tabindex=-1 lets us move focus here: the answer buttons just disappeared, and focus must not fall to the page top.
+    firstControl = el("p", { class: `verdict verdict-${res.verdict}`, role: "status", tabindex: "-1" },
+      s.verdict[res.verdict] || res.verdict);
+    card.append(firstControl);
   }
 
   const list = el("ul", { class: "checklist" });
@@ -327,9 +374,9 @@ function renderChecklist(card, res, schemeName, onAnswer) {
   card.append(list);
 
   const source = res.checklist.find((i) => i.source)?.source;
-  if (source) card.append(el("a", { href: source, target: "_blank", rel: "noopener noreferrer", class: "elig-source" }, `${s.openPage} ↗`));
+  if (source) card.append(externalLink(source, s.openPage, "elig-source"));
 
-  // WHY: move keyboard focus to the new question so keyboard and screen-reader users can answer straight away.
+  // WHY: move keyboard focus to the new question (or the verdict) so keyboard and screen-reader users continue from there.
   if (firstControl) firstControl.focus({ preventScroll: true });
 }
 
@@ -348,7 +395,7 @@ function startChecklist(schemeId, schemeName) {
     } catch (err) {
       // FALLBACK: no criteria for this scheme yet, or the server is down -> say so; the answer above still stands.
       const msg = err.kind === "unknown_scheme" ? S().noChecklist : (S().errors[err.kind] || err.message);
-      card.replaceChildren(el("p", { class: "state-title" }, "⚠️ ", msg));
+      card.replaceChildren(el("p", { class: "state-title" }, icon("⚠️"), msg));
     }
     scrollToBottom();
   };
@@ -366,7 +413,7 @@ async function submitQuestion(text) {
 
   busy = true;
   els.send.disabled = true;
-  els.log.append(el("div", { class: "msg-user" }, q));
+  els.log.append(el("div", { class: "msg-user", lang: textLang(q) }, q));
   const pending = el("p", { class: "thinking", "aria-busy": "true" }, S().thinking);
   els.log.append(pending);
   els.query.value = "";
@@ -397,6 +444,8 @@ function autoGrow() {
   // WHY: add the border width (offset - client), since box-sizing:border-box counts borders in the height.
   const border = els.query.offsetHeight - els.query.clientHeight;
   els.query.style.height = `${els.query.scrollHeight + border}px`;
+  // WHY: only show a scrollbar once the box hits its max height; sub-pixel rounding otherwise shows a useless one.
+  els.query.style.overflowY = els.query.scrollHeight + border > els.query.offsetHeight + 1 ? "auto" : "hidden";
 }
 
 // ---------------------------------------------------------------------------
@@ -415,6 +464,7 @@ function setupLargeText() {
   els.largeText.addEventListener("click", () => {
     on = !on;
     apply();
+    autoGrow();   // WHY: bigger text means a taller line; resize the question box so it doesn't show a scrollbar
     try { localStorage.setItem("ys-large-text", on ? "1" : "0"); } catch {}
   });
 }
@@ -427,9 +477,10 @@ function setupMic() {
     if (stop) { stop(); return; }   // second click stops listening
     els.micBtn.setAttribute("aria-pressed", "true");
     els.query.placeholder = S().listening;
+    announce(S().listening);   // WHY: a placeholder change is silent for screen-reader users
     stop = startListening(els.micLang.value, {
       // WHY: show the transcript in the box first, so a wrong recognition can be fixed before sending.
-      onResult: (text) => { els.query.value = text; autoGrow(); els.query.focus(); },
+      onResult: (text) => { els.query.value = text; autoGrow(); els.query.focus(); announce(text); },
       onError: (code) => {
         els.log.append(renderError(code === "not-allowed" ? "micDenied" : "micFailed"));
         scrollToBottom();

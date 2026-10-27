@@ -24,7 +24,8 @@ data-i18n-attr="attribute:key,..." does the same for attributes such as placehol
 </head>
 <body class="picking">
   <!-- Opening page. WHY trilingual: the user hasn't chosen yet, so each choice is written in its own script. -->
-  <section id="lang-picker" class="lang-picker" aria-labelledby="picker-title">
+  <!-- WHY <main>: it is the only content while picking, so screen-reader users land straight on it. -->
+  <main id="lang-picker" class="lang-picker" aria-labelledby="picker-title">
     <div class="picker-card">
       <p class="picker-brand">Yojana Saathi · <span lang="hi">योजना साथी</span> · <span lang="gu">યોજના સાથી</span></p>
       <h1 id="picker-title" class="picker-title">
@@ -34,7 +35,7 @@ data-i18n-attr="attribute:key,..." does the same for attributes such as placehol
       </h1>
       <div id="picker-options" class="picker-options"></div>
     </div>
-  </section>
+  </main>
 
   <header class="topbar">
     <div class="brand">
@@ -44,7 +45,8 @@ data-i18n-attr="attribute:key,..." does the same for attributes such as placehol
     <div class="topbar-actions">
       <!-- Shows mock / server status so nobody mistakes the mock for the real system. -->
       <span id="status-pill" class="pill" role="status"></span>
-      <button id="change-lang" class="btn btn-ghost btn-lang" type="button" data-i18n-attr="title:changeLanguage,aria-label:changeLanguage">
+      <!-- aria-label is set in app.js so the spoken name includes the visible language name (WCAG 2.5.3). -->
+      <button id="change-lang" class="btn btn-ghost btn-lang" type="button" data-i18n-attr="title:changeLanguage">
         <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm6.9 6h-2.95a15.7 15.7 0 0 0-1.38-3.56A8.03 8.03 0 0 1 18.9 8ZM12 4.04A14 14 0 0 1 13.91 8h-3.82A14 14 0 0 1 12 4.04ZM4.26 14a8.2 8.2 0 0 1 0-4h3.38a16.5 16.5 0 0 0 0 4H4.26Zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56A8 8 0 0 1 5.08 16ZM8.03 8H5.08a8 8 0 0 1 4.33-3.56A15.7 15.7 0 0 0 8.03 8ZM12 19.96A14 14 0 0 1 10.09 16h3.82A14 14 0 0 1 12 19.96ZM14.34 14H9.66a14.7 14.7 0 0 1 0-4h4.68a14.7 14.7 0 0 1 0 4Zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95a8.03 8.03 0 0 1-4.33 3.56ZM16.36 14a16.5 16.5 0 0 0 0-4h3.38a8.2 8.2 0 0 1 0 4h-3.38Z"/></svg>
         <span id="current-lang"></span>
       </button>
@@ -63,7 +65,8 @@ data-i18n-attr="attribute:key,..." does the same for attributes such as placehol
     <section id="chat-log" class="chat-log" role="log" aria-live="polite" data-i18n-attr="aria-label:conversation"></section>
   </main>
 
-  <form id="ask-form" class="composer" autocomplete="off">
+  <!-- A named form is a landmark, so screen-reader users can jump straight to the question box. -->
+  <form id="ask-form" class="composer" autocomplete="off" data-i18n-attr="aria-label:yourQuestion">
     <div class="mic-group" id="mic-group">
       <label class="visually-hidden" for="mic-lang" data-i18n="micLanguage"></label>
       <select id="mic-lang" class="mic-lang" data-i18n-attr="title:micLanguage"></select>
@@ -75,6 +78,9 @@ data-i18n-attr="attribute:key,..." does the same for attributes such as placehol
     <textarea id="query" class="query" rows="1" data-i18n-attr="placeholder:placeholder"></textarea>
     <button id="send-btn" class="btn btn-primary" type="submit" data-i18n="ask"></button>
   </form>
+
+  <!-- Invisible announcer: tells screen-reader users about changes they can't see (e.g. "Listening…"). -->
+  <p id="sr-status" class="visually-hidden" role="status" aria-live="polite"></p>
 
   <script type="module" src="app.js"></script>
 </body>
