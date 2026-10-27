@@ -17,8 +17,9 @@ ROOT = Path(__file__).resolve().parents[2]
 UI = ROOT / "src" / "ui"
 FIXTURES = json.loads((UI / "mock" / "ask_fixtures.json").read_text(encoding="utf-8"))
 
-# Keys every citation must carry, per docs/COMPONENTS.md "Interfaces" (answer() citations).
-CITATION_KEYS = {"id", "chunk_id", "scheme_name", "passage", "source_url"}
+# Keys every citation must carry, per docs/COMPONENTS.md "Interfaces" (answer() citations), plus
+# "scheme_id": an assumed addition the eligibility button needs; to be agreed with comp/api at integration.
+CITATION_KEYS = {"id", "chunk_id", "scheme_id", "scheme_name", "passage", "source_url"}
 # Answer variants the UI can show: en, hi, gu plus Hinglish (hi in Latin script).
 LANG_VARIANTS = {"en", "hi", "gu", "hinglish"}
 

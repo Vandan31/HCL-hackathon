@@ -9,7 +9,7 @@
  */
 
 import { CONFIG } from "../../config/ui.js";
-import { ask, health, ApiError } from "./api.js";
+import { ask, eligibility, health, ApiError } from "./api.js";
 import { sttSupported, ttsSupported, startListening, speak } from "./voice.js";
 
 const $ = (id) => document.getElementById(id);
@@ -133,6 +133,7 @@ function renderAnswer(resp) {
     card.append(box);
   }
   if (!refused) {
+    card.append(renderEligibilityButtons(cites, key, strings));
     card.append(el("p", { class: "disclaimer" }, strings.disclaimer.replace("{date}", CONFIG.DATA_AS_OF)));
   }
   if (typeof resp.latency_ms === "number") {
@@ -156,16 +157,122 @@ function renderFallbackPassages(body) {
   return card;
 }
 
+const ERROR_MESSAGES = {
+  timeout: "The server took too long to answer. Please try again.",
+  network: "Can't reach the server. Check the connection and try again.",
+  server: "Something went wrong on the server. Please try again.",
+  empty_query: "Please type or say a question.",
+};
+
 /** Network / timeout / server error: say what happened and how to recover. */
 function renderError(err) {
-  const messages = {
-    timeout: "The server took too long to answer. Please try again.",
-    network: "Can't reach the server. Check the connection and try again.",
-    server: "Something went wrong on the server. Please try again.",
-    empty_query: "Please type or say a question.",
-  };
   return el("article", { class: "card card-error", role: "alert" },
-    el("p", { class: "state-title" }, "✖ ", messages[err.kind] || err.message));
+    el("p", { class: "state-title" }, "✖ ", ERROR_MESSAGES[err.kind] || err.message));
+}
+
+// ---------------------------------------------------------------------------
+// Eligibility checklist (bonus): rules engine asks follow-ups, UI shows ✅/❌/❓
+// ---------------------------------------------------------------------------
+
+/** Scheme id behind a citation, or null. */
+function schemeIdOf(c) {
+  // MOCK: "scheme_id" in citations is an assumption, not yet in the /api/ask contract (to settle with comp/api
+  // at integration). Fallback: the chunk_id prefix ("pm-kisan#benefits#0" -> "pm-kisan"), a naming convention only.
+  return c.scheme_id || (c.chunk_id || "").split("#")[0] || null;
+}
+
+/** One "Check if I'm eligible for X" button per scheme cited in the answer. */
+function renderEligibilityButtons(cites, key, strings) {
+  if (!CONFIG.ENABLE_ELIGIBILITY) return null;
+  const schemes = new Map();   // scheme id -> display name, in citation order, no duplicates
+  for (const c of cites) {
+    const id = schemeIdOf(c);
+    if (id && !schemes.has(id)) schemes.set(id, c.scheme_name || id);
+  }
+  if (!schemes.size) return null;
+  const row = el("div", { class: "elig-actions" });
+  for (const [id, name] of schemes) {
+    row.append(el("button", {
+      class: "btn btn-small btn-elig", type: "button",
+      // WHY: disable after one click so a double tap doesn't start two checklists.
+      onclick: (e) => { e.currentTarget.disabled = true; startChecklist(id, name, key); },
+    }, strings.checkEligibility.replace("{scheme}", name)));
+  }
+  return row;
+}
+
+const STATUS_ICON = { met: "✅", not_met: "❌", unknown: "❓" };
+
+/** Draw the checklist card for one engine response; onAnswer(field, value) is called when the user answers. */
+function renderChecklist(card, res, schemeName, strings, onAnswer) {
+  card.replaceChildren(el("h3", { class: "elig-title" }, `${strings.eligibilityTitle}: ${schemeName}`));
+  let firstControl = null;
+
+  if (res.question) {
+    const q = res.question;
+    const box = el("div", { class: "elig-question" }, el("p", { class: "q-text" }, q.text));
+    if (q.options.length) {
+      const opts = el("div", { class: "options", role: "group", "aria-label": q.text });
+      for (const o of q.options) {
+        const b = el("button", { class: "btn chip-option", type: "button", onclick: () => onAnswer(q.field, o.value) }, o.label);
+        firstControl = firstControl || b;
+        opts.append(b);
+      }
+      box.append(opts);
+    } else {
+      // Empty options = the engine wants a number (e.g. age).
+      const input = el("input", { type: "number", inputmode: "numeric", min: "0", class: "num-input", "aria-label": q.text });
+      const form = el("form", { class: "options", onsubmit: (e) => {
+        e.preventDefault();
+        if (input.value !== "") onAnswer(q.field, Number(input.value));
+      } }, input, el("button", { class: "btn btn-primary", type: "submit" }, strings.ok));
+      firstControl = input;
+      box.append(form);
+    }
+    card.append(box);
+  } else {
+    // WHY: words + icon, not colour alone, so the verdict is clear to colour-blind users and screen readers.
+    card.append(el("p", { class: `verdict verdict-${res.verdict}`, role: "status" },
+      strings.verdict[res.verdict] || res.verdict));
+  }
+
+  const list = el("ul", { class: "checklist" });
+  for (const item of res.checklist) {
+    list.append(el("li", { class: `check-${item.status}` },
+      el("span", { class: "check-icon", "aria-hidden": "true" }, STATUS_ICON[item.status] || "❓"),
+      el("span", { class: "check-text" }, item.criterion),
+      el("span", { class: "check-status" }, strings.status[item.status] || item.status)));
+  }
+  card.append(list);
+
+  const source = res.checklist.find((i) => i.source)?.source;
+  if (source) card.append(el("a", { href: source, target: "_blank", rel: "noopener noreferrer", class: "elig-source" }, `${strings.openPage} ↗`));
+
+  // WHY: move keyboard focus to the new question so keyboard and screen-reader users can answer straight away.
+  if (firstControl) firstControl.focus({ preventScroll: true });
+}
+
+/** Run the follow-up loop for one scheme: ask, record the answer, ask again until the engine stops. */
+function startChecklist(schemeId, schemeName, key) {
+  const strings = CONFIG.STRINGS[key];
+  const lang = CONFIG.ELIGIBILITY_LANG[key] || "en";
+  const answers = {};   // lives only in this page: no personal data is stored (PLAN §4.6)
+  const card = el("article", { class: "card card-elig", lang: htmlLang[lang] || "en" });
+  els.log.append(card);
+
+  const step = async () => {
+    card.replaceChildren(el("p", { class: "thinking", "aria-busy": "true" }, strings.eligibilityTitle));
+    try {
+      const res = await eligibility(schemeId, answers, lang);
+      renderChecklist(card, res, schemeName, strings, (field, value) => { answers[field] = value; step(); });
+    } catch (err) {
+      // FALLBACK: no criteria for this scheme yet, or the server is down -> say so; the answer above still stands.
+      const msg = err.kind === "unknown_scheme" ? strings.noChecklist : (ERROR_MESSAGES[err.kind] || err.message);
+      card.replaceChildren(el("p", { class: "state-title" }, "⚠️ ", msg));
+    }
+    scrollToBottom();
+  };
+  step();
 }
 
 // ---------------------------------------------------------------------------

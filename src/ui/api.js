@@ -62,6 +62,34 @@ export async function ask(query, sessionId) {
   throw new ApiError("server", `Server error (HTTP ${status}).`);
 }
 
+/**
+ * POST /api/eligibility. Returns {question, checklist, verdict}, or throws ApiError
+ * (kind "unknown_scheme" when no checklist exists for that scheme yet).
+ */
+export async function eligibility(schemeId, answers, lang) {
+  // WHY: same timeout reasoning as ask(); a stuck checklist must not freeze the screen.
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), CONFIG.REQUEST_TIMEOUT_MS);
+  let res;
+  try {
+    res = await fetch(`${CONFIG.API_BASE}/api/eligibility`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ scheme_id: schemeId, answers, lang }),
+      signal: ctrl.signal,
+    });
+  } catch (e) {
+    throw new ApiError(e.name === "AbortError" ? "timeout" : "network", "Could not reach the server.");
+  } finally {
+    clearTimeout(timer);
+  }
+  let body = null;
+  try { body = await res.json(); } catch { body = null; }
+  if (res.ok && body) return body;
+  if (body && body.error === "unknown_scheme") throw new ApiError("unknown_scheme", "No checklist for this scheme.");
+  throw new ApiError("server", `Server error (HTTP ${res.status}).`);
+}
+
 /** GET /api/health. Returns the body, or null if the server can't be reached (never throws). */
 export async function health() {
   if (CONFIG.USE_MOCK) return { ok: true, mock: true };

@@ -1,5 +1,5 @@
 {
-  "_comment": "MOCK: hand-written demo responses for /api/ask, used only while CONFIG.USE_MOCK is true. Not real retrieval output. Passage texts are short paraphrases for UI testing; the real passages come from data/schemes/ via the API.",
+  "_comment": "MOCK: hand-written demo responses for /api/ask, used only while CONFIG.USE_MOCK is true. Not real retrieval output. Passage texts are short paraphrases for UI testing; the real passages come from data/schemes/ via the API. 'scheme_id' in citations is an ASSUMPTION pending the API contract (the UI needs it to start the eligibility checklist).",
   "topics": [
     {
       "id": "pm-kisan",
@@ -15,6 +15,7 @@
         {
           "id": "S1",
           "chunk_id": "pm-kisan#benefits#0",
+          "scheme_id": "pm-kisan",
           "scheme_name": "PM-KISAN",
           "passage": "MOCK passage: Financial benefit of ₹6,000 per year in three equal instalments of ₹2,000 to landholding farmer families, transferred to their bank accounts.",
           "source_url": "https://www.myscheme.gov.in/schemes/pm-kisan"
@@ -22,6 +23,7 @@
         {
           "id": "S2",
           "chunk_id": "pm-kisan#exclusions#0",
+          "scheme_id": "pm-kisan",
           "scheme_name": "PM-KISAN",
           "passage": "MOCK passage: Families in which one or more members paid income tax in the last assessment year are excluded.",
           "source_url": "https://www.myscheme.gov.in/schemes/pm-kisan"
@@ -42,6 +44,7 @@
         {
           "id": "S1",
           "chunk_id": "pmay#documents#0",
+          "scheme_id": "pmay",
           "scheme_name": "Pradhan Mantri Awas Yojana",
           "passage": "MOCK passage: Documents required: Aadhaar card, income certificate, bank account details, and a declaration that the family does not own a pucca house.",
           "source_url": "https://www.myscheme.gov.in/schemes/pmay-g"

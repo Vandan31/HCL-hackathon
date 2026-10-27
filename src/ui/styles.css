@@ -144,6 +144,34 @@ body {
 
 .toast { margin: 0.5rem 0 0; font-size: 0.85rem; color: var(--bad); }
 
+/* ---------- Eligibility checklist ---------- */
+.elig-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.9rem; }
+.btn-elig { border-color: var(--good); color: var(--good); background: var(--good-tint); }
+.card-elig { border-color: var(--good); }
+.elig-title { margin: 0 0 0.6rem; font-size: 1.05rem; }
+.q-text { margin: 0 0 0.5rem; font-size: 1.1rem; font-weight: 600; }
+.options { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.75rem; }
+.chip-option { border-radius: 999px; }
+.chip-option:hover { border-color: var(--accent); }
+.num-input {
+  font: inherit; width: 7rem; min-height: 44px; padding: 0 0.6rem;
+  border: 1px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--ink);
+}
+.num-input:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.verdict { margin: 0 0 0.75rem; padding: 0.6rem 0.8rem; border-radius: 10px; font-weight: 700; }
+.verdict-likely_eligible { background: var(--good-tint); color: var(--good); }
+.verdict-not_eligible { background: var(--bad-tint); color: var(--bad); }
+.verdict-need_more_info { background: var(--warn-tint); color: var(--warn); }
+.checklist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.35rem; }
+.checklist li {
+  display: grid; grid-template-columns: 1.6rem 1fr auto; gap: 0.5rem; align-items: baseline;
+  padding: 0.4rem 0.5rem; border-radius: 8px; background: var(--bg); font-size: 0.95rem;
+}
+.check-status { font-size: 0.8rem; font-weight: 700; color: var(--ink-soft); white-space: nowrap; }
+.check-not_met .check-status { color: var(--bad); }
+.check-met .check-status { color: var(--good); }
+.elig-source { display: inline-block; margin-top: 0.6rem; color: var(--accent); font-weight: 600; font-size: 0.9rem; }
+
 /* ---------- Composer (bottom bar) ---------- */
 .composer {
   position: sticky; bottom: 0; display: flex; gap: 0.5rem; align-items: flex-end;
