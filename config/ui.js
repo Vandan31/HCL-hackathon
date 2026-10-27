@@ -73,17 +73,13 @@ export const CONFIG = {
       "PM awas yojana ke liye kaunse documents chahiye?",
       "पासपोर्ट कैसे बनवाएँ?",
     ],
-    // DEMO-KNOB: the team's Gujarati demo questions (2026-10-27). Their real answers are recorded in the API's
-    // offline cache (data/cache/demo_answers.json), served when the API runs with OFFLINE_MODE=true.
+    // DEMO-KNOB: Gujarati demo: 3 questions the documents answer + 1 out of scope (passport), which the
+    // system refuses. All 4 real answers are recorded in the API's offline cache (served with OFFLINE_MODE=true).
     gu: [
       "મારી પાસે ઉંમર સાબિત કરવાનો કોઈ દસ્તાવેજ નથી. શું હું તેમ છતાં વિધવા પેન્શન માટે અરજી કરી શકું?",
       "હું ગુજરાતની અનુસૂચિત જાતિ (SC)ની મહિલા છું. મારા માટે કઈ લોન વધુ સારી છે, મહિલા સમૃદ્ધિ યોજના કે નાના ધંધા માટેની લોન?",
       "મારી એક જોડિયા બહેન છે અને કોઈ ભાઈ નથી. શું અમે સિંગલ ગર્લ ચાઇલ્ડ શિષ્યવૃત્તિ માટે અરજી કરી શકીએ?",
-      "મારાં માતા-પિતા પાસે કોઈ મિલકત નથી. શું મને તેમ છતાં વિદેશ અભ્યાસ માટેની લોન મળી શકે?",
-      "મારા પરિવારની આવક બરાબર ₹3,00,000 છે. શું હું નાના ધંધા માટેની લોન માટે પાત્ર છું?",
-      "હળપતિ આવાસ યોજનામાં ₹1,20,000 એકસાથે મળશે કે ઘર બંધાય તેમ હપ્તામાં?",
-      "શું પદ્મ પુરસ્કાર સાથે કોઈ ઇનામની રકમ પણ મળે છે?",
-      "વિધવા પેન્શન માટે મારું આવકનું પ્રમાણપત્ર હજી બહાર પડ્યું નથી. મેં તેના માટે ઓનલાઈન અરજી કરી છે અને મને એક પહોંચ (acknowledgement) નંબર મળ્યો છે. પ્રમાણપત્ર મળે ત્યાં સુધી શું હું આવકના પ્રમાણપત્રની જગ્યાએ આ નંબર વાપરી શકું?",
+      "પાસપોર્ટ કેવી રીતે બનાવવો?",
     ],
   },
 
