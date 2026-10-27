@@ -38,8 +38,13 @@
 
 ```python
 # src/lang/detect.py
-detect_language(text: str) -> {"lang": "en"|"hi"|"gu", "script": "Latn"|"Deva"|"Gujr",
-                               "code_mixed": bool, "confidence": float}
+detect_language(text: str, speech_hint: {"lang", "prob"} | None = None)
+    -> {"lang": ISO 639-1 code ("en","hi","gu","mr","ta",...), "script": ISO 15924 ("Latn","Deva","Gujr",...),
+        "code_mixed": bool, "confidence": float, "source": "rules"|"indiclid"|"whisper",
+        "supported": bool}   # supported = we have documents + refusal templates (en/hi/gu)
+# speech_hint = faster-whisper's {"lang": info.language, "prob": info.language_probability}
+# supported == False -> answer engine replies/refuses in `lang` via the LLM (no native template).
+# Agreed with Harsh 2026-10-27 (IndicLID layer, D-006).
 
 # src/retrieval/search.py
 search(query: str, lang: str, k: int = 5) -> list[{"chunk_id", "scheme_id", "scheme_name", "section",
@@ -60,7 +65,9 @@ POST /api/eligibility  {"scheme_id","answers","lang"}               → {"questi
 GET  /api/health                                                    → {"ok","index_chunks","llm","offline_mode"}
 Errors: 400 {"error":"empty_query"} · 503 {"error":"llm_unavailable","fallback_passages":[...]}
 ```
-Data files: `data/schemes/<id>.json` (template in PLAN §4.4) · `data/processed/chunks.jsonl` (one chunk per line, fields as `search()` output minus `score`).
+Data files: **exact format in `docs/DATA_FORMAT.md`** (schemes JSON, `data/processed/chunks.jsonl`,
+`data/eval/questions.jsonl`). Check before pushing data: `python scripts/validate_data.py`.
+Chunk `text` is the clean passage; retrieval adds scheme name + section to the searched text itself.
 
 ## Honest disclosure (what is mocked / estimated / not built)
 

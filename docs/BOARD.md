@@ -12,6 +12,11 @@
 ## Shared-file change notices
 _Announce here before editing shared files (config, requirements, API contracts)._
 
+- **2026-10-27 · Vandan · data contract + lang interface.** New `docs/DATA_FORMAT.md` (exact format for
+  `data/schemes/*.json`, `chunks.jsonl`, eval questions) + `scripts/validate_data.py`. **@Jaya: build ingest
+  to this and run the validator before pushing data.** `detect_language()` output gained `source` and
+  `supported`, and `lang` can now be any ISO code (agreed with Harsh; see COMPONENTS.md Interfaces, D-006).
+
 ## Handoff log (newest on top)
 
 <!--

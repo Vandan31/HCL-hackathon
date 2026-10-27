@@ -43,3 +43,17 @@
 - **Decision:** Gujarati unless the organisers' 100 sample questions use another language.
 - **Why:** team location (Gujarat), IndicQA has Gujarati, demo story with a Gujarat citizen.
 - **Change if:** sample questions are in another language. It's one config value plus documents.
+
+## D-006 · Layered language ID: script rules → IndicLID → Whisper hint · lang · 2026-10-27
+- **Decision:** Unicode script rules + Hinglish word list first; AI4Bharat IndicLID (fastText FTN/FTR, via
+  `fasttext-predict`) only for shared scripts (Devanagari, Bengali, Arabic, Roman); faster-whisper's own
+  language guess as a hint for speech. Rules-only fallback when the models are missing.
+- **Alternatives:** rules only (can't tell Marathi from Hindi, misses romanised Gujarati); IndicLID alone
+  (wrong on short/Hinglish queries); IndicLID-BERT (968 MB, slower).
+- **Evidence:** Measured on our probes: IndicLID right on Marathi, romanised Marathi/Gujarati/Tamil; wrong
+  alone on Hinglish (→ Maithili 0.77–0.92), "PM किसान का पैसा कब आएगा?" (→ Kashmiri 1.00), "apply online"
+  (→ Gujarati 0.68), hence guards (≥3 words, ≥0.5 prob, accepted-language list). 50/50 lang tests pass;
+  0.03 ms/query avg over 1,000 queries after a one-time 16 s model load (laptop CPU).
+- **Panel answer:** "Free rules settle most queries instantly; the IndicLID model only judges the scripts
+  several languages share, and we measured where it fails and guard against it."
+- **Change if:** eval on the organisers' questions shows the guards reject correct model answers.
