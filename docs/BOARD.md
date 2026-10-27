@@ -7,6 +7,7 @@
 
 | Component | Agent / person | Branch | Started (date time) | Files touched |
 |-----------|----------------|--------|---------------------|---------------|
+| 6. UI (Gujarati examples: 3 demo + 1 out of scope) | Vaidehi/claude | `Vaidehi` | 2026-10-27 20:10 | `config/ui.js` |
 | C: language + retrieval + eval | Vandan/claude | `comp/retrieval` | 2026-10-27 | `src/lang/`, `src/retrieval/`, `scripts/eval.py`, `data/eval/`, `config/lang.py`, `config/retrieval.py`, `tests/lang/`, `tests/retrieval/` |
 | API + answer engine (#4, #5) | harsh/claude | `harsh` | 2026-10-27 11:19 | `src/api/`, `src/answer/`, `config/api.py`, `config/answer.py`, `tests/api/`, `tests/answer/`, `requirements.txt`, `pytest.ini` |
 
