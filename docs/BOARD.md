@@ -21,6 +21,11 @@ _Announce here before editing shared files (config, requirements, API contracts)
   validator are not touched. Questions are MOCK (organisers' 100 not received yet) and will be swapped in later.
 - **2026-10-27 · Jaya · answer language (D-009).** @Harsh: scheme text stays English only. The answer engine
   should write the answer in the user's language from English passages; source cards show the English text.
+- **2026-10-27 · Jaya · eligibility criteria (D-011).** @Vaidehi: all 26 `data/schemes/<id>.json` now have draft
+  `criteria` in your engine's format (+ `source_text`, `verified`, `review_note`, which your code ignores). Field
+  names: `config/ingest.py` `CRITERIA_FIELDS` (on `comp/ingest`). Tested with your `rules.py`. Please add questions
+  for the most-used new fields: `state` (9 schemes), `citizen_of_india` (5), `annual_family_income` (4),
+  `social_category` (4), `applicant_type` (3). Without them the checklist stops after `age`/`gender`/`occupation`.
 
 ## Handoff log (newest on top)
 

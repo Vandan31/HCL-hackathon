@@ -22,7 +22,7 @@
 | # | Component | Folders | Owner | Status | Next step |
 |---|-----------|---------|-------|--------|-----------|
 | 0 | Planning | `docs/` | A. Harsh | WORKING | Confirm 3rd language from the 100 sample questions; freeze interfaces at 0:45 |
-| 1 | Data + ingestion | `data/schemes/`, `src/ingest/`, `config/ingest.py` | B. Jaya | WORKING (tested) on `comp/ingest` | 26 schemes → 137 chunks, validator 0 errors. Next: swap in the organisers' 100 questions; draft `criteria` for human check (PLAN §4.4); optional real `source_url`s; then re-run `python -m src.ingest.build_chunks` + `python scripts/validate_data.py` |
+| 1 | Data + ingestion | `data/schemes/`, `src/ingest/`, `config/ingest.py` | B. Jaya | WORKING (tested) on `comp/ingest` | 26 schemes → 137 chunks, validator 0 errors. Criteria drafted (124 rules, `verified: false`). Next: a human checks each rule against `source_text` and sets `verified: true`; optional real `source_url`s; then re-run `python -m src.ingest.build_chunks` + `python scripts/validate_data.py` |
 | 2 | Language detection | `src/lang/`, `config/lang.py` | C. Vandan | TODO | Unicode script rules (Deva/Gujr/Latn) + Hinglish word list + tests |
 | 3 | Retrieval | `src/retrieval/`, `config/retrieval.py` | C. Vandan | TODO | BM25 + BGE-M3 + RRF over `data/processed/`; MOCK chunks until ingest is ready |
 | 4 | Answer engine | `src/answer/`, `config/answer.py` | A. Harsh | TODO | Prompt → JSON {answer, citations, answerable}; citation check; refusal templates en/hi/gu/Hinglish |
@@ -77,5 +77,6 @@ Chunk `text` is the clean passage; retrieval adds scheme name + section to the s
 | Cost per 1,000 questions | Estimated (formula; prices filled on the day) | docs/PLAN.md §4.5 |
 | All accuracy/latency numbers | Not measured yet | scripts/eval.py |
 | Scheme `source_url` = myScheme search page, not the scheme's own page (26 schemes) | MOCK (team decision, D-008) | config/ingest.py, data/schemes/*.json |
-| Eval questions `mock-001`..`mock-098` written by us, not the organisers' 100 | MOCK | data/eval/questions.jsonl |
+| Eval set = 98 questions written by our team (organisers' 100 not provided; team decision D-010) | Disclosed: ours, not the organisers' | data/eval/questions.jsonl |
+| Eligibility `criteria`: agent drafts from scheme text, not yet human-checked (`verified: false`) | Draft (D-011) | data/schemes/*.json |
 | Scheme text is English only; answers translated by the LLM at answer time (D-009) | Design choice | data/schemes/*.json |
