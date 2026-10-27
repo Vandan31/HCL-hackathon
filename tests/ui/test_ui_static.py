@@ -61,8 +61,17 @@ class TestJsImports(unittest.TestCase):
             src = js.read_text(encoding="utf-8")
             paths = re.findall(r'from\s+"(\.{1,2}/[^"]+)"', src)
             paths += re.findall(r'new URL\("(\.{1,2}/[^"]+)"', src)
+            paths += re.findall(r'import\("(\.{1,2}/[^"]+)"\)', src)   # dynamic imports, e.g. the local Three.js
             for rel in paths:
                 self.assertTrue((js.parent / rel).resolve().exists(), f"{js.name} -> {rel}")
+
+    def test_three_js_is_local_and_licensed(self):
+        # WHY: the demo must work offline, so Three.js is served from the repo, never a CDN, with its MIT licence.
+        vendor = UI / "vendor" / "three"
+        self.assertTrue((vendor / "three.module.min.js").stat().st_size > 500_000)
+        self.assertIn("MIT License", (vendor / "LICENSE").read_text(encoding="utf-8"))
+        for js in UI.glob("*.js"):
+            self.assertNotRegex(js.read_text(encoding="utf-8"), r"https?://[^\s\"']*three", js.name)
 
     def test_html_assets_exist(self):
         html = (UI / "index.html").read_text(encoding="utf-8")

@@ -26,6 +26,8 @@ data-i18n-attr="attribute:key,..." does the same for attributes such as placehol
   <!-- Opening page. WHY trilingual: the user hasn't chosen yet, so each choice is written in its own script. -->
   <!-- WHY <main>: it is the only content while picking, so screen-reader users land straight on it. -->
   <main id="lang-picker" class="lang-picker" aria-labelledby="picker-title">
+    <!-- Decoration only: floating syllables (src/ui/landing3d.js). aria-hidden so screen readers skip it. -->
+    <canvas id="landing-canvas" class="landing-canvas" aria-hidden="true"></canvas>
     <div class="picker-card">
       <p class="picker-brand">Yojana Saathi · <span lang="hi">योजना साथी</span> · <span lang="gu">યોજના સાથી</span></p>
       <h1 id="picker-title" class="picker-title">

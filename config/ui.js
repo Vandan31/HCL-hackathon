@@ -21,6 +21,17 @@ export const CONFIG = {
   UI_LANGUAGES: ["en", "hi", "gu"],  // DEMO-KNOB: choices in the language dropdowns (opening page + header), in this order
   REMEMBER_LANGUAGE: false,   // DEMO-KNOB: true skips the picker on return visits (remembers the last choice on this device)
 
+  // --- Landing page decoration (Three.js, loaded only on the language page) ---------------------------
+  ENABLE_3D_LANDING: true,    // DEMO-KNOB: false = plain landing page (also used automatically if WebGL fails)
+  LANDING_GLYPH_COUNT: 70,    // DEMO-KNOB: how many syllables float behind the card (fewer = lighter on old phones)
+  // DEMO-KNOB: the syllables that float, a mix of the three languages (drawn by the browser, so conjuncts like
+  // क्ष and જ્ઞ render correctly).
+  LANDING_GLYPHS: [
+    "A", "B", "K", "M", "P", "R", "S", "Ya", "Ka", "Ma",
+    "अ", "आ", "क", "ख", "ग", "म", "न", "प", "र", "स", "ह", "क्ष", "श्र", "यो", "जा",
+    "અ", "આ", "ક", "ખ", "ગ", "મ", "ન", "પ", "ર", "સ", "હ", "જ્ઞ", "યો", "જ",
+  ],
+
   // --- Voice (bonus; browser Web Speech API, free, no keys) ----------------
   ENABLE_VOICE_INPUT: true,   // DEMO-KNOB: false hides the mic if it misbehaves on stage
   ENABLE_VOICE_OUTPUT: true,  // DEMO-KNOB: false hides the "Listen" buttons

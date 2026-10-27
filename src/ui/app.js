@@ -12,6 +12,7 @@
 import { CONFIG } from "../../config/ui.js";
 import { ask, eligibility, health, ApiError } from "./api.js";
 import { sttSupported, ttsSupported, startListening, speak } from "./voice.js";
+import { startLanding3D } from "./landing3d.js";   // small; Three.js itself loads only when the landing page shows
 
 const $ = (id) => document.getElementById(id);
 const els = {
@@ -20,7 +21,7 @@ const els = {
   micGroup: $("mic-group"), micBtn: $("mic-btn"), micLang: $("mic-lang"),
   pickerForm: $("picker-form"), pickerSelect: $("picker-select"), pickerContinue: $("picker-continue"),
   headerLang: $("header-lang"),
-  picker: $("lang-picker"), srStatus: $("sr-status"),
+  picker: $("lang-picker"), srStatus: $("sr-status"), landingCanvas: $("landing-canvas"),
 };
 
 // WHY: the API contract asks for a session_id so follow-up questions can share context later.
@@ -139,12 +140,21 @@ function updateContinueButton() {
   els.pickerContinue.lang = lang;
 }
 
-/** Show the opening page: a language dropdown and a Continue button. */
+let stopLanding3D = null;   // stop() for the floating syllables while the landing page is open
+
+/** Show the opening page: a language dropdown and a Continue button, with floating syllables behind it. */
 function showPicker() {
   document.body.classList.add("picking");
   els.picker.hidden = false;
   updateContinueButton();
   els.pickerSelect.focus();
+  if (CONFIG.ENABLE_3D_LANDING && !stopLanding3D) {
+    startLanding3D(els.landingCanvas).then((stop) => {
+      // WHY: if a language was chosen before Three.js finished loading, shut it down straight away.
+      if (stop && !document.body.classList.contains("picking")) stop();
+      else stopLanding3D = stop;
+    }).catch(() => {});   // FALLBACK: any 3D error -> the plain landing page, which already works
+  }
 }
 
 /** User picked a language: translate the page and open the app. */
@@ -164,6 +174,8 @@ function chooseLanguage(lang) {
 function closePicker() {
   document.body.classList.remove("picking");
   els.picker.hidden = true;
+  // WHY: free the GPU and stop the animation loop, so the chat screen stays fast on low-end phones.
+  if (stopLanding3D) { stopLanding3D(); stopLanding3D = null; }
   autoGrow();   // WHY: the box can only be measured once visible; sizes it to one line (no needless scrollbar)
   els.query.focus();
 }
