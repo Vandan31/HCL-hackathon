@@ -80,3 +80,14 @@
 - **Panel answer:** "The link opens myScheme's search, where the scheme name on the card finds the page;
   per-scheme links are a one-line fix in each scheme file."
 - **Change if:** someone pastes the real myScheme page URLs into `data/schemes/<id>.json` (converter keeps them).
+
+## D-009 · Hindi/Gujarati answers: translate at answer time, not in the data · data/answer · 2026-10-27
+- **Decision:** team chose (Jaya, 2026-10-27) to keep scheme text English-only and have the answer engine
+  write the answer in the user's language from the English passages (one LLM call, same as today).
+- **Alternatives:** translate every section once at ingest (lowest per-question latency, works offline,
+  but unofficial text to check by hand for 26 schemes).
+- **Evidence:** Estimated: replying in Hindi from an English passage costs about the same output tokens as
+  replying in English; only translating the full passage for the source card would add latency.
+- **Panel answer:** "Our source of truth is the official English page; the AI only translates the answer,
+  and the proof card shows the exact official wording."
+- **Change if:** the demo needs native-language proof cards, or offline mode must answer in Hindi/Gujarati.
