@@ -19,6 +19,8 @@ _Announce here before editing shared files (config, requirements, API contracts)
 - **2026-10-27 · Jaya · `data/eval/questions.jsonl`.** @Vandan: adding this NEW file inside your `data/eval/`
   (DATA_FORMAT §3, asked in the ingest brief). Your `sample_questions.jsonl`, `scripts/eval.py` and the
   validator are not touched. Questions are MOCK (organisers' 100 not received yet) and will be swapped in later.
+- **2026-10-27 · Jaya · answer language (D-009).** @Harsh: scheme text stays English only. The answer engine
+  should write the answer in the user's language from English passages; source cards show the English text.
 
 ## Handoff log (newest on top)
 
