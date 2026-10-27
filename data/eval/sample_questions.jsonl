@@ -1,0 +1,12 @@
+{"id": "m01", "question": "How much money does PM-KISAN give per year?", "lang": "en", "expected_scheme": "pm-kisan", "note": "MOCK: written by us for the mock chunks; replace with the organisers' 100 questions"}
+{"id": "m02", "question": "पीएम किसान की किस्त कितनी होती है?", "lang": "hi", "expected_scheme": "pm-kisan"}
+{"id": "m03", "question": "શું સરકારી કર્મચારી પીએમ-કિસાન માટે પાત્ર છે?", "lang": "gu", "expected_scheme": "pm-kisan"}
+{"id": "m04", "question": "Ayushman card ke liye kaunse documents chahiye?", "lang": "hi", "expected_scheme": "pmjay"}
+{"id": "m05", "question": "आयुष्मान भारत में कितने रुपये तक का इलाज मुफ्त है?", "lang": "hi", "expected_scheme": "pmjay"}
+{"id": "m06", "question": "Who can get a free LPG connection under Ujjwala?", "lang": "en", "expected_scheme": "ujjwala"}
+{"id": "m07", "question": "बेटी के लिए सुकन्या खाता कहाँ खुलता है?", "lang": "hi", "expected_scheme": "ssy"}
+{"id": "m08", "question": "સુકન્યા સમૃદ્ધિ ખાતું ખોલવા કયા દસ્તાવેજ જોઈએ?", "lang": "gu", "expected_scheme": "ssy"}
+{"id": "m09", "question": "How do I renew my passport?", "lang": "en", "expected_scheme": null}
+{"id": "m10", "question": "इनकम टैक्स स्लैब इस साल क्या है?", "lang": "hi", "expected_scheme": null}
+{"id": "m11", "question": "driving licence kaise banwaye?", "lang": "hi", "expected_scheme": null}
+{"id": "m12", "question": "મારે નવો પાસપોર્ટ કેવી રીતે મેળવવો?", "lang": "gu", "expected_scheme": null}
