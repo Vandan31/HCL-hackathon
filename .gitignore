@@ -35,3 +35,6 @@ job.*.err
 Thumbs.db
 .vscode/
 .claude/settings.local.json
+
+# Audit log (no personal data, but never needed in git)
+data/logs/

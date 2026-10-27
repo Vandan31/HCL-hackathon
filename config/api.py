@@ -15,6 +15,14 @@ USE_MOCKS = os.getenv("USE_MOCKS", "true").lower() == "true"
 # DEMO-KNOB: True = serve cached demo answers, no LLM call (Wi-Fi-off safety net on stage).
 OFFLINE_MODE = os.getenv("OFFLINE_MODE", "false").lower() == "true"
 
+# DEMO-KNOB: True = save every successful live answer into the offline cache. Run the demo questions once
+# with Wi-Fi on and this set, then switch it off.
+RECORD_CACHE = os.getenv("RECORD_CACHE", "false").lower() == "true"
+
+# DEMO-KNOB: where cached demo answers and the audit log live (audit dir is gitignored).
+CACHE_PATH = "data/cache/demo_answers.json"
+AUDIT_PATH = "data/logs/audit.jsonl"
+
 # DEMO-KNOB: which browser origins may call the API. "*" is fine for a local demo, not for production.
 CORS_ORIGINS = ["*"]
 

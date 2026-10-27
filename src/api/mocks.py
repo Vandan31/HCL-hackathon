@@ -42,6 +42,23 @@ def mock_ask(query: str) -> dict:
     }
 
 
+_SCRIPT_TO_LANG = {"Deva": "hi", "Gujr": "gu", "Taml": "ta"}
+
+
+def mock_detect(text: str) -> dict:
+    """MOCK of src/lang detect_language (Vandan): script only, so it can't spot Marathi or Hinglish."""
+    from src.answer.langcheck import dominant_script
+    script = dominant_script(text) or "Latn"
+    return {"lang": _SCRIPT_TO_LANG.get(script, "en"), "script": script, "code_mixed": False, "confidence": 0.5}
+
+
+def mock_search(query: str, lang: str, k: int = 5) -> list[dict]:
+    """MOCK of src/retrieval search (Vandan): always the same PM-KISAN passage, so the real LLM path can be tried."""
+    return [{"chunk_id": "pm-kisan#eligibility#en#0", "scheme_id": "pm-kisan", "scheme_name": "PM-KISAN",
+             "section": "eligibility", "lang": "en", "score": 0.8,
+             "text": _PM_KISAN_CITATION["passage"], "source_url": _PM_KISAN_CITATION["source_url"]}]
+
+
 def mock_eligibility(scheme_id: str, answers: dict) -> dict:
     """Ask one follow-up until 'occupation' is answered, then return a checklist (Vaidehi owns the real engine)."""
     if "occupation" not in answers:
