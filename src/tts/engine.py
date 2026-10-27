@@ -2,7 +2,7 @@
 COMPONENT : tts
 PURPOSE   : Load AI4Bharat IndicTTS (FastPitch + HiFi-GAN) once per language and turn text into WAV audio, reusing
             audio already made for the same text.
-INPUTS    : text, language ("gu" | "hi"), speaker ("female" | "male")
+INPUTS    : text, language ("gu" | "hi" | "en"), speaker ("female" | "male"). Hinglish = "hi" in Latin letters.
 OUTPUTS   : WAV bytes (22,050 Hz mono) and whether it came from the cache
 DEPENDS ON: coqui-tts + torch (see src/tts/requirements.txt), checkpoints in config.tts.CHECKPOINT_DIR,
             src/tts/normalize.py, config/tts.py
@@ -19,14 +19,15 @@ from collections import OrderedDict
 
 import soundfile as sf
 
-from config.tts import CACHE_DIR, CHECKPOINT_DIR, DEFAULT_SPEAKER, LANGS, MEMORY_CACHE_ITEMS, WARM_UP
-from src.tts.normalize import normalize
+from config.tts import (CACHE_DIR, CHECKPOINT_DIR, DEFAULT_SPEAKER, HINGLISH_VOICE, LANGS, LATIN_MODEL,
+                        MEMORY_CACHE_ITEMS, MODEL_FOR_LANG, WARM_UP)
+from src.tts.normalize import is_speakable, normalize
 
-WARM_UP_TEXT = {"gu": "નમસ્તે.", "hi": "नमस्ते."}
+WARM_UP_TEXT = {"gu": "નમસ્તે.", "hi": "नमस्ते.", "en+hi": "Namaste. Hello."}
 
 
 class UnsupportedLanguage(ValueError):
-    """Raised for a language whose model isn't loaded (e.g. English/Hinglish until en+hi.zip is added)."""
+    """Raised when no loaded model can speak this language/script."""
 
 
 def _local_config(lang: str):
@@ -42,7 +43,8 @@ def _local_config(lang: str):
 
 
 class TTSEngine:
-    """One FastPitch + HiFi-GAN pair per language, loaded at start-up and kept in memory."""
+    """One FastPitch + HiFi-GAN pair per model folder (gu, hi, en+hi), loaded at start-up and kept in memory.
+    Note: self.models / self.vocab / self.locks are keyed by MODEL folder; callers pass a LANGUAGE ("gu"/"hi"/"en")."""
 
     def __init__(self, langs=LANGS):
         # WHY import here: lets the server and tests import this module without the 1.5 GB models or torch.
@@ -52,7 +54,8 @@ class TTSEngine:
         self.cache = OrderedDict()            # (lang, speaker, text) -> wav bytes, most recent last
         self.cache_lock = threading.Lock()
         CACHE_DIR.mkdir(parents=True, exist_ok=True)
-        for lang in langs:
+        # Load each needed model folder once (two languages could share one model).
+        for lang in dict.fromkeys(MODEL_FOR_LANG[l] for l in langs):
             t0 = time.perf_counter()
             cfg_path, vocab = _local_config(lang)
             self.models[lang] = Synthesizer(
@@ -73,16 +76,30 @@ class TTSEngine:
 
     @property
     def langs(self):
-        return list(self.models)
+        """Languages a request may ask for: those whose model loaded."""
+        return [l for l in LANGS if MODEL_FOR_LANG[l] in self.models]
+
+    def route(self, text: str, lang: str):
+        """(model folder, text-rule language) for a request, or None if nothing loaded can speak it."""
+        if lang not in self.langs:
+            return None
+        if lang == "en" or not is_speakable(text):
+            # WHY: English, and Hinglish ("hi" written in Latin letters), are read by the code-mixed en+hi model;
+            # the gu/hi models only know their own script and would skip every letter.
+            return (LATIN_MODEL, "en") if LATIN_MODEL in self.models else None
+        return MODEL_FOR_LANG[lang], lang
 
     def speakers(self, lang: str):
-        return list(self.models[lang].tts_model.speaker_manager.name_to_id)
+        """Voice names for a language's main model (each AI4Bharat model has "female" and "male")."""
+        return list(self.models[MODEL_FOR_LANG[lang]].tts_model.speaker_manager.name_to_id)
 
-    def _fit_vocab(self, text: str, lang: str) -> str:
+    def _fit_vocab(self, text: str, model: str) -> str:
         """Keep only characters the model was trained on; split letters like 'ज़' into 'ज' + nukta first."""
-        vocab = self.vocab[lang]
+        vocab = self.vocab[model]
         out = []
-        for ch in text:
+        # WHY lower(): the en+hi vocabulary has only lowercase a-z; without this every capital letter would be
+        # dropped ("Under" -> "nder"). No effect on Gujarati/Devanagari, which have no case.
+        for ch in text.lower():
             if ch in vocab:
                 out.append(ch)
             else:
@@ -92,12 +109,16 @@ class TTSEngine:
 
     def synthesize(self, text: str, lang: str, speaker: str = DEFAULT_SPEAKER):
         """Return (wav_bytes, cache_hit). Raises UnsupportedLanguage or ValueError for unknown speaker."""
-        if lang not in self.models:
+        routed = self.route(text, lang)
+        if routed is None:
             raise UnsupportedLanguage(lang)
-        if speaker not in self.speakers(lang):
+        model, rule_lang = routed
+        if model == LATIN_MODEL and lang == "hi":
+            speaker = HINGLISH_VOICE.get(speaker, speaker)   # Hinglish -> the Hindi-accented voice of the en+hi model
+        if speaker not in self.models[model].tts_model.speaker_manager.name_to_id:
             raise ValueError(f"unknown speaker: {speaker}")
-        spoken = self._fit_vocab(normalize(text, lang), lang)
-        key = (lang, speaker, spoken)
+        spoken = self._fit_vocab(normalize(text, rule_lang), model)
+        key = (model, speaker, spoken)
 
         with self.cache_lock:
             if key in self.cache:
@@ -105,16 +126,16 @@ class TTSEngine:
                 return self.cache[key], True
         # Disk cache: survives restarts and holds the pre-generated demo answers (src/tts/pregenerate.py).
         digest = hashlib.sha256("|".join(key).encode("utf-8")).hexdigest()[:32]
-        disk = CACHE_DIR / f"{lang}-{speaker}-{digest}.wav"
+        disk = CACHE_DIR / f"{model.replace('+', '')}-{speaker}-{digest}.wav"
         if disk.exists():
             wav = disk.read_bytes()
             self._remember(key, wav)
             return wav, True
 
-        with self.locks[lang]:
-            samples = self.models[lang].tts(spoken, speaker_name=speaker)
+        with self.locks[model]:
+            samples = self.models[model].tts(spoken, speaker_name=speaker)
         buf = io.BytesIO()
-        sf.write(buf, samples, self.models[lang].output_sample_rate, format="WAV", subtype="PCM_16")
+        sf.write(buf, samples, self.models[model].output_sample_rate, format="WAV", subtype="PCM_16")
         wav = buf.getvalue()
         disk.write_bytes(wav)
         self._remember(key, wav)

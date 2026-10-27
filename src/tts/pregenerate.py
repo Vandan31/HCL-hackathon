@@ -18,13 +18,19 @@ from src.tts.engine import TTSEngine
 FIXTURES = Path(__file__).resolve().parents[1] / "ui" / "mock" / "ask_fixtures.json"
 
 
+# Fixture answer key -> language sent to /api/tts. Hinglish is sent as "hi"; its Latin letters route it to en+hi.
+FIXTURE_LANG = {"gu": "gu", "hi": "hi", "en": "en", "hinglish": "hi"}
+
+
 def demo_texts(langs):
     """(lang, text) for every answer and refusal in the UI fixtures, for the languages we can speak."""
     fx = json.loads(FIXTURES.read_text(encoding="utf-8"))
-    for lang in langs:
+    for key, lang in FIXTURE_LANG.items():
+        if lang not in langs:
+            continue
         for topic in fx["topics"]:
-            yield lang, topic["answers"][lang]
-        yield lang, fx["refusal"]["answers"][lang]
+            yield lang, topic["answers"][key]
+        yield lang, fx["refusal"]["answers"][key]
 
 
 def main():

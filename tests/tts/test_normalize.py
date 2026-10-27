@@ -67,7 +67,25 @@ class TestText(unittest.TestCase):
 
     def test_unsupported_language_raises(self):
         with self.assertRaises(ValueError):
-            normalize("hello", "en")
+            normalize("வணக்கம்", "ta")
+
+
+class TestEnglishAndHinglish(unittest.TestCase):
+    """'en' mode: English and Hinglish, spoken by the en+hi model in Latin letters."""
+
+    def test_english_numbers_indian_system(self):
+        self.assertEqual(normalize("₹6,000", "en"), "six thousand rupees")
+        self.assertEqual(normalize("₹1,25,000", "en"), "one lakh twenty five thousand rupees")
+        self.assertEqual(normalize("21", "en"), "twenty one")
+
+    def test_scheme_name_and_acronyms(self):
+        self.assertEqual(normalize("PM-KISAN", "en"), "P M Kisan")
+        self.assertEqual(normalize("SC, OBC and PMAY", "en"), "S C, O B C and P M A Y")
+        self.assertEqual(normalize("myscheme.gov.in", "en"), "my scheme dot gov dot in")
+
+    def test_hinglish_words_kept(self):
+        self.assertEqual(normalize("PM Awas Yojana ke liye documents chahiye [S1].", "en"),
+                         "P M Awas Yojana ke liye documents chahiye.")
 
 
 if __name__ == "__main__":

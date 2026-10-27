@@ -17,13 +17,20 @@ CACHE_DIR = Path.home() / "indic-tts" / "cache"              # DEMO-KNOB: spoken
 HOST = "127.0.0.1"
 PORT = 5600                       # DEMO-KNOB: the UI dev server uses 5500, so the voice service sits next to it
 ALLOWED_ORIGINS = ["http://127.0.0.1:5500", "http://localhost:5500"]   # DEMO-KNOB: pages allowed to call the service
-LANGS = ["gu", "hi"]              # DEMO-KNOB: languages to load at start (each ~3 s to load, ~1.7 GB RAM, estimated)
+LANGS = ["gu", "hi", "en"]        # DEMO-KNOB: languages to load at start (each model ~3 s to load, ~1.7 GB RAM, estimated)
+# Which AI4Bharat checkpoint folder speaks each language. "en+hi" is their code-mixed model: it reads English and
+# Hinglish written in Latin letters, so it serves both.
+MODEL_FOR_LANG = {"gu": "gu", "hi": "hi", "en": "en+hi"}
+LATIN_MODEL = "en+hi"             # WHY: any answer mostly in Latin letters (English, Hinglish) is routed to this model
+# DEMO-KNOB: the en+hi model has four voices (female, male, hindifemale, hindimale). Hinglish sounds more natural in
+# the Hindi-accented ones, so a Hinglish request for "female" uses "hindifemale". English keeps female/male.
+HINGLISH_VOICE = {"female": "hindifemale", "male": "hindimale"}
 DEFAULT_SPEAKER = "female"        # DEMO-KNOB: "female" or "male" (the two voices in each AI4Bharat model)
 MAX_CHARS = 1200                  # DEMO-KNOB: longer text is refused (a typical answer is 150–400 characters)
 MEMORY_CACHE_ITEMS = 200          # DEMO-KNOB: how many recent answers to keep as audio in memory
 WARM_UP = True                    # DEMO-KNOB: speak one dummy sentence at start; the first real call is otherwise ~2x slower
-# WHY: a sentence mostly in Latin letters (Hinglish, English) can't be read by the gu/hi models, which only know their
-# own script. Above this share of Latin letters we refuse, and the UI falls back to the browser voice.
+# WHY: the gu/hi models only know their own script. Text with more than this share of Latin letters (Hinglish,
+# English) is sent to the en+hi model instead; if that model isn't loaded, it's refused and the UI uses the browser voice.
 MAX_LATIN_SHARE = 0.5             # DEMO-KNOB
 
 # --- Words the voice must say in the user's language ------------------------------------------------
@@ -77,7 +84,20 @@ NUMBER_WORDS = {
            "उन्यासी अस्सी इक्यासी बयासी तिरासी चौरासी पचासी छियासी सत्तासी अट्ठासी नवासी नब्बे इक्यानवे बानवे "
            "तिरानवे चौरानवे पंचानवे छियानवे सत्तानवे अट्ठानवे निन्यानवे").split(),
 }
+
+# --- English / Hinglish (Latin letters, spoken by the en+hi model) -----------------------------------------
+# DEMO-KNOB: terms to say a particular way. Acronyms are spaced out so the voice says the letters, not a word.
+EN_WORDS = {
+    "pm": "P M", "csc": "C S C", "lpg": "L P G", "bpl": "B P L", "sc": "S C", "st": "S T", "obc": "O B C",
+    "myscheme.gov.in": "my scheme dot gov dot in", "ai": "A I", "kisan": "Kisan", "pmjay": "P M J A Y",
+}
+EN_NUMBER_WORDS = ("zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen "
+                   "sixteen seventeen eighteen nineteen").split()
+EN_TENS = "_ _ twenty thirty forty fifty sixty seventy eighty ninety".split()
+EN_SYMBOL_WORDS = {"₹": "rupees", "%": "percent", "&": "and", "+": "plus", "/": " ", ".": "point"}
+
 SCALE_WORDS = {   # hundred, thousand, lakh, crore
     "gu": {"hundred": "સો", "thousand": "હજાર", "lakh": "લાખ", "crore": "કરોડ"},
     "hi": {"hundred": "सौ", "thousand": "हज़ार", "lakh": "लाख", "crore": "करोड़"},
+    "en": {"hundred": "hundred", "thousand": "thousand", "lakh": "lakh", "crore": "crore"},   # Indian system, as people say it
 }

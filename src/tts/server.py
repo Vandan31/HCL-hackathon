@@ -15,10 +15,10 @@ import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 from config.tts import ALLOWED_ORIGINS, DEFAULT_SPEAKER, HOST, MAX_CHARS, PORT
-from src.tts.normalize import is_speakable
 
 # Contract (proposed to comp/api on docs/BOARD.md):
-#   POST /api/tts  {"text": str, "lang": "gu"|"hi", "speaker"?: "female"|"male"}
+#   POST /api/tts  {"text": str, "lang": "gu"|"hi"|"en", "speaker"?: "female"|"male"}
+#     Hinglish: send lang "hi" with the Latin-letter text; it is routed to the en+hi voice automatically.
 #     200 audio/wav            headers: X-TTS-Cache: hit|miss, X-TTS-Ms: synthesis time
 #     400 {"error": "bad_json" | "empty_text" | "text_too_long" | "unknown_speaker"}
 #     422 {"error": "unsupported_lang" | "unsupported_script", "supported": [...]}   -> UI uses the browser voice instead
@@ -78,10 +78,10 @@ def make_handler(engine):
             if len(text) > MAX_CHARS:
                 return self._json(400, {"error": "text_too_long", "max": MAX_CHARS})
             if lang not in engine.langs:
-                # FALLBACK: e.g. English until en+hi.zip is added -> the UI speaks with the browser voice instead.
+                # FALLBACK: a language with no model loaded -> the UI speaks with the browser voice instead.
                 return self._json(422, {"error": "unsupported_lang", "supported": engine.langs})
-            if not is_speakable(text):
-                # FALLBACK: Hinglish/English in Latin script can't be read by the gu/hi voices -> browser voice.
+            if engine.route(text, lang) is None:
+                # FALLBACK: Latin-letter text (English/Hinglish) while the en+hi model isn't loaded -> browser voice.
                 return self._json(422, {"error": "unsupported_script", "supported": engine.langs})
             if speaker not in engine.speakers(lang):
                 return self._json(400, {"error": "unknown_speaker", "speakers": engine.speakers(lang)})

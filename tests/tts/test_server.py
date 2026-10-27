@@ -24,10 +24,18 @@ FAKE_WAV = b"RIFF\x24\x00\x00\x00WAVEfmt "   # just the start of a WAV header; e
 
 
 class FakeEngine:
-    """Stands in for TTSEngine: no models, records calls, can be told to fail."""
-    langs = ["gu", "hi"]
+    """Stands in for TTSEngine: no models, records calls, can be told to fail.
+    `latin` = whether the en+hi model is "loaded" (English and Hinglish need it)."""
+    langs = ["gu", "hi", "en"]
     cache = {}
     fail = False
+    latin = True
+
+    def route(self, text, lang):
+        latin_text = sum(c.isascii() for c in text if c.isalpha()) > 0.5 * max(1, sum(c.isalpha() for c in text))
+        if lang == "en" or latin_text:
+            return ("en+hi", "en") if self.latin else None
+        return lang, lang
 
     def speakers(self, lang):
         return ["female", "male"]
@@ -74,14 +82,28 @@ class TestTTSServer(unittest.TestCase):
         cases = [
             ({"text": "", "lang": "gu"}, 400, "empty_text"),
             ({"text": "x" * 5000, "lang": "gu"}, 400, "text_too_long"),
-            ({"text": "hello", "lang": "en"}, 422, "unsupported_lang"),
-            ({"text": "PM awas yojana ke liye documents chahiye", "lang": "hi"}, 422, "unsupported_script"),
+            ({"text": "வணக்கம்", "lang": "ta"}, 422, "unsupported_lang"),
             ({"text": "नमस्ते", "lang": "hi", "speaker": "robot"}, 400, "unknown_speaker"),
         ]
         for body, code, error in cases:
             with self.subTest(error=error):
                 status, _, raw = self.request("POST", "/api/tts", body)
                 self.assertEqual((status, json.loads(raw)["error"]), (code, error))
+
+    def test_english_and_hinglish_are_spoken(self):
+        for body in ({"text": "Farmers get six thousand rupees a year.", "lang": "en"},
+                     {"text": "PM awas yojana ke liye documents chahiye", "lang": "hi"}):
+            with self.subTest(text=body["text"]):
+                status, headers, _ = self.request("POST", "/api/tts", body)
+                self.assertEqual((status, headers["Content-Type"]), (200, "audio/wav"))
+
+    def test_latin_text_refused_when_en_hi_model_missing(self):
+        self.engine.latin = False
+        try:
+            status, _, raw = self.request("POST", "/api/tts", {"text": "PM awas yojana ke liye", "lang": "hi"})
+        finally:
+            self.engine.latin = True
+        self.assertEqual((status, json.loads(raw)["error"]), (422, "unsupported_script"))
 
     def test_bad_json(self):
         status, _, raw = self.request("POST", "/api/tts", b"{not json")
@@ -110,7 +132,7 @@ class TestTTSServer(unittest.TestCase):
         status, _, raw = self.request("GET", "/api/tts/health")
         body = json.loads(raw)
         self.assertEqual(status, 200)
-        self.assertEqual(body["langs"], ["gu", "hi"])
+        self.assertEqual(body["langs"], ["gu", "hi", "en"])
 
 
 if __name__ == "__main__":
