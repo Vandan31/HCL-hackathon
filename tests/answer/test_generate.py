@@ -127,3 +127,38 @@ def test_detector_is_used_for_language_check():
     says_hindi = lambda t: {"lang": "hi", "script": "Deva", "code_mixed": False, "confidence": 0.9}
     r = answer("q", MR, [chunk("a")], llm=FakeLLM(reply("आप आवेदन कर सकते हैं [S1]")), detector=says_hindi)
     assert r["refusal_reason"] == "wrong_language"
+
+
+# ---- Final-review fixes ----
+
+class ProviderAwareLLM:
+    """Fails on gemini unless told to avoid it, like a pool whose Gemini keys are all rate-limited."""
+
+    def __init__(self, good_reply):
+        self.good = good_reply
+        self.avoided = []
+
+    def __call__(self, prompt, avoid_provider=None):
+        self.avoided.append(avoid_provider)
+        if avoid_provider != "gemini":
+            e = LLMCallFailed("gemini#0: HTTP 429")
+            e.provider = "gemini"
+            raise e
+        return self.good, "groq#0"
+
+
+def test_retry_goes_to_other_provider():
+    llm = ProviderAwareLLM(reply(GU_TEXT))
+    r = answer("q", GU, [chunk("a")], llm=llm)
+    assert r["refused"] is False and r["provider"] == "groq#0" and llm.avoided == [None, "gemini"]
+
+
+def test_missing_or_null_score_refuses_instead_of_crashing():
+    for bad in ({k: v for k, v in chunk("a").items() if k != "score"}, {**chunk("a"), "score": None}):
+        r = answer("q", GU, [bad], llm=FakeLLM())
+        assert r["refusal_reason"] == "low_score"
+
+
+def test_empty_reply_from_safety_block_is_bad_output():
+    llm = FakeLLM("", "")
+    assert answer("q", GU, [chunk("a")], llm=llm)["refusal_reason"] == "bad_output"

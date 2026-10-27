@@ -38,3 +38,6 @@ Thumbs.db
 
 # Audit log (no personal data, but never needed in git)
 data/logs/
+
+# Offline demo cache: holds recorded question text, never commit
+data/cache/

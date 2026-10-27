@@ -57,3 +57,8 @@ def test_answerable_with_no_citations_invalid():
 
 def test_valid_citations():
     assert citations_valid({"answer": "x [S2]", "cited": ["S2"], "answerable": True}, k=2)
+
+
+def test_parse_non_string_is_none():
+    # Review #2: Groq can return content=null.
+    assert parse_llm_output(None) is None

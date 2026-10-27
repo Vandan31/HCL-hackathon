@@ -112,3 +112,24 @@ def test_health_reports_llm_down_when_no_keys(wired, monkeypatch):
     assert wired["client"].get("/api/health").json()["llm"] == "down"
     monkeypatch.setattr(main, "POOL", FakePool(usable=True))
     assert wired["client"].get("/api/health").json()["llm"] == "up"
+
+
+# ---- Final-review fixes ----
+
+def test_record_cache_also_saves_refusals_for_offline_demo(wired, monkeypatch):
+    # Review #5: the planned refusal demo step must work with Wi-Fi off.
+    refused = {**GOOD, "refused": True, "refusal_reason": "not_in_documents", "citations": [],
+               "answer": "Mujhe yeh jaankari ... nahi mili", "provider": "groq#0"}
+    monkeypatch.setattr(main, "answer_fn", lambda *a, **k: dict(refused))
+    monkeypatch.setattr(main, "RECORD_CACHE", True)
+    ask(wired["client"], "Passport kaise banaye?")
+    monkeypatch.setattr(main, "OFFLINE_MODE", True)
+    r = ask(wired["client"], "passport kaise banaye")
+    assert r.status_code == 200 and r.json()["refused"] is True
+
+
+def test_recorded_cache_is_gitignored():
+    # Review #6: recorded queries are user text; they must never reach git.
+    import subprocess
+    rc = subprocess.run(["git", "check-ignore", "-q", "data/cache/demo_answers.json"]).returncode
+    assert rc == 0

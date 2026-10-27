@@ -44,6 +44,10 @@ load_env_file()
 POOL = KeyPool(entries_from_env(os.environ, GEMINI_MODEL, GROQ_MODEL), KEY_COOLDOWN_S, timeout_s=LLM_TIMEOUT_S)
 TRANSLATIONS = load_translations(TRANSLATIONS_PATH)
 CACHE = AnswerCache(CACHE_PATH)
+if RECORD_CACHE:
+    # PANEL: privacy? -> recording stores question text, so it is only switched on to record our own demo
+    # questions, the cache folder is gitignored, and this warning prints at every start.
+    print("WARNING: RECORD_CACHE=true -> questions are being saved to", CACHE_PATH, "(turn off after recording)")
 
 app = FastAPI(title="Yojana Saathi API")
 # WHY: the UI is a static HTML page on a different origin/port, so the browser needs CORS to call us.
@@ -125,7 +129,8 @@ def ask(req: AskRequest):
         return _fallback_503(lang_info, chunks)
 
     body = {k: result[k] for k in ASK_FIELDS} | {"code_mixed": lang_info.get("code_mixed", False)}
-    if RECORD_CACHE and not result["refused"]:
+    if RECORD_CACHE:
+        # WHY: refusals are recorded too, so the planned refusal demo step also works offline (review #5).
         CACHE.put(req.query, body)
     _audit(lang_info, chunks, result["refused"], result["refusal_reason"], result["provider"], ms())
     return {**body, "latency_ms": ms()}

@@ -26,6 +26,9 @@ def build_prompt(query: str, target_key: str, chunks: list[dict]) -> str:
 
 def parse_llm_output(text: str) -> dict | None:
     """Return {answer, cited, answerable} if the reply has exactly the right types, else None."""
+    if not isinstance(text, str):
+        # FALLBACK: a provider returned null content -> treat as unreadable (review #2).
+        return None
     m = FENCE_RE.match(text)
     if m:
         text = m.group(1)

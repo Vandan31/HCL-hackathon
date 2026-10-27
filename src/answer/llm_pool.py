@@ -23,6 +23,11 @@ ENV_VARS = {"gemini": "GEMINI_API_KEYS", "groq": "GROQ_API_KEYS"}
 class LLMCallFailed(Exception):
     """One attempt failed; the pool has already rested or disabled that key."""
 
+    def __init__(self, message: str, provider: str | None = None):
+        super().__init__(message)
+        # WHY: answer() retries on the OTHER provider, so a Gemini outage doesn't cost a 503 (review #1).
+        self.provider = provider
+
 
 class LLMUnavailable(Exception):
     """No key can be used right now (all resting, disabled, or none configured)."""
@@ -55,7 +60,14 @@ def load_env_file(path: str = ".env") -> None:
         if not line or line.startswith("#") or "=" not in line:
             continue
         name, value = line.split("=", 1)
-        os.environ.setdefault(name.strip(), value.strip())
+        # WHY: accept common .env styles: `export NAME=...` and quoted values "..." / '...'.
+        name = name.strip().removeprefix("export ").strip()
+        os.environ.setdefault(name, _unquote(value.strip()))
+
+
+def _unquote(v: str) -> str:
+    """Strip one matching pair of surrounding quotes."""
+    return v[1:-1] if len(v) >= 2 and v[0] == v[-1] and v[0] in "\"'" else v
 
 
 def entries_from_env(env: Mapping[str, str], gemini_model: str, groq_model: str) -> list[KeyEntry]:
@@ -66,7 +78,13 @@ def entries_from_env(env: Mapping[str, str], gemini_model: str, groq_model: str)
         if not models[provider]:
             continue
         # WHY: tolerate "k1, k2 ," as people actually type it into .env.
-        keys = [k.strip() for k in env.get(ENV_VARS[provider], "").split(",") if k.strip()]
+        keys = [_unquote(k.strip()) for k in env.get(ENV_VARS[provider], "").split(",") if k.strip()]
+        # WHY: also accept one key per numbered var (GEMINI_API_KEY_1, _2, ...), the format the team's .env
+        # uses; sorted by number so _10 comes after _2.
+        prefix = ENV_VARS[provider][:-1] + "_"  # "GEMINI_API_KEYS" -> "GEMINI_API_KEY_"
+        numbered = sorted((int(n[len(prefix):]), v.strip()) for n, v in env.items()
+                          if n.startswith(prefix) and n[len(prefix):].isdigit())
+        keys += [_unquote(v) for _, v in numbered if v]
         entries += [KeyEntry(provider, i, k, models[provider]) for i, k in enumerate(keys)]
     return entries
 
@@ -90,10 +108,11 @@ class KeyPool:
     def _usable(self, e: KeyEntry, now: float) -> bool:
         return id(e) not in self._disabled and self._resting_until[id(e)] <= now
 
-    def _pick(self) -> KeyEntry | None:
-        """Next usable key of the first provider that has one (caller holds the lock)."""
+    def _pick(self, avoid_provider: str | None = None) -> KeyEntry | None:
+        """Next usable key of the first provider that has one; avoid_provider goes last (caller holds the lock)."""
         now = self._clock()
-        for provider in PROVIDER_ORDER:
+        order = [p for p in PROVIDER_ORDER if p != avoid_provider] + [p for p in PROVIDER_ORDER if p == avoid_provider]
+        for provider in order:
             group = [e for e in self._entries if e.provider == provider]
             for offset in range(len(group)):
                 i = (self._next[provider] + offset) % len(group)
@@ -115,19 +134,20 @@ class KeyPool:
             else:
                 self._resting_until[id(e)] = self._clock() + self._cooldown_s
         # WHY: message carries only the label and status, never the key or the provider's response body.
-        return LLMCallFailed(f"{e.label}: {why}")
+        return LLMCallFailed(f"{e.label}: {why}", provider=e.provider)
 
-    def complete(self, prompt: str) -> tuple[str, str]:
-        """One attempt on the next usable key; returns (text, label)."""
+    def complete(self, prompt: str, avoid_provider: str | None = None) -> tuple[str, str]:
+        """One attempt on the next usable key (other providers before avoid_provider); returns (text, label)."""
         with self._lock:
-            entry = self._pick()
+            entry = self._pick(avoid_provider)
         if entry is None:
             raise LLMUnavailable("no usable LLM key")
         try:
             resp = self._send(entry, prompt)
         except httpx.TransportError as e:  # timeouts and connection errors
             raise self._fail(entry, False, type(e).__name__) from None
-        if resp.status_code in (401, 403):
+        # WHY: Gemini reports a wrong key as HTTP 400 API_KEY_INVALID, not 401/403 (review #1).
+        if resp.status_code in (401, 403) or (resp.status_code == 400 and "API_KEY_INVALID" in resp.text):
             # WHY: a revoked/wrong key won't recover by waiting, so stop wasting attempts on it.
             raise self._fail(entry, True, f"HTTP {resp.status_code}")
         if resp.status_code != 200:
@@ -154,6 +174,14 @@ class KeyPool:
 
     @staticmethod
     def _extract(e: KeyEntry, body: dict) -> str:
+        """Reply text; "" when the model replied but gave no text (safety block, null content)."""
         if e.provider == "gemini":
-            return body["candidates"][0]["content"]["parts"][0]["text"]
-        return body["choices"][0]["message"]["content"]
+            if "candidates" not in body:
+                # WHY: a safety block is the model's answer, not a broken key -> "" ends as bad_output and the
+                # key stays usable (review #2). Any other shape is a real failure (KeyError below).
+                if "promptFeedback" in body:
+                    return ""
+                raise KeyError("candidates")
+            parts = body["candidates"][0].get("content", {}).get("parts", [])
+            return "".join(p.get("text", "") for p in parts)
+        return body["choices"][0]["message"].get("content") or ""

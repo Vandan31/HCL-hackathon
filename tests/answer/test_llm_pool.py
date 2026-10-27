@@ -57,6 +57,18 @@ def test_entries_from_env_strips_and_drops_empty():
     assert [(x.label, x.key) for x in e] == [("gemini#0", "k1"), ("gemini#1", "k2"), ("groq#0", "k3")]
 
 
+def test_entries_from_env_accepts_numbered_vars():
+    # WHY: Harsh's real .env uses GEMINI_API_KEY_1, _2 ...; both formats must work, in number order.
+    env = {"GEMINI_API_KEY_2": "k2", "GEMINI_API_KEY_1": "k1", "GROQ_API_KEY_1": " k3 ", "GROQ_API_KEY_2": ""}
+    e = entries_from_env(env, "gm", "qm")
+    assert [(x.label, x.key) for x in e] == [("gemini#0", "k1"), ("gemini#1", "k2"), ("groq#0", "k3")]
+
+
+def test_numbered_vars_sort_numerically_and_join_list_format():
+    env = {f"GEMINI_API_KEY_{i}": f"n{i}" for i in (10, 2, 1)} | {"GEMINI_API_KEYS": "a"}
+    assert [x.key for x in entries_from_env(env, "gm", "")] == ["a", "n1", "n2", "n10"]
+
+
 def test_provider_with_empty_model_is_skipped():
     e = entries_from_env({"GEMINI_API_KEYS": "k1", "GROQ_API_KEYS": "k3"}, "gm", "")
     assert [x.provider for x in e] == ["gemini"]
@@ -179,3 +191,59 @@ def test_threads_share_pool_safely():
         t.join()
     assert errors == []
     assert Counter(labels) == {"gemini#0": 10, "gemini#1": 10}
+
+
+# ---- Final-review fixes ----
+
+def test_retry_avoids_failed_provider():
+    # Review #1: Gemini down (429) must not cost the user a 503 when Groq is healthy.
+    pool = make_pool({"k1": 429, "k2": 429})
+    with pytest.raises(LLMCallFailed) as exc:
+        pool.complete("p")
+    assert exc.value.provider == "gemini"
+    assert pool.complete("p", avoid_provider="gemini")[1] == "groq#0"
+
+
+def test_avoid_provider_still_uses_it_if_nothing_else():
+    pool = make_pool(entries=[KeyEntry("gemini", 0, "k1", "gm"), KeyEntry("gemini", 1, "k2", "gm")])
+    assert pool.complete("p", avoid_provider="gemini")[1] == "gemini#0"
+
+
+def test_gemini_invalid_key_400_disables_key():
+    def handler(request):
+        return httpx.Response(400, json={"error": {"status": "INVALID_ARGUMENT",
+                                                   "details": [{"reason": "API_KEY_INVALID"}]}})
+    clock = FakeClock()
+    pool = KeyPool([KeyEntry("gemini", 0, "bad", "gm")], 60, clock=clock, transport=httpx.MockTransport(handler))
+    with pytest.raises(LLMCallFailed):
+        pool.complete("p")
+    clock.t += 10_000
+    assert pool.has_usable_key() is False
+
+
+def test_gemini_safety_block_is_empty_reply_not_key_failure():
+    # Review #2: a blocked prompt is the model's answer, not a broken key; don't rest the key.
+    def handler(request):
+        return httpx.Response(200, json={"promptFeedback": {"blockReason": "SAFETY"}})
+    pool = KeyPool([KeyEntry("gemini", 0, "k1", "gm")], 60, clock=FakeClock(), transport=httpx.MockTransport(handler))
+    assert pool.complete("p") == ("", "gemini#0")
+    assert pool.has_usable_key() is True
+
+
+def test_groq_null_content_is_empty_reply():
+    def handler(request):
+        return httpx.Response(200, json={"choices": [{"message": {"content": None}}]})
+    pool = KeyPool([KeyEntry("groq", 0, "k3", "qm")], 60, clock=FakeClock(), transport=httpx.MockTransport(handler))
+    assert pool.complete("p") == ("", "groq#0")
+
+
+def test_quoted_and_exported_env_values(tmp_path, monkeypatch):
+    # Review #4: GEMINI_API_KEYS="k1,k2" and `export X=...` are common .env styles.
+    p = tmp_path / ".env"
+    p.write_text('GEMINI_API_KEYS="k1,k2"\nexport GROQ_API_KEY_1=\'k3\'\n', encoding="utf-8")
+    monkeypatch.delenv("GEMINI_API_KEYS", raising=False)
+    monkeypatch.delenv("GROQ_API_KEY_1", raising=False)
+    load_env_file(str(p))
+    import os
+    e = entries_from_env(os.environ, "gm", "qm")
+    assert [x.key for x in e if x.key in ("k1", "k2", "k3")] == ["k1", "k2", "k3"]

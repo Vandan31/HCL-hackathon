@@ -56,4 +56,5 @@
 - **Alternatives:** Claude (no free tier), Sarvam (small one-time credits), Groq only (weaker Gujarati/Marathi/Tamil, Hypothesized).
 - **Evidence:** Sourced (web, 2026-10-27, third-party, conflicting): Gemini Flash free tier ~20–1,500 req/day; Groq ~1,000–14,400 req/day; both limit per project/account, not per key. Quality on our languages: not measured yet.
 - **Panel answer:** "Free-tier Gemini writes the answer, Groq takes over if Gemini is rate-limited, and if both fail we still show the source passages; on stage, recorded answers cover the demo questions."
+- **Models (Measured 2026-10-27):** `gemini-3.5-flash-lite` (1.7 s) because `gemini-3.8-flash` timed out / returned 503 "high demand"; Groq `openai/gpt-oss-120b`. A failed call retries on the *other* provider.
 - **Change if:** eval shows poor mr/ta quality, or free-tier limits break the demo.

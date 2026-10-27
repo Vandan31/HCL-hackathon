@@ -25,18 +25,21 @@ def answer(query: str, lang_info: dict, chunks: list[dict], llm: Callable[[str],
     def refuse(reason: str, provider: str | None) -> dict:
         return {**refusal(lang, code_mixed, reason), "provider": provider}
 
-    # FALLBACK: nothing relevant retrieved -> refuse without spending an LLM call.
-    if not chunks or chunks[0]["score"] < MIN_SCORE:
+    top = chunks[0].get("score") if chunks else None
+    # FALLBACK: nothing relevant retrieved, or retrieval sent no usable score (black box, review #3)
+    # -> refuse without spending an LLM call.
+    if not isinstance(top, (int, float)) or top < MIN_SCORE:
         return refuse("low_score", None)
 
     prompt = build_prompt(query, template_key(lang, code_mixed), chunks)
-    parsed, provider, last_error = None, None, None
+    parsed, provider, last_error, avoid = None, None, None, None
     # WHY: one shared budget for failed calls and unreadable replies keeps worst-case latency ≈ 2 × timeout.
     for _ in range(1 + MAX_RETRIES):
         try:
-            text, provider = llm(prompt)
+            # WHY: after a provider failure, retry on the other provider (Gemini down -> Groq), review #1.
+            text, provider = llm(prompt) if avoid is None else llm(prompt, avoid_provider=avoid)
         except LLMCallFailed as e:
-            last_error = e
+            last_error, avoid = e, e.provider
             continue
         last_error = None
         parsed = parse_llm_output(text)
@@ -63,4 +66,4 @@ def answer(query: str, lang_info: dict, chunks: list[dict], llm: Callable[[str],
     citations = [build_citation(sid, chunks[int(sid[1:]) - 1], lang, code_mixed, translations or {})
                  for sid in cited]
     return {"answer": parsed["answer"], "lang": lang, "refused": False, "refusal_reason": None,
-            "citations": citations, "confidence": chunks[0]["score"], "provider": provider}
+            "citations": citations, "confidence": top, "provider": provider}

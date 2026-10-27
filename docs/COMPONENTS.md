@@ -25,7 +25,7 @@
 | 1 | Data + ingestion | `data/schemes/`, `src/ingest/`, `config/ingest.py` | B. Jaya | TODO | Pick 25 schemes from the sample questions; everyone hand-collects 6–8 into the JSON template (PLAN §4.4) |
 | 2 | Language detection | `src/lang/`, `config/lang.py` | C. Vandan | TODO | Unicode script rules (Deva/Gujr/Latn) + Hinglish word list + tests |
 | 3 | Retrieval | `src/retrieval/`, `config/retrieval.py` | C. Vandan | TODO | BM25 + BGE-M3 + RRF over `data/processed/`; MOCK chunks until ingest is ready |
-| 4 | Answer engine | `src/answer/`, `config/answer.py` | A. Harsh | WORKING (tested with fake LLM) | Fill `GEMINI_MODEL`/`GROQ_MODEL` in `config/answer.py`, keys in `.env`, run one live question per language; native-speaker check of gu/mr/ta refusals |
+| 4 | Answer engine | `src/answer/`, `config/answer.py` | A. Harsh | WORKING (live-tested 2026-10-27) | Native-speaker check of gu/mr/ta refusals; record demo answers with `RECORD_CACHE=true` once real retrieval is merged |
 | 5 | API | `src/api/`, `config/api.py` | A. Harsh | WORKING (tested) | `USE_MOCKS=false` runs detect → search → answer (lang/retrieval MOCKed until merged); offline cache + audit log done. Next: swap in real src/lang + src/retrieval at integration; record demo answers with `RECORD_CACHE=true` |
 | 6 | UI + voice | `src/ui/`, `config/ui.js` | D. Vaidehi | TODO | Chat + passage cards + language badge against MOCK API; Web Speech mic/TTS as bonus |
 | 7 | Eligibility checklist | `src/eligibility/`, `config/eligibility.py` | D. Vaidehi | TODO | Rules engine over `criteria` in scheme JSON; next-question logic |
@@ -80,4 +80,4 @@ Search space = the 20–30 myScheme pages ONLY. IndicQA is for retrieval testing
 | detect_language / search inside the API | MOCK until src/lang, src/retrieval merge (script-only detector, one fixed passage) | src/api/mocks.py |
 | gu / mr / ta refusal templates | Not yet checked by a native speaker | src/answer/refusals.py |
 | Answer-language check | Script-only until src/lang merges (can't tell hi from mr) | src/answer/langcheck.py |
-| LLM answers on real questions | Not run yet: model names empty, no live call made | config/answer.py |
+| LLM answers on real questions | Measured 2026-10-27: 1 live question per language (en/hi/Hinglish/gu/mr/ta) answered in the right language with [S1], out-of-scope refused; 0.8–1.9 s; against ONE mock passage, not real retrieval | config/answer.py |
