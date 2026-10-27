@@ -27,6 +27,17 @@ _Announce here before editing shared files (config, requirements, API contracts)
   for the most-used new fields: `state` (9 schemes), `citizen_of_india` (5), `annual_family_income` (4),
   `social_category` (4), `applicant_type` (3). Without them the checklist stops after `age`/`gender`/`occupation`.
 
+- **2026-10-27 · Vandan → @Harsh · retrieval behaviour for answer/API (`comp/retrieval`, D-012, D-013).**
+  1. `search()` now refuses itself: `[]` unless the best chunk scores ≥ 0.81 AND clearly stands out (z ≥ 2.8).
+     Your `MIN_SCORE = 0.35` gate stays a harmless safety net (every non-empty result has a top score ≥ 0.81).
+     Two knobs are both called `MIN_SCORE` (config/retrieval.py vs config/answer.py): the retrieval one is the real dial.
+  2. Model is `multilingual-e5-small` (BGE-M3 crashed out of memory on a 6 GB laptop). Contract unchanged.
+  3. Please warm up at startup, or the first question waits ~16 s (IndicLID) + embedding load: in `src/api/main.py`
+     after the imports: `detect("warm up"); search("warm up", "en")`.
+  4. Measured on the 98-question set: recall@5 0.936, right scheme first 0.923, false refusal 0.064, search refuses
+     75% of off-topic questions; the other 25% (PAN–Aadhaar, pension increase, ITR date, driving licence) must be
+     caught by your `not_in_documents` LLM check. Weakest language: Gujarati (false refusal 0.154).
+
 ## Handoff log (newest on top)
 
 <!--
