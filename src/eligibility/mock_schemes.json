@@ -1,0 +1,42 @@
+{
+  "_comment": "MOCK: stand-in scheme criteria until Jaya's human-verified data/schemes/<id>.json files exist. Same shape as PLAN §4.4 (only the fields the eligibility engine reads). Criteria are simplified for testing and must not be presented as official rules.",
+  "schemes": [
+    {
+      "id": "pm-kisan",
+      "name": {"en": "PM-KISAN", "hi": "पीएम-किसान", "gu": "PM-KISAN"},
+      "source_url": {"en": "https://www.myscheme.gov.in/schemes/pm-kisan"},
+      "criteria": [
+        {"field": "occupation", "op": "eq", "value": "farmer",
+         "text_en": "Must be a farmer family", "text_hi": "किसान परिवार होना चाहिए", "text_gu": "ખેડૂત પરિવાર હોવો જોઈએ"},
+        {"field": "land_owner", "op": "eq", "value": true,
+         "text_en": "Family must own cultivable land", "text_hi": "परिवार के नाम पर खेती योग्य ज़मीन होनी चाहिए", "text_gu": "પરિવારના નામે ખેતીલાયક જમીન હોવી જોઈએ"},
+        {"field": "income_tax_payer", "op": "eq", "value": false,
+         "text_en": "Income-tax payers are excluded", "text_hi": "आयकर देने वाले परिवार पात्र नहीं हैं", "text_gu": "આવકવેરો ભરનારા પરિવારો પાત્ર નથી"},
+        {"field": "govt_employee", "op": "eq", "value": false,
+         "text_en": "Serving or retired government employees are excluded", "text_hi": "सरकारी या रिटायर्ड सरकारी कर्मचारी पात्र नहीं हैं", "text_gu": "સરકારી અથવા નિવૃત્ત સરકારી કર્મચારીઓ પાત્ર નથી"}
+      ]
+    },
+    {
+      "id": "atal-pension",
+      "name": {"en": "Atal Pension Yojana"},
+      "source_url": {"en": "https://www.myscheme.gov.in/schemes/apy"},
+      "criteria": [
+        {"field": "age", "op": "gte", "value": 18, "text_en": "Age must be at least 18"},
+        {"field": "age", "op": "lte", "value": 40, "text_en": "Age must be 40 or below"},
+        {"field": "has_bank_account", "op": "eq", "value": true, "text_en": "Must have a bank or post office savings account"},
+        {"field": "income_tax_payer", "op": "eq", "value": false, "text_en": "Income-tax payers are excluded"}
+      ]
+    },
+    {
+      "id": "pm-ujjwala",
+      "name": {"en": "Pradhan Mantri Ujjwala Yojana"},
+      "source_url": {"en": "https://www.myscheme.gov.in/schemes/pmuy"},
+      "criteria": [
+        {"field": "gender", "op": "eq", "value": "female", "text_en": "Applicant must be a woman"},
+        {"field": "age", "op": "gte", "value": 18, "text_en": "Age must be at least 18"},
+        {"field": "lpg_connection_at_home", "op": "eq", "value": false, "text_en": "Household must not already have an LPG connection"},
+        {"field": "bpl_household", "op": "eq", "value": true, "text_en": "Must belong to a poor household (category list on the official page)"}
+      ]
+    }
+  ]
+}
