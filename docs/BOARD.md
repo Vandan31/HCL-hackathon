@@ -7,10 +7,12 @@
 
 | Component | Agent / person | Branch | Started (date time) | Files touched |
 |-----------|----------------|--------|---------------------|---------------|
-| | | | | |
+| API + answer engine (#4, #5) | harsh/claude | `harsh` | 2026-10-27 11:19 | `src/api/`, `src/answer/`, `config/api.py`, `config/answer.py`, `tests/api/`, `tests/answer/`, `requirements.txt`, `pytest.ini` |
 
 ## Shared-file change notices
 _Announce here before editing shared files (config, requirements, API contracts)._
+
+- 2026-10-27 11:19 · harsh (integrator): creating root `requirements.txt` (fastapi, uvicorn, pytest, httpx) and `pytest.ini`. Others: post new packages here and Harsh adds them.
 
 ## Handoff log (newest on top)
 
