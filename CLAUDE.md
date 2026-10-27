@@ -180,7 +180,7 @@ meanwhile. Always pull `main` before reading the board. Full team procedure: `do
   datasets/model weights (use `.gitignore`; keep the fixtures small).
 - Pull before starting (`git pull --rebase` on your branch) to pick up other agents' work.
 - Shared files (`CLAUDE.md`, `docs/COMPONENTS.md` interfaces, root config, `requirements.txt`)
-  are changed only by the integrator; others request changes on the board (see `docs/TEAM_WORKFLOW.md`).
+  are changed only by the integrator (Harsh); others request changes on the board (see `docs/TEAM_WORKFLOW.md`).
 - Tag demo-ready snapshots: `git tag demo-v1` (a safe rollback point if something breaks live).
 
 ---

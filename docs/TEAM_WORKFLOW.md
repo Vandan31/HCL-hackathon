@@ -1,6 +1,6 @@
 # Team workflow: branches, pushing, and no-clash rules
 
-A team of 4 (Vandan as integrator + 3 teammates), each with their own AI agent. Everyone works on
+A team of 4 (Harsh as integrator, Jaya, Vandan, Vaidehi), each with their own AI agent. Everyone works on
 **their own branch and their own folder**, so two people never edit the same file. Then `main`
 only ever receives clean merges. Full plan and timeline: `docs/PLAN.md`.
 
@@ -10,17 +10,17 @@ only ever receives clean merges. Full plan and timeline: `docs/PLAN.md`.
 
 | Person | GitHub username | Component | Branch | Folders they own |
 |--------|-----------------|-----------|--------|------------------|
-| A. Vandan (integrator) | Vandan31 | API + answer engine (LLM, citations, refusal) | `comp/api` | `src/api/`, `src/answer/`, `config/answer.py`, `docs/`, root files |
-| B. Member 2 | | Data + ingestion | `comp/data` | `data/schemes/`, `src/ingest/`, `config/ingest.py` |
-| C. Member 3 | | Language detection + retrieval + eval | `comp/retrieval` | `src/lang/`, `src/retrieval/`, `scripts/eval.py`, `data/eval/`, `config/lang.py`, `config/retrieval.py` |
-| D. Member 4 | | UI + voice + eligibility + pitch | `comp/ui` | `src/ui/`, `src/eligibility/`, `config/ui.js`, `config/eligibility.py`, `docs/pitch/` |
+| A. Harsh (integrator) | | API + answer engine (LLM, citations, refusal); merges all PRs | `comp/api` | `src/api/`, `src/answer/`, `config/answer.py`, `docs/`, root files |
+| B. Jaya | | Data + ingestion | `comp/data` | `data/schemes/`, `src/ingest/`, `config/ingest.py` |
+| C. Vandan | Vandan31 | Language detection + retrieval + eval; PARAM GPU jobs; repo owner | `comp/retrieval` | `src/lang/`, `src/retrieval/`, `scripts/eval.py`, `data/eval/`, `config/lang.py`, `config/retrieval.py` |
+| D. Vaidehi | | UI + voice + eligibility + pitch | `comp/ui` | `src/ui/`, `src/eligibility/`, `config/ui.js`, `config/eligibility.py`, `docs/pitch/` |
 
 Tests live next to the owner: `tests/<component>/`.
 
 **Golden rule:** you only edit files inside *your* folder. Need a change somewhere else? Write it
 on `docs/BOARD.md` under "Shared-file change notices" and the owner makes it.
 
-**Shared files have one owner, the integrator (Vandan):** `CLAUDE.md`, `AGENTS.md`,
+**Shared files have one owner, the integrator (Harsh):** `CLAUDE.md`, `AGENTS.md`,
 `docs/COMPONENTS.md` (interfaces section), root config file, `requirements.txt` / `package.json`.
 
 ---
@@ -85,7 +85,7 @@ git push                        # after a rebase use: git push --force-with-leas
 2. `git fetch origin && git rebase origin/main`, then re-run the tests, then `git push --force-with-lease`.
 3. Open a PR: `gh pr create --base main --head comp/<your-component>` (or on the GitHub website).
    PR description = handoff note (what changed, how to run it, what was tested, known issues).
-4. **The integrator (Vandan) reviews and merges**, one PR at a time. After each merge, everyone
+4. **The integrator (Harsh) reviews and merges**, one PR at a time. After each merge, everyone
    runs step 1 of the daily loop again.
 5. Merge with **"Squash and merge"** so `main` keeps one clean commit per feature.
 

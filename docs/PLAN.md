@@ -9,7 +9,7 @@
 > **[Hypothesis]** (not yet validated) or **[Target]** (a goal, not a measurement).
 > Nothing here has been measured yet.
 
-**Planning assumptions:** 4 team members (Vandan + 3), 5–6 hours, laptops plus one Claude Code or
+**Planning assumptions:** 4 team members (Harsh, Jaya, Vandan, Vaidehi), 5–6 hours, laptops plus one Claude Code or
 Antigravity agent each, small API budget. **Third language = Gujarati** by default (team at IITGN,
 covered by IndicQA). **If the organisers' 100 sample questions use a different third language,
 switch to that one**: it's a single config value plus that language's documents.
@@ -281,10 +281,10 @@ the only input the eligibility engine trusts.
 
 | | Person | Owns (folders) | Branch | Their agent (Claude Code / Antigravity) does |
 |---|---|---|---|---|
-| **A** | **Vandan: integrator + answer engine** | `src/api/`, `src/answer/`, `config/answer.py`, `docs/`, root files | `comp/api` | Writes FastAPI routes, LLM prompt + JSON output parsing, citation checker, refusal templates (en/hi/gu/Hinglish), offline cache, audit log. Reviews and merges all PRs. |
-| **B** | Member 2: **data + ingestion** | `data/schemes/`, `src/ingest/`, `config/ingest.py` | `comp/data` | Turns **text pasted by humans** into the scheme JSON template, drafts `criteria` for human review, writes chunker + index builder. Never fetches websites. |
-| **C** | Member 3: **language + retrieval + eval** | `src/lang/`, `src/retrieval/`, `scripts/eval.py`, `data/eval/`, `config/retrieval.py`, `config/lang.py` | `comp/retrieval` | Script + Hinglish detector, BM25 + BGE-M3 + RRF search, IndicQA Recall@5 test, eval script on the 100 questions + 20 unanswerable ones. |
-| **D** | Member 4: **UI + voice + eligibility + pitch** | `src/ui/`, `src/eligibility/`, `config/ui.js`, `config/eligibility.py`, `docs/pitch/` | `comp/ui` | Chat UI with passage cards and language badge, Web Speech mic + TTS, eligibility checklist flow, accessible large-text mode. Uses Antigravity's browser agent to click-test the demo. |
+| **A** | **Harsh: integrator + answer engine** | `src/api/`, `src/answer/`, `config/answer.py`, `docs/`, root files | `comp/api` | Writes FastAPI routes, LLM prompt + JSON output parsing, citation checker, refusal templates (en/hi/gu/Hinglish), offline cache, audit log. Reviews and merges all PRs. |
+| **B** | Jaya: **data + ingestion** | `data/schemes/`, `src/ingest/`, `config/ingest.py` | `comp/data` | Turns **text pasted by humans** into the scheme JSON template, drafts `criteria` for human review, writes chunker + index builder. Never fetches websites. |
+| **C** | Vandan: **language + retrieval + eval** (+ PARAM GPU jobs) | `src/lang/`, `src/retrieval/`, `scripts/eval.py`, `data/eval/`, `config/retrieval.py`, `config/lang.py` | `comp/retrieval` | Script + Hinglish detector, BM25 + BGE-M3 + RRF search, IndicQA Recall@5 test, eval script on the 100 questions + 20 unanswerable ones. |
+| **D** | Vaidehi: **UI + voice + eligibility + pitch** | `src/ui/`, `src/eligibility/`, `config/ui.js`, `config/eligibility.py`, `docs/pitch/` | `comp/ui` | Chat UI with passage cards and language badge, Web Speech mic + TTS, eligibility checklist flow, accessible large-text mode. Uses Antigravity's browser agent to click-test the demo. |
 
 *If you have a 5th member:* they take eligibility (`src/eligibility/`) + the demo script from D.
 *Everyone* collects 6–8 scheme pages by hand in Hour 1 (~30 min), so B isn't the bottleneck.
@@ -319,7 +319,7 @@ During the demo: `grep -rn "DEMO-KNOB:" config/` lists every value you can chang
 (e.g. `MIN_SCORE` makes refusals stricter, `TOP_K` changes how many sources show, `ANSWER_MODEL` swaps the model).
 
 ### 5.3 Roadmap with milestones
-| Time | Milestone | A (Vandan) | B (data) | C (retrieval) | D (UI) |
+| Time | Milestone | A (Harsh) | B (Jaya) | C (Vandan) | D (Vaidehi) |
 |---|---|---|---|---|---|
 | **0:00–0:20** | **Kick-off** | Read brief + 100 questions with everyone; confirm the 3rd language; create branches | ← same | ← same | ← same |
 | **0:20–0:45** | **Design freeze** | Freeze §4.2/§4.3 contracts in COMPONENTS.md; create `config/` files | Finalise scheme list from the 100 questions; JSON template | Label which scheme answers each sample question | Wireframe: chat + passage cards + refusal state |
@@ -333,14 +333,14 @@ During the demo: `grep -rn "DEMO-KNOB:" config/` lists every value you can chang
 | **5:10–6:00** | **Pitch** | Rehearse 3× with timer; judge Q&A drill (§9) | ← all | ← all | Deck final |
 
 ### 5.4 Clash-free GitHub routine for this project
-1. Contracts (§4.2–4.3) are frozen at 0:45 in `docs/COMPONENTS.md`. Changing one = ask Vandan.
+1. Contracts (§4.2–4.3) are frozen at 0:45 in `docs/COMPONENTS.md`. Changing one = ask Harsh.
 2. **Folder ownership** (§5.1): you only `git add` your own folders.
 3. **Config split:** each component has its own `config/<component>` file, so two people never
    edit the same config file.
 4. Build against **MOCKs** of other components; swap to the real one at integration.
 5. Rebase on `origin/main` every merge checkpoint (2:45, 4:00, 4:45). Push your branch, open a PR,
-   and **Vandan merges one PR at a time** in order data → retrieval → api → ui.
-6. Board claims on `main` (`docs/TEAM_WORKFLOW.md` §5). `requirements.txt` is owned by Vandan:
+   and **Harsh merges one PR at a time** in order data → retrieval → api → ui.
+6. Board claims on `main` (`docs/TEAM_WORKFLOW.md` §5). `requirements.txt` is owned by Harsh:
    post new packages on the board and he adds them.
 
 ---

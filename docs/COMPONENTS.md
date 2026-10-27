@@ -21,20 +21,20 @@
 
 | # | Component | Folders | Owner | Status | Next step |
 |---|-----------|---------|-------|--------|-----------|
-| 0 | Planning | `docs/` | A. Vandan | WORKING | Confirm 3rd language from the 100 sample questions; freeze interfaces at 0:45 |
-| 1 | Data + ingestion | `data/schemes/`, `src/ingest/`, `config/ingest.py` | B | TODO | Pick 25 schemes from the sample questions; everyone hand-collects 6–8 into the JSON template (PLAN §4.4) |
-| 2 | Language detection | `src/lang/`, `config/lang.py` | C | TODO | Unicode script rules (Deva/Gujr/Latn) + Hinglish word list + tests |
-| 3 | Retrieval | `src/retrieval/`, `config/retrieval.py` | C | TODO | BM25 + BGE-M3 + RRF over `data/processed/`; MOCK chunks until ingest is ready |
-| 4 | Answer engine | `src/answer/`, `config/answer.py` | A. Vandan | TODO | Prompt → JSON {answer, citations, answerable}; citation check; refusal templates en/hi/gu/Hinglish |
-| 5 | API | `src/api/` | A. Vandan | TODO | FastAPI `/api/ask`, `/api/eligibility`, `/api/health` returning MOCKs first |
-| 6 | UI + voice | `src/ui/`, `config/ui.js` | D | TODO | Chat + passage cards + language badge against MOCK API; Web Speech mic/TTS as bonus |
-| 7 | Eligibility checklist | `src/eligibility/`, `config/eligibility.py` | D | TODO | Rules engine over `criteria` in scheme JSON; next-question logic |
-| 8 | Evaluation | `scripts/eval.py`, `data/eval/` | C | TODO | Label sample questions with scheme ids; 20 unanswerable questions; metrics table (PLAN §6) |
-| 9 | Demo & pitch | `docs/pitch/` | D + A | TODO | Deck draft; 90-s demo script (PLAN §9); offline mode + backup video |
+| 0 | Planning | `docs/` | A. Harsh | WORKING | Confirm 3rd language from the 100 sample questions; freeze interfaces at 0:45 |
+| 1 | Data + ingestion | `data/schemes/`, `src/ingest/`, `config/ingest.py` | B. Jaya | TODO | Pick 25 schemes from the sample questions; everyone hand-collects 6–8 into the JSON template (PLAN §4.4) |
+| 2 | Language detection | `src/lang/`, `config/lang.py` | C. Vandan | TODO | Unicode script rules (Deva/Gujr/Latn) + Hinglish word list + tests |
+| 3 | Retrieval | `src/retrieval/`, `config/retrieval.py` | C. Vandan | TODO | BM25 + BGE-M3 + RRF over `data/processed/`; MOCK chunks until ingest is ready |
+| 4 | Answer engine | `src/answer/`, `config/answer.py` | A. Harsh | TODO | Prompt → JSON {answer, citations, answerable}; citation check; refusal templates en/hi/gu/Hinglish |
+| 5 | API | `src/api/` | A. Harsh | TODO | FastAPI `/api/ask`, `/api/eligibility`, `/api/health` returning MOCKs first |
+| 6 | UI + voice | `src/ui/`, `config/ui.js` | D. Vaidehi | TODO | Chat + passage cards + language badge against MOCK API; Web Speech mic/TTS as bonus |
+| 7 | Eligibility checklist | `src/eligibility/`, `config/eligibility.py` | D. Vaidehi | TODO | Rules engine over `criteria` in scheme JSON; next-question logic |
+| 8 | Evaluation | `scripts/eval.py`, `data/eval/` | C. Vandan | TODO | Label sample questions with scheme ids; 20 unanswerable questions; metrics table (PLAN §6) |
+| 9 | Demo & pitch | `docs/pitch/` | D. Vaidehi + A. Harsh | TODO | Deck draft; 90-s demo script (PLAN §9); offline mode + backup video |
 
 ## Interfaces (contracts between components): freeze at 0:45
 
-> Changing anything here = stop and ask Vandan, and update in the same commit.
+> Changing anything here = stop and ask Harsh (integrator), and update in the same commit.
 
 ```python
 # src/lang/detect.py
