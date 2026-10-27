@@ -33,7 +33,12 @@ data-i18n-attr="attribute:key,..." does the same for attributes such as placehol
         <span lang="hi">अपनी भाषा चुनें</span>
         <span lang="gu">તમારી ભાષા પસંદ કરો</span>
       </h1>
-      <div id="picker-options" class="picker-options"></div>
+      <!-- One dropdown + Continue. The dropdown is named by the trilingual heading above (aria-labelledby). -->
+      <form id="picker-form" class="picker-form">
+        <select id="picker-select" class="picker-select" aria-labelledby="picker-title"></select>
+        <!-- Its text follows the language chosen in the dropdown (set in app.js). -->
+        <button id="picker-continue" class="picker-btn" type="submit">Continue</button>
+      </form>
     </div>
   </main>
 
@@ -45,11 +50,13 @@ data-i18n-attr="attribute:key,..." does the same for attributes such as placehol
     <div class="topbar-actions">
       <!-- Shows mock / server status so nobody mistakes the mock for the real system. -->
       <span id="status-pill" class="pill" role="status"></span>
-      <!-- aria-label is set in app.js so the spoken name includes the visible language name (WCAG 2.5.3). -->
-      <button id="change-lang" class="btn btn-ghost btn-lang" type="button" data-i18n-attr="title:changeLanguage">
+      <!-- Language dropdown: switching starts a fresh conversation in the new language. The label wraps the
+           dropdown, so screen readers say "Change language, ગુજરાતી" (name + current value). -->
+      <label class="lang-switch" data-i18n-attr="title:changeLanguage">
         <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm6.9 6h-2.95a15.7 15.7 0 0 0-1.38-3.56A8.03 8.03 0 0 1 18.9 8ZM12 4.04A14 14 0 0 1 13.91 8h-3.82A14 14 0 0 1 12 4.04ZM4.26 14a8.2 8.2 0 0 1 0-4h3.38a16.5 16.5 0 0 0 0 4H4.26Zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56A8 8 0 0 1 5.08 16ZM8.03 8H5.08a8 8 0 0 1 4.33-3.56A15.7 15.7 0 0 0 8.03 8ZM12 19.96A14 14 0 0 1 10.09 16h3.82A14 14 0 0 1 12 19.96ZM14.34 14H9.66a14.7 14.7 0 0 1 0-4h4.68a14.7 14.7 0 0 1 0 4Zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95a8.03 8.03 0 0 1-4.33 3.56ZM16.36 14a16.5 16.5 0 0 0 0-4h3.38a8.2 8.2 0 0 1 0 4h-3.38Z"/></svg>
-        <span id="current-lang"></span>
-      </button>
+        <span class="visually-hidden" data-i18n="changeLanguage"></span>
+        <select id="header-lang" class="header-lang"></select>
+      </label>
       <button id="large-text-toggle" class="btn btn-ghost" type="button" aria-pressed="false"
               data-i18n-attr="title:largeText,aria-label:largeText">A<span class="big-a">A</span></button>
     </div>

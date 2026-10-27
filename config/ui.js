@@ -18,7 +18,7 @@ export const CONFIG = {
   REQUEST_TIMEOUT_MS: 12000,  // DEMO-KNOB: PLAN §4.5 targets p95 < 5 s; 12 s leaves slack before we show an error
 
   // --- Language -------------------------------------------------------------
-  UI_LANGUAGES: ["en", "hi", "gu"],  // DEMO-KNOB: buttons on the opening language picker, in this order
+  UI_LANGUAGES: ["en", "hi", "gu"],  // DEMO-KNOB: choices in the language dropdowns (opening page + header), in this order
   REMEMBER_LANGUAGE: false,   // DEMO-KNOB: true skips the picker on return visits (remembers the last choice on this device)
 
   // --- Voice (bonus; browser Web Speech API, free, no keys) ----------------
@@ -73,6 +73,7 @@ export const CONFIG = {
   STRINGS: {
     en: {
       appName: "Yojana Saathi",
+      continue: "Continue",
       tagline: "Ask about government schemes, certificates and subsidies.",
       changeLanguage: "Change language",
       largeText: "Large text",
@@ -118,6 +119,7 @@ export const CONFIG = {
     },
     hi: {
       appName: "योजना साथी",
+      continue: "आगे बढ़ें",
       tagline: "सरकारी योजनाओं, प्रमाण पत्रों और सब्सिडी के बारे में पूछें।",
       changeLanguage: "भाषा बदलें",
       largeText: "बड़े अक्षर",
@@ -163,6 +165,7 @@ export const CONFIG = {
     },
     gu: {
       appName: "યોજના સાથી",
+      continue: "આગળ વધો",
       tagline: "સરકારી યોજનાઓ, પ્રમાણપત્રો અને સબસિડી વિશે પૂછો.",
       changeLanguage: "ભાષા બદલો",
       largeText: "મોટા અક્ષર",

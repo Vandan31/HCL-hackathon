@@ -11,13 +11,14 @@ PANEL NOTE: Designed for low-literacy, low-end-phone users: 16px+ text, 44px but
 
 :root {
   /* DEMO-KNOB: the theme is these colours; change them here and everything follows. */
-  --bg: #fffbe6;          /* pale yellow page background */
-  --surface: #fffef7;     /* cards: near-white so long text stays easy to read */
-  --band: #ffd43b;        /* bright yellow: header bar and the opening page */
-  --ink: #2b2200;         /* main text: dark brown-black, ~15:1 on --bg and ~11:1 on --band */
-  --ink-soft: #5c4a10;    /* secondary text: ~8:1 on --bg */
-  --line: #efdf9c;        /* borders */
-  --accent: #f5c000;      /* yellow fill for buttons and highlights; always paired with dark text */
+  --bg: #fffef0;          /* very pale lemon page background */
+  --surface: #fffffa;     /* cards: near-white so long text stays easy to read */
+  --band: #fff59d;        /* lemon yellow: header bar, input bar and the opening page */
+  --ink: #2b2200;         /* main text: dark brown-black (ratios checked in tests/ui/test_contrast.py) */
+  --ink-soft: #5c4a10;    /* secondary text */
+  --line: #f2ea9e;        /* card borders (decorative) */
+  --accent: #ffeb3b;      /* lemon fill for buttons, badges and your messages; always paired with dark text */
+  --accent-edge: #e6d200; /* thin edge around lemon fills so they don't melt into the lemon bars */
   --accent-ink: #2b2200;  /* text on --accent */
   --accent-text: #7a5600; /* dark amber for links and small coloured text: ~6:1 on --bg (plain yellow text would be unreadable) */
   --control-border: #7a5600; /* edge of buttons, chips and inputs: WCAG 1.4.11 needs 3:1 against both --surface and --band */
@@ -68,9 +69,15 @@ body:not(.picking) .lang-picker { display: none; }
 }
 .picker-brand { margin: 0 0 0.75rem; font-weight: 700; color: var(--accent-text); }
 .picker-title { margin: 0 0 1.5rem; font-size: 1.35rem; line-height: 1.35; display: flex; flex-direction: column; }
-.picker-options { display: flex; flex-direction: column; gap: 0.75rem; }
+.picker-form { display: flex; flex-direction: column; gap: 0.75rem; }
+/* Big, easy-to-tap dropdown; the browser's own list keeps it usable with keyboards and screen readers. */
+.picker-select {
+  font: inherit; font-size: 1.3rem; font-weight: 600; min-height: 60px; padding: 0 1rem; cursor: pointer;
+  border: 2px solid var(--control-border); border-radius: 14px; background: var(--surface); color: var(--ink);
+}
+.picker-select:focus-visible { outline: 4px solid var(--ink); outline-offset: 3px; }
 .picker-btn {
-  font: inherit; font-size: 1.4rem; font-weight: 700; min-height: 64px; cursor: pointer;
+  font: inherit; font-size: 1.3rem; font-weight: 700; min-height: 60px; cursor: pointer;
   border: 2px solid var(--ink); border-radius: 14px; background: var(--accent); color: var(--accent-ink);
 }
 .picker-btn:hover { background: var(--band); }
@@ -109,7 +116,17 @@ body:not(.picking) .lang-picker { display: none; }
 .btn-primary:hover { background: var(--band); }
 .btn-ghost { padding: 0 0.6rem; }
 .btn-ghost[aria-pressed="true"] { background: var(--ink) !important; color: var(--band); }
-.btn-lang { display: inline-flex; align-items: center; gap: 0.35rem; }
+/* Header language dropdown with a globe icon in front. */
+.lang-switch {
+  display: inline-flex; align-items: center; gap: 0.35rem; min-height: 44px; padding: 0 0.5rem;
+  border: 1px solid var(--control-border); border-radius: 10px; background: var(--surface); color: var(--ink);
+}
+.header-lang {
+  font: inherit; font-weight: 600; border: none; background: transparent; color: var(--ink);
+  min-height: 40px; cursor: pointer;
+}
+.lang-switch:focus-within { outline: 3px solid var(--ink); outline-offset: 2px; }
+.header-lang:focus { outline: none; }   /* WHY: the whole switch shows the focus ring (focus-within) instead */
 .big-a { font-size: 1.3em; }
 .btn-small { min-height: 36px; padding: 0 0.75rem; font-size: 0.85rem; }
 
@@ -128,7 +145,7 @@ body:not(.picking) .lang-picker { display: none; }
 
 .msg-user {
   align-self: flex-end; max-width: 85%;
-  background: var(--accent); color: var(--accent-ink); border: 1px solid #d9a900;
+  background: var(--accent); color: var(--accent-ink); border: 1px solid var(--accent-edge);
   padding: 0.6rem 0.9rem; border-radius: var(--radius) var(--radius) 4px var(--radius);
   white-space: pre-wrap; overflow-wrap: anywhere;
 }
@@ -211,7 +228,7 @@ body:not(.picking) .lang-picker { display: none; }
 /* ---------- Composer (bottom bar) ---------- */
 .composer {
   position: sticky; bottom: 0; display: flex; gap: 0.5rem; align-items: flex-end;
-  padding: 0.75rem 1rem; background: var(--band); border-top: 1px solid #e6b800;
+  padding: 0.75rem 1rem; background: var(--band); border-top: 1px solid var(--accent-edge);
   max-width: 100%;
 }
 .query {

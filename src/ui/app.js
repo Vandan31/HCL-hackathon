@@ -18,7 +18,8 @@ const els = {
   log: $("chat-log"), form: $("ask-form"), query: $("query"), send: $("send-btn"),
   chips: $("sample-chips"), pill: $("status-pill"), largeText: $("large-text-toggle"),
   micGroup: $("mic-group"), micBtn: $("mic-btn"), micLang: $("mic-lang"),
-  pickerOptions: $("picker-options"), changeLang: $("change-lang"), currentLang: $("current-lang"),
+  pickerForm: $("picker-form"), pickerSelect: $("picker-select"), pickerContinue: $("picker-continue"),
+  headerLang: $("header-lang"),
   picker: $("lang-picker"), srStatus: $("sr-status"),
 };
 
@@ -116,9 +117,7 @@ function applyLanguage() {
       node.setAttribute(attr, s[key] ?? "");
     }
   });
-  els.currentLang.textContent = CONFIG.LANG_LABELS[uiLang];
-  // WHY: the spoken name must contain the visible text ("ગુજરાતી"), so voice-control users can say what they see.
-  els.changeLang.setAttribute("aria-label", `${s.changeLanguage}: ${CONFIG.LANG_LABELS[uiLang]}`);
+  els.headerLang.value = uiLang;   // the header dropdown always shows the current language
 
   // Example questions in the picked language (lang per chip: some are Hinglish on a Hindi page).
   els.chips.replaceChildren(...(CONFIG.SAMPLE_QUESTIONS[uiLang] || []).map((q) =>
@@ -129,14 +128,23 @@ function applyLanguage() {
   renderStatusPill();
 }
 
-/** Show the opening page with one big button per language. */
+/** One <option> per language, each written in its own script so anyone can find theirs. */
+const languageOptions = (langs) =>
+  langs.map((l) => el("option", { value: l, lang: l }, CONFIG.LANG_LABELS[l]));
+
+/** The Continue button speaks the language currently chosen in the opening dropdown. */
+function updateContinueButton() {
+  const lang = els.pickerSelect.value;
+  els.pickerContinue.textContent = (CONFIG.STRINGS[lang] || CONFIG.STRINGS.en).continue;
+  els.pickerContinue.lang = lang;
+}
+
+/** Show the opening page: a language dropdown and a Continue button. */
 function showPicker() {
   document.body.classList.add("picking");
   els.picker.hidden = false;
-  els.pickerOptions.replaceChildren(...CONFIG.UI_LANGUAGES.map((lang) =>
-    el("button", { class: "picker-btn", type: "button", lang, onclick: () => chooseLanguage(lang) },
-      CONFIG.LANG_LABELS[lang])));
-  els.pickerOptions.firstChild?.focus();
+  updateContinueButton();
+  els.pickerSelect.focus();
 }
 
 /** User picked a language: translate the page and open the app. */
@@ -161,16 +169,17 @@ function closePicker() {
 }
 
 function setupLanguage() {
-  // Mic menu: one entry per language, each written in its own script.
-  els.micLang.replaceChildren(...["en", "hi", "gu"].map((l) =>
-    el("option", { value: l, lang: l }, CONFIG.LANG_LABELS[l])));
-  els.changeLang.addEventListener("click", showPicker);
-  // WHY: keyboard users can leave the picker with Escape and keep their current language and conversation.
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && uiLang && document.body.classList.contains("picking")) {
-      closePicker();
-      els.changeLang.focus();
-    }
+  // Three dropdowns share the same list: opening page, header, and the mic's spoken-language menu.
+  els.pickerSelect.replaceChildren(...languageOptions(CONFIG.UI_LANGUAGES));
+  els.headerLang.replaceChildren(...languageOptions(CONFIG.UI_LANGUAGES));
+  els.micLang.replaceChildren(...languageOptions(["en", "hi", "gu"]));
+
+  els.pickerSelect.addEventListener("change", updateContinueButton);
+  els.pickerForm.addEventListener("submit", (e) => { e.preventDefault(); chooseLanguage(els.pickerSelect.value); });
+  // WHY: switching in the header applies at once (no extra click); it starts a fresh conversation in that language.
+  els.headerLang.addEventListener("change", () => {
+    chooseLanguage(els.headerLang.value);
+    els.headerLang.focus();   // keep keyboard focus on the dropdown the user just used
   });
 
   let saved = null;
