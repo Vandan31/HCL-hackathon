@@ -1,0 +1,12 @@
+# COMPONENT : integration (root file, owned by Harsh; post new packages on docs/BOARD.md)
+# PURPOSE   : Exact package versions so every teammate's laptop runs the same code.
+# Install   : python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
+# PANEL NOTE: Pinned versions = the demo machine can't drift from what we tested.
+
+# API (component #5): see docs/DECISIONS.md D-002
+fastapi==0.162.0
+uvicorn==0.54.0
+
+# Tests
+pytest==9.1.1
+httpx==0.28.1
