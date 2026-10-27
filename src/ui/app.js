@@ -125,7 +125,7 @@ function applyLanguage() {
   els.chips.replaceChildren(...(CONFIG.SAMPLE_QUESTIONS[uiLang] || []).map((q) =>
     el("button", { class: "chip", type: "button", lang: textLang(q), onclick: () => submitQuestion(q) }, q)));
 
-  // WHY: people usually speak the language they picked, so the mic starts there (they can still switch).
+  // The dropdown beside the mic shows the page language too (it switches the whole page, see setupLanguage).
   els.micLang.value = uiLang;
   renderStatusPill();
 }
@@ -182,18 +182,21 @@ function closePicker() {
 }
 
 function setupLanguage() {
-  // Three dropdowns share the same list: opening page, header, and the mic's spoken-language menu.
+  // Three dropdowns share the same list: opening page, header, and the one beside the mic.
   els.pickerSelect.replaceChildren(...languageOptions(CONFIG.UI_LANGUAGES));
   els.headerLang.replaceChildren(...languageOptions(CONFIG.UI_LANGUAGES));
-  els.micLang.replaceChildren(...languageOptions(["en", "hi", "gu"]));
+  els.micLang.replaceChildren(...languageOptions(CONFIG.UI_LANGUAGES));
 
   els.pickerSelect.addEventListener("change", updateContinueButton);
   els.pickerForm.addEventListener("submit", (e) => { e.preventDefault(); chooseLanguage(els.pickerSelect.value); });
-  // WHY: switching in the header applies at once (no extra click); it starts a fresh conversation in that language.
-  els.headerLang.addEventListener("change", () => {
-    chooseLanguage(els.headerLang.value);
-    els.headerLang.focus();   // keep keyboard focus on the dropdown the user just used
-  });
+  // WHY: both in-app dropdowns (header + beside the mic) switch the WHOLE page at once, no extra click, and start a
+  // fresh conversation in that language; the mic then listens in it too. One language everywhere = no confusion.
+  for (const select of [els.headerLang, els.micLang]) {
+    select.addEventListener("change", () => {
+      chooseLanguage(select.value);
+      select.focus();   // keep keyboard focus on the dropdown the user just used
+    });
+  }
 
   let saved = null;
   if (CONFIG.REMEMBER_LANGUAGE) {

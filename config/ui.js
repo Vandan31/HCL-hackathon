@@ -38,7 +38,7 @@ export const CONFIG = {
   VOICE_AUTO_SEND: false,     // DEMO-KNOB: true sends a spoken question as soon as it is recognised (no button press)
   ENABLE_VOICE_OUTPUT: true,  // DEMO-KNOB: false hides the "Listen" buttons
   AUTO_SPEAK_ANSWERS: false,  // DEMO-KNOB: true reads every answer aloud as soon as it arrives
-  // (the mic listens in the language picked on the opening page; the user can switch it next to the mic)
+  // (the mic listens in the page language; the dropdown beside it switches the whole page)
 
   // --- Eligibility checklist (bonus) ----------------------------------------
   ENABLE_ELIGIBILITY: true,   // DEMO-KNOB: false hides the "Check if I'm eligible" buttons
@@ -93,7 +93,7 @@ export const CONFIG = {
       examples: "Example questions",
       tryAsking: "Try asking:",
       conversation: "Conversation",
-      micLanguage: "Language you will speak",
+      micLanguage: "Language for the page and your voice",
       speakQuestion: "Speak your question",
       yourQuestion: "Your question",
       placeholder: "Type your question…",
@@ -147,7 +147,7 @@ export const CONFIG = {
       examples: "उदाहरण सवाल",
       tryAsking: "ऐसे पूछकर देखें:",
       conversation: "बातचीत",
-      micLanguage: "आप किस भाषा में बोलेंगे",
+      micLanguage: "पेज और आवाज़ की भाषा",
       speakQuestion: "अपना सवाल बोलें",
       yourQuestion: "आपका सवाल",
       placeholder: "अपना सवाल लिखें…",
@@ -201,7 +201,7 @@ export const CONFIG = {
       examples: "ઉદાહરણ પ્રશ્નો",
       tryAsking: "આ રીતે પૂછી જુઓ:",
       conversation: "વાતચીત",
-      micLanguage: "તમે કઈ ભાષામાં બોલશો",
+      micLanguage: "પેજ અને અવાજની ભાષા",
       speakQuestion: "તમારો પ્રશ્ન બોલો",
       yourQuestion: "તમારો પ્રશ્ન",
       placeholder: "તમારો પ્રશ્ન લખો…",
