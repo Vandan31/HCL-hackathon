@@ -44,7 +44,7 @@ _Announce here before editing shared files (config, requirements, API contracts)
   `POST /api/tts {text, lang: "gu"|"hi"|"en", speaker?: "female"|"male"}` → 200 `audio/wav`; Hinglish = `lang "hi"` in
   Latin letters (handled automatically); 400 bad_json/empty_text/text_too_long/unknown_speaker; 422 unsupported_lang
   (e.g. `mr`, `ta` from the new lang interface → UI uses the browser voice) / unsupported_script; 503 model_unavailable;
-  `GET /api/tts/health`. Decisions D-014, D-015, D-016.
+  `GET /api/tts/health`. Decisions D-018, D-019, D-020 (renumbered from D-012–D-014 at merge).
 
 - **2026-10-27 · Vaidehi → Harsh (comp/api), to settle at integration; nothing changed in shared files:**
   the UI + eligibility code assumes (1) each `/api/ask` citation carries `"scheme_id"` (UI falls back to the
@@ -61,16 +61,17 @@ _Announce here before editing shared files (config, requirements, API contracts)
 - 2026-10-27 11:19 · harsh (integrator): creating root `requirements.txt` (fastapi, uvicorn, pytest, httpx) and `pytest.ini`. Others: post new packages here and Harsh adds them.
 
 - **2026-10-27 · Vaidehi → Harsh: merged `harsh` into `Vaidehi` (on top of Vandan's + Jaya's main). Please check:**
-  (1) your decisions renumbered to avoid clashes with main: D-006 → **D-018** (API mock-first), D-007 → **D-019**
+  (1) your decisions renumbered to avoid clashes with main: D-006 → **D-016** (API mock-first), D-007 → **D-017**
   (Gemini/Groq); references updated in your text. (2) `requirements.txt`: Vandan's full list kept, `fastapi` set to
   your tested **0.162.0** (was 0.158.0), `anthropic` line removed (imported nowhere; you call Gemini/Groq over httpx).
   (3) COMPONENTS `detect_language`: kept Vandan's newer signature (any ISO code + `source`, `supported`,
   `speech_hint`) plus a line with your en/hi/gu/mr/ta + `Taml`; please confirm it's what you two agreed.
   (4) Your `src/__init__.py` / `tests/__init__.py` are kept; Vaidehi's suites still pass with them.
 
-- **2026-10-27 · Vaidehi → everyone: decision numbers keep colliding** (3 times today: D-006, D-007…, D-012…).
-  Proposal: right before adding a decision, `git pull` main and take the next free number in DECISIONS.md; if two
-  branches still clash, the one merged later renumbers. Vaidehi's are now **D-014 to D-017** (after Vandan's D-012/D-013).
+- **2026-10-27 · Vaidehi → everyone: decision numbers keep colliding** (3 times today). Proposal: right before
+  adding a decision, `git pull` main and take the next free number in DECISIONS.md; if two branches still clash,
+  the one merged later renumbers. Vaidehi adopted Harsh's numbering: hers are **D-018 to D-021**, Harsh's
+  D-016/D-017; D-014/D-015 stay unused.
 
 ## Handoff log (newest on top)
 
@@ -95,8 +96,30 @@ _Announce here before editing shared files (config, requirements, API contracts)
 - Note: browser speech recognition uses Google's servers (needs internet). The team's Whisper path (Vandan's `speech_hint`) has no API route yet.
 - Next step: UI wiring to Harsh's API; then speak answers automatically when `lastInputWasVoice` (component 10).
 
+### 2026-10-27 15:30 · API + answer engine ← retrieval/lang integration · harsh/claude
+- Changed: merged `main` (D-012, D-013) into `harsh`; warm-up `detect("warm up"); search("warm up","en")` in the server
+  startup hook (not at import, so tests don't load models; failure = warning, server still starts); `config/answer.py`
+  `MIN_SCORE` → `ANSWER_MIN_SCORE` (safety net; `config/retrieval.py` MIN_SCORE is the real dial). Vaidehi's TTS/UI
+  decisions renumbered D-012–D-015 → **D-018–D-021** (clashed with Vandan's D-012/D-013, which code references).
+- Environment (macOS, Python 3.14): `multilingual-e5-small` loaded; **IndicLID models not installed** (disk) → detection
+  on rules. Server ready 12 s after start (warm-up included).
+- Tested: `.venv/bin/pytest -q` → 210 passed, 33 skipped. Real pipeline, `USE_MOCKS=false`, live Gemini:
+  | Question | Result | Cites | latency_ms |
+  |---|---|---|---|
+  | What is the age limit to join as an Agniveer under Agnipath? | en answer: "17.5 to 23 years (2022 intake) … 17.5 to 21 years" | agnipath:eligibility:en | 1789 |
+  | अग्निवीर को चार साल बाद सेवा निधि में कितना पैसा मिलेगा? | hi answer: "लगभग ₹11.71 लाख का 'सेवा निधि' पैकेज" | agnipath:benefits:en | 1424 |
+  | અગ્નિપથ યોજનામાં અગ્નિવીરને કેટલું જીવન વીમા કવચ મળે છે? | gu answer: "₹૪૮ લાખનું … જીવન વીમા કવચ" | agnipath:benefits:en | 1068 |
+  | What are the new income tax slabs for this year? | refused by search (`[]`, low_score) | – | 17 |
+  | How do I link my PAN card with Aadhaar? | refused by LLM check (not_in_documents) | – | 1176 |
+  | Will the government increase old-age pension next year? | refused by LLM check (not_in_documents) | – | 1231 |
+  | इनकम टैक्स रिटर्न भरने की आखिरी तारीख क्या है? | refused by search (`[]`), Hindi template | – | 36 |
+  | Driving licence kaise banwaye? | refused by LLM check, Hinglish template | – | 1084 |
+  Answer language = question language in all 8; the 3 answers' numbers (17.5/23/21, 11.71, 48) verified present in the cited chunk text.
+- For Vandan: detect()/search() behaved as described. ITR question was caught by search here (you listed it as LLM-caught).
+- Open: IndicLID not tested on this machine; `source_url` still placeholder (D-008); IndicTrans2 card translations still need `translations.jsonl`.
+
 ### 2026-10-27 16:30 · 6. UI (3D syllables on landing page) · Vaidehi/claude
-- Changed: small syllables of English, Hindi and Gujarati float in 3D behind the language card (`src/ui/landing3d.js`). Three.js r170 (MIT) saved in `src/ui/vendor/three/` (675 KB + LICENSE) so it works offline; loaded only on the landing page. Letters drawn with the browser's text engine (Three.js 3D text can't shape Devanagari/Gujarati). Knobs: `ENABLE_3D_LANDING`, `LANDING_GLYPH_COUNT`, `LANDING_GLYPHS` in `config/ui.js`. D-017.
+- Changed: small syllables of English, Hindi and Gujarati float in 3D behind the language card (`src/ui/landing3d.js`). Three.js r170 (MIT) saved in `src/ui/vendor/three/` (675 KB + LICENSE) so it works offline; loaded only on the landing page. Letters drawn with the browser's text engine (Three.js 3D text can't shape Devanagari/Gujarati). Knobs: `ENABLE_3D_LANDING`, `LANDING_GLYPH_COUNT`, `LANDING_GLYPHS` in `config/ui.js`. D-021.
 - Safeguards: no Three.js / no WebGL → plain landing page; hidden from screen readers; one still frame under "reduce motion"; pauses when the tab is hidden; fully stopped and GPU memory freed once a language is chosen.
 - Tested: `tests/ui` → OK (new: Three.js local + licensed, never from a CDN); Chrome: renders, no console errors; measured 60 frames/s on the landing page (= browser refresh rate) and 0 frames/s after choosing a language.
 - Next step: UI wiring after teammates (unchanged).
@@ -107,7 +130,7 @@ _Announce here before editing shared files (config, requirements, API contracts)
 - Next step: UI wiring after teammates (unchanged).
 
 ### 2026-10-27 15:10 · 10. Final output (accent fix: Hindi + Hinglish) · Vaidehi/claude
-- Changed: picked by ear from A/B samples (Vaidehi): Hindi now uses the Hindi model's **male** voice (`VOICE_FOR_LANG`); Hinglish is **converted to Devanagari** and read by the Hindi model's female voice (`HINGLISH_MODE = "devanagari"`). New `src/tts/hinglish.py`: fixed word lists first (`HINGLISH_WORDS`, scheme names, acronyms), then `hindi-xlit` (MIT, 45 MB, IndicXlit-based, audited: no network/shell calls) at beam 1, with a word cache and clean-up of stray zero-width/halant characters. FALLBACK: without hindi-xlit, Hinglish uses the en+hi Latin voice. English unchanged (confirmed correct by ear). D-016.
+- Changed: picked by ear from A/B samples (Vaidehi): Hindi now uses the Hindi model's **male** voice (`VOICE_FOR_LANG`); Hinglish is **converted to Devanagari** and read by the Hindi model's female voice (`HINGLISH_MODE = "devanagari"`). New `src/tts/hinglish.py`: fixed word lists first (`HINGLISH_WORDS`, scheme names, acronyms), then `hindi-xlit` (MIT, 45 MB, IndicXlit-based, audited: no network/shell calls) at beam 1, with a word cache and clean-up of stray zero-width/halant characters. FALLBACK: without hindi-xlit, Hinglish uses the en+hi Latin voice. English unchanged (confirmed correct by ear). D-020.
 - Tested: system Python `tests/tts` → OK (4 real-model tests skipped there); TTS venv: `tests.tts.test_hinglish` → 7 OK (real converter reproduces the hand-written demo sentence exactly), `tests.tts.test_engine_real` → 3 OK; Hinglish full sentence 2.8 s incl. conversion. Demo answers re-generated. Bug caught by tests: `[S1]` markers were being converted ("[?1]"); now stripped first.
 - Open: Vaidehi to confirm the two final samples (`Desktop/tts-final-check`). From Vandan's lang update: `lang` may now be any ISO code (`mr`, `ta`…) → the UI badge must not default to "English" for those (fix during UI wiring).
 - Next step: UI wiring after teammates.

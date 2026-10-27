@@ -11,7 +11,7 @@
   Bonus: voice in/out, Hinglish, eligibility checklist via follow-up questions.
 - **Working name / pitch:** Yojana Saathi. *Ask in your language, get the answer with proof, or an honest "I don't know".*
 - **Languages (final, Harsh 2026-10-27):** English, Hindi, Gujarati, Marathi, Tamil + Hinglish (`hi` + `code_mixed`). Replies and refusals are always in the input's language.
-- **Team & time:** 4 people, 5–6 hours. Stack: Option 1 (FastAPI + BM25/BGE-M3 hybrid + **Gemini free tier, Groq fallback** (D-019) + IndicTrans2 for passage translations + AI4Bharat IndicTTS + HTML/JS).
+- **Team & time:** 4 people, 5–6 hours. Stack: Option 1 (FastAPI + BM25/BGE-M3 hybrid + **Gemini free tier, Groq fallback** (D-017) + IndicTrans2 for passage translations + AI4Bharat IndicTTS + HTML/JS).
 - **Data rule:** myScheme pages are collected **by hand** (Terms of Use ban bots/scrapers). Agents never fetch them.
 
 ## Status legend
@@ -25,7 +25,7 @@
 | 1 | Data + ingestion | `data/schemes/`, `src/ingest/`, `config/ingest.py` | B. Jaya | WORKING (tested) on `comp/ingest` | 26 schemes → 137 chunks, validator 0 errors. Criteria drafted (124 rules, `verified: false`). Next: a human checks each rule against `source_text` and sets `verified: true`; optional real `source_url`s; then re-run `python -m src.ingest.build_chunks` + `python scripts/validate_data.py` |
 | 2 | Language detection | `src/lang/`, `config/lang.py` | C. Vandan | TODO | Unicode script rules (Deva/Gujr/Latn) + Hinglish word list + tests |
 | 3 | Retrieval | `src/retrieval/`, `config/retrieval.py` | C. Vandan | TODO | BM25 + BGE-M3 + RRF over `data/processed/`; MOCK chunks until ingest is ready |
-| 4 | Answer engine | `src/answer/`, `config/answer.py` | A. Harsh | WORKING (live-tested 2026-10-27) | Native-speaker check of gu/mr/ta refusals; record demo answers with `RECORD_CACHE=true` once real retrieval is merged |
+| 4 | Answer engine | `src/answer/`, `config/answer.py` | A. Harsh | WORKING (live-tested 2026-10-27) | record demo answers with `RECORD_CACHE=true` once real retrieval is merged |
 | 5 | API | `src/api/`, `config/api.py` | A. Harsh | WORKING (tested) | `USE_MOCKS=false` runs detect → search → answer (lang/retrieval MOCKed until merged); offline cache + audit log done. Next: swap in real src/lang + src/retrieval at integration; record demo answers with `RECORD_CACHE=true` |
 | 6 | UI + voice | `src/ui/`, `config/ui.js` | D. Vaidehi | WORKING (tested, MOCK API; accessibility pass done) | Set `USE_MOCK: false` in `config/ui.js` once `/api/ask` is live; test en/hi/gu/Hinglish end to end; test mic + voices on the demo laptop |
 | 7 | Eligibility checklist | `src/eligibility/`, `config/eligibility.py` | D. Vaidehi | WORKING (tested, MOCK criteria) | Add questions for Jaya's new fields: `state`, `citizen_of_india`, `annual_family_income`, `social_category`, `applicant_type` (BOARD notice, D-011); criteria are drafts (`verified: false`) until a human checks; Harsh wires `/api/eligibility` to `next_question` |
@@ -96,7 +96,7 @@ Search space = the 20–30 myScheme pages ONLY. IndicQA is for retrieval testing
 | `/api/ask` and `/api/eligibility` responses | MOCK (fixture data, `USE_MOCKS` knob) | src/api/mocks.py |
 | `/api/health` index_chunks | MOCK (reports 0 until retrieval exposes its size) | src/api/main.py |
 | detect_language / search inside the API | MOCK until src/lang, src/retrieval merge (script-only detector, one fixed passage) | src/api/mocks.py |
-| gu / mr / ta refusal templates | Not yet checked by a native speaker | src/answer/refusals.py |
+| gu / mr / ta refusal templates | Checked by native speakers (confirmed by Harsh 2026-10-27) | src/answer/refusals.py |
 | Answer-language check | Script-only until src/lang merges (can't tell hi from mr) | src/answer/langcheck.py |
 | Answer-engine stress test | Measured 2026-10-27, one run: 26/26 hard cases passed (16 answerable in all 5 langs + Hinglish, 7 must-refuse, 3 prompt-injection); LLM p50 1.2 s, p95 3.2 s; 5 concurrent all answered (2.8 s wall). Passages are paraphrased MOCK text, graded by script, not by native speakers. Re-run: `.venv/bin/python scripts/stress_answer.py` | scripts/stress_answer.py |
 | LLM answers on real questions | Measured 2026-10-27: 1 live question per language (en/hi/Hinglish/gu/mr/ta) answered in the right language with [S1], out-of-scope refused; 0.8–1.9 s; against ONE mock passage, not real retrieval | config/answer.py |

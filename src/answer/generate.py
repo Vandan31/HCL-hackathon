@@ -9,7 +9,7 @@ PANEL NOTE: Rules gate every answer; the LLM only writes. Score gate, citation c
 """
 from typing import Callable
 
-from config.answer import MAX_RETRIES, MIN_SCORE
+from config.answer import ANSWER_MIN_SCORE, MAX_RETRIES
 from src.answer.langcheck import language_matches
 from src.answer.llm_pool import LLMCallFailed, LLMUnavailable
 from src.answer.prompting import build_prompt, citations_valid, parse_llm_output
@@ -28,7 +28,7 @@ def answer(query: str, lang_info: dict, chunks: list[dict], llm: Callable[[str],
     top = chunks[0].get("score") if chunks else None
     # FALLBACK: nothing relevant retrieved, or retrieval sent no usable score (black box, review #3)
     # -> refuse without spending an LLM call.
-    if not isinstance(top, (int, float)) or top < MIN_SCORE:
+    if not isinstance(top, (int, float)) or top < ANSWER_MIN_SCORE:
         return refuse("low_score", None)
 
     prompt = build_prompt(query, template_key(lang, code_mixed), chunks)

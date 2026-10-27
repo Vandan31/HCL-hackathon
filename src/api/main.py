@@ -10,6 +10,7 @@ Run       : USE_MOCKS=false .venv/bin/uvicorn src.api.main:app --reload   (then 
 """
 import os
 import time
+from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 
 from fastapi import FastAPI
@@ -18,7 +19,8 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from config.answer import GEMINI_MODEL, GROQ_MODEL, KEY_COOLDOWN_S, LLM_TIMEOUT_S, TRANSLATIONS_PATH
-from config.api import AUDIT_PATH, CACHE_PATH, CORS_ORIGINS, OFFLINE_MODE, RECORD_CACHE, USE_MOCKS
+from config.api import (AUDIT_PATH, CACHE_PATH, CORS_ORIGINS, OFFLINE_MODE, RECORD_CACHE, USE_MOCK_SEARCH,
+                        USE_MOCKS)
 from src.answer.generate import answer as answer_fn
 from src.answer.llm_pool import KeyPool, LLMUnavailable, entries_from_env, load_env_file
 from src.answer.translations import build_citation, load_translations
@@ -38,6 +40,9 @@ try:
 except ImportError:
     # MOCK: src/retrieval not merged yet -> one fixed PM-KISAN passage.
     search = mock_search
+if USE_MOCK_SEARCH:
+    # MOCK: forced by the knob -> the smoke-test passage, real retrieval is skipped (local UI testing).
+    search = mock_search
 
 # WHY: built once at startup; keys come only from .env / environment, never from code or config.
 load_env_file()
@@ -49,7 +54,21 @@ if RECORD_CACHE:
     # questions, the cache folder is gitignored, and this warning prints at every start.
     print("WARNING: RECORD_CACHE=true -> questions are being saved to", CACHE_PATH, "(turn off after recording)")
 
-app = FastAPI(title="Yojana Saathi API")
+@asynccontextmanager
+async def lifespan(_app):
+    """Load the language-ID and embedding models before the first request (runs once at server start)."""
+    if not USE_MOCKS:
+        try:
+            # WHY: without this the first citizen waits ~16 s (IndicLID) + the embedding model load (D-012).
+            detect("warm up")
+            search("warm up", "en")
+        except Exception as e:  # noqa: BLE001
+            # FALLBACK: a missing model must not stop the server; that request path has its own fallbacks.
+            print("WARNING: model warm-up failed:", type(e).__name__, e)
+    yield
+
+
+app = FastAPI(title="Yojana Saathi API", lifespan=lifespan)
 # WHY: the UI is a static HTML page on a different origin/port, so the browser needs CORS to call us.
 app.add_middleware(CORSMiddleware, allow_origins=CORS_ORIGINS, allow_methods=["*"], allow_headers=["*"])
 

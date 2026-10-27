@@ -133,3 +133,40 @@ def test_recorded_cache_is_gitignored():
     import subprocess
     rc = subprocess.run(["git", "check-ignore", "-q", "data/cache/demo_answers.json"]).returncode
     assert rc == 0
+
+
+def test_use_mock_search_switch_forces_test_paragraph(monkeypatch):
+    # WHY: after merging real retrieval, local UI testing on the smoke-test passage needs an explicit switch.
+    import importlib
+    import config.api
+    from src.api import mocks
+    monkeypatch.setenv("USE_MOCK_SEARCH", "true")
+    importlib.reload(config.api)
+    m = importlib.reload(main)
+    try:
+        assert m.search is mocks.mock_search
+    finally:
+        monkeypatch.delenv("USE_MOCK_SEARCH")
+        importlib.reload(config.api)
+        importlib.reload(main)
+
+
+def test_startup_warms_up_detect_and_search(monkeypatch):
+    # WHY: without warm-up the first citizen waits ~16 s (IndicLID) + the embedding model load (Vandan, D-012).
+    calls = []
+    monkeypatch.setattr(main, "USE_MOCKS", False)
+    monkeypatch.setattr(main, "detect", lambda q: calls.append(("detect", q)) or {"lang": "en", "code_mixed": False})
+    monkeypatch.setattr(main, "search", lambda q, lang, k=5: calls.append(("search", q, lang)) or [])
+    with TestClient(main.app):
+        pass
+    assert ("detect", "warm up") in calls and ("search", "warm up", "en") in calls
+
+
+def test_warm_up_failure_does_not_stop_the_server(monkeypatch):
+    def broken(*a, **k):
+        raise RuntimeError("model missing")
+    monkeypatch.setattr(main, "USE_MOCKS", False)
+    monkeypatch.setattr(main, "detect", broken)
+    monkeypatch.setattr(main, "search", broken)
+    with TestClient(main.app) as c:
+        assert c.get("/api/health").status_code == 200
