@@ -7,7 +7,6 @@
 
 | Component | Agent / person | Branch | Started (date time) | Files touched |
 |-----------|----------------|--------|---------------------|---------------|
-| 6. UI (mic-side language dropdown switches the page) | Vaidehi/claude | `Vaidehi` | 2026-10-27 17:40 | `src/ui/`, `config/ui.js` |
 | C: language + retrieval + eval | Vandan/claude | `comp/retrieval` | 2026-10-27 | `src/lang/`, `src/retrieval/`, `scripts/eval.py`, `data/eval/`, `config/lang.py`, `config/retrieval.py`, `tests/lang/`, `tests/retrieval/` |
 
 ## Shared-file change notices
@@ -66,6 +65,11 @@ _Announce here before editing shared files (config, requirements, API contracts)
 - Broken / open issues: ...
 - Next step: ...
 -->
+
+### 2026-10-27 17:50 · 6. UI (mic-side language dropdown) · Vaidehi/claude
+- Changed: the language dropdown beside the mic now switches the whole page (same as the header dropdown, both kept in sync; fresh conversation; the mic listens in that language). Its label is now "Language for the page and your voice" (en/hi/gu). Options come from `UI_LANGUAGES`.
+- Tested: `tests/ui` → OK; Chrome: Gujarati page with a conversation → switch beside the mic to Hindi → title, tagline, buttons, placeholder, examples, mic labels, status pill all Hindi, header dropdown = Hindi, chat cleared, focus kept; no console errors.
+- Next step: UI wiring to Harsh's API.
 
 ### 2026-10-27 17:20 · 6. UI (mic input fix) · Vaidehi/claude
 - Changed: pressing the mic now (1) asks for microphone permission first with a clear message, (2) shows "starting…", then "listening… speak now" only when audio is really captured (pulsing red), (3) shows the words live while you speak, (4) gives a clear, translated message for every failure: blocked, no microphone, no internet, nothing heard, didn't start in 8 s, browser without voice input (mic stays visible). Knobs: `MIC_START_TIMEOUT_MS`, `VOICE_AUTO_SEND` (off: text lands in the box to check first).
