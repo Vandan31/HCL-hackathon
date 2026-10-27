@@ -69,10 +69,39 @@ class TestJsImports(unittest.TestCase):
         for rel in re.findall(r'(?:src|href)="([^":]+\.(?:js|css))"', html):
             self.assertTrue((UI / rel).exists(), rel)
 
-    def test_config_has_strings_for_every_language(self):
-        cfg = (ROOT / "config" / "ui.js").read_text(encoding="utf-8")
-        for lang in LANG_VARIANTS:
-            self.assertRegex(cfg, rf"\n\s+{lang}: \{{", f"STRINGS.{lang} missing")
+
+class TestTranslations(unittest.TestCase):
+    """Every word on the page must exist in all three page languages (the language picker promises it)."""
+    PAGE_LANGS = ("en", "hi", "gu")
+    CFG = (ROOT / "config" / "ui.js").read_text(encoding="utf-8")
+    # WHY: strip <!-- comments -->, whose usage example would otherwise look like a real label.
+    HTML = re.sub(r"<!--.*?-->", "", (UI / "index.html").read_text(encoding="utf-8"), flags=re.S)
+
+    def strings_block(self, lang):
+        # The text between "    <lang>: {" and the next language block (or the end of STRINGS).
+        m = re.search(rf"\n    {lang}: \{{(.*?)(?=\n    [a-z]+: \{{|\n  \}},\n\}};)", self.CFG, re.S)
+        self.assertIsNotNone(m, f"STRINGS.{lang} missing")
+        return m.group(1)
+
+    def keys(self, lang):
+        return set(re.findall(r"\n\s+(\w+):", self.strings_block(lang)))
+
+    def test_all_languages_have_the_same_keys(self):
+        en = self.keys("en")
+        for lang in self.PAGE_LANGS[1:]:
+            self.assertEqual(self.keys(lang), en, f"STRINGS.{lang} differs from STRINGS.en")
+
+    def test_every_html_label_is_translated(self):
+        used = set(re.findall(r'data-i18n="(\w+)"', self.HTML))
+        for attr_list in re.findall(r'data-i18n-attr="([^"]+)"', self.HTML):
+            used |= {pair.split(":")[1] for pair in attr_list.split(",")}
+        for lang in self.PAGE_LANGS:
+            missing = used - self.keys(lang)
+            self.assertFalse(missing, f"STRINGS.{lang} lacks {missing}")
+
+    def test_sample_questions_for_every_language(self):
+        for lang in self.PAGE_LANGS:
+            self.assertRegex(self.CFG, rf"\n    {lang}: \[\n", f"SAMPLE_QUESTIONS.{lang} missing")
 
 
 if __name__ == "__main__":

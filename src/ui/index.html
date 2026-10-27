@@ -1,16 +1,19 @@
 <!doctype html>
 <!--
 COMPONENT : ui
-PURPOSE   : The one screen a citizen uses: ask in any of our languages (typed or spoken), read or hear the
-            answer, and see the official passage it came from.
+PURPOSE   : The one screen a citizen uses: pick a language first, then ask (typed or spoken), read or hear the
+            answer, and see the official passage it came from. Every label is shown in the picked language.
 INPUTS    : user text or speech
-OUTPUTS   : rendered answer, passage cards, refusal or error messages
-DEPENDS ON: src/ui/app.js (logic), src/ui/styles.css, config/ui.js
+OUTPUTS   : rendered answer, passage cards, refusal or error messages, eligibility checklist
+DEPENDS ON: src/ui/app.js (logic), src/ui/styles.css, config/ui.js (all knobs and all UI text)
 PANEL NOTE: Plain HTML/JS: no build step, loads fast on low-end phones, and anyone on the team can edit it live.
 
 HOW TO RUN:  python src/ui/dev_server.py   then open  http://127.0.0.1:5500/src/ui/
 WHY a server: browsers block ES modules and fetch() on file:// pages; the dev server also answers
 /api/eligibility until the team's API (comp/api) does.
+
+TRANSLATION: elements marked data-i18n="key" get their text from CONFIG.STRINGS[<language>][key];
+data-i18n-attr="attribute:key,..." does the same for attributes such as placeholder or aria-label.
 -->
 <html lang="en">
 <head>
@@ -19,45 +22,58 @@ WHY a server: browsers block ES modules and fetch() on file:// pages; the dev se
   <title>Yojana Saathi</title>
   <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body class="picking">
+  <!-- Opening page. WHY trilingual: the user hasn't chosen yet, so each choice is written in its own script. -->
+  <section id="lang-picker" class="lang-picker" aria-labelledby="picker-title">
+    <div class="picker-card">
+      <p class="picker-brand">Yojana Saathi · <span lang="hi">योजना साथी</span> · <span lang="gu">યોજના સાથી</span></p>
+      <h1 id="picker-title" class="picker-title">
+        <span lang="en">Choose your language</span>
+        <span lang="hi">अपनी भाषा चुनें</span>
+        <span lang="gu">તમારી ભાષા પસંદ કરો</span>
+      </h1>
+      <div id="picker-options" class="picker-options"></div>
+    </div>
+  </section>
+
   <header class="topbar">
     <div class="brand">
-      <h1>Yojana Saathi <span class="brand-sub" lang="hi">योजना साथी</span></h1>
-      <p class="tagline">Ask about government schemes in English, हिन्दी, ગુજરાતી or Hinglish.</p>
+      <h1 data-i18n="appName">Yojana Saathi</h1>
+      <p class="tagline" data-i18n="tagline"></p>
     </div>
     <div class="topbar-actions">
-      <!-- Shows MOCK DATA / server status so nobody mistakes the mock for the real system. -->
+      <!-- Shows mock / server status so nobody mistakes the mock for the real system. -->
       <span id="status-pill" class="pill" role="status"></span>
+      <button id="change-lang" class="btn btn-ghost btn-lang" type="button" data-i18n-attr="title:changeLanguage,aria-label:changeLanguage">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm6.9 6h-2.95a15.7 15.7 0 0 0-1.38-3.56A8.03 8.03 0 0 1 18.9 8ZM12 4.04A14 14 0 0 1 13.91 8h-3.82A14 14 0 0 1 12 4.04ZM4.26 14a8.2 8.2 0 0 1 0-4h3.38a16.5 16.5 0 0 0 0 4H4.26Zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56A8 8 0 0 1 5.08 16ZM8.03 8H5.08a8 8 0 0 1 4.33-3.56A15.7 15.7 0 0 0 8.03 8ZM12 19.96A14 14 0 0 1 10.09 16h3.82A14 14 0 0 1 12 19.96ZM14.34 14H9.66a14.7 14.7 0 0 1 0-4h4.68a14.7 14.7 0 0 1 0 4Zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95a8.03 8.03 0 0 1-4.33 3.56ZM16.36 14a16.5 16.5 0 0 0 0-4h3.38a8.2 8.2 0 0 1 0 4h-3.38Z"/></svg>
+        <span id="current-lang"></span>
+      </button>
       <button id="large-text-toggle" class="btn btn-ghost" type="button" aria-pressed="false"
-              title="Large text">A<span class="big-a">A</span></button>
+              data-i18n-attr="title:largeText,aria-label:largeText">A<span class="big-a">A</span></button>
     </div>
   </header>
 
   <main class="layout">
-    <section class="samples" aria-label="Example questions">
-      <p class="samples-label">Try asking:</p>
+    <section class="samples" data-i18n-attr="aria-label:examples">
+      <p class="samples-label" data-i18n="tryAsking"></p>
       <div id="sample-chips" class="chips"></div>
     </section>
 
     <!-- role=log + aria-live: screen readers announce each new answer automatically. -->
-    <section id="chat-log" class="chat-log" role="log" aria-live="polite" aria-label="Conversation"></section>
+    <section id="chat-log" class="chat-log" role="log" aria-live="polite" data-i18n-attr="aria-label:conversation"></section>
   </main>
 
   <form id="ask-form" class="composer" autocomplete="off">
     <div class="mic-group" id="mic-group">
-      <label class="visually-hidden" for="mic-lang">Language you will speak</label>
-      <select id="mic-lang" class="mic-lang" title="Language you will speak">
-        <option value="en">English</option>
-        <option value="hi">हिन्दी</option>
-        <option value="gu">ગુજરાતી</option>
-      </select>
-      <button id="mic-btn" class="btn btn-mic" type="button" aria-pressed="false" aria-label="Speak your question">
+      <label class="visually-hidden" for="mic-lang" data-i18n="micLanguage"></label>
+      <select id="mic-lang" class="mic-lang" data-i18n-attr="title:micLanguage"></select>
+      <button id="mic-btn" class="btn btn-mic" type="button" aria-pressed="false" data-i18n-attr="aria-label:speakQuestion,title:speakQuestion">
         <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V22h2v-3.08A7 7 0 0 0 19 12h-2Z"/></svg>
       </button>
     </div>
-    <label class="visually-hidden" for="query">Your question</label>
-    <textarea id="query" class="query" rows="1" placeholder="Type your question… / अपना सवाल लिखें… / તમારો પ્રશ્ન લખો…"></textarea>
-    <button id="send-btn" class="btn btn-primary" type="submit">Ask</button>
+    <label class="visually-hidden" for="query" data-i18n="yourQuestion"></label>
+    <textarea id="query" class="query" rows="1" data-i18n-attr="placeholder:placeholder"></textarea>
+    <button id="send-btn" class="btn btn-primary" type="submit" data-i18n="ask"></button>
   </form>
 
   <script type="module" src="app.js"></script>

@@ -1,9 +1,10 @@
 /**
  * COMPONENT : ui
- * PURPOSE   : Wire the chat screen: send questions, render answers with [S1] links to source passage cards,
- *             show refusals and errors clearly, and handle voice and large-text mode.
+ * PURPOSE   : Wire the app: language picker first, then send questions, render answers with [S1] links to
+ *             source passage cards, show refusals and errors clearly, run the eligibility checklist, and handle
+ *             voice and large-text mode. Every word on screen comes from CONFIG.STRINGS in the picked language.
  * INPUTS    : user actions on src/ui/index.html
- * OUTPUTS   : DOM updates in #chat-log
+ * OUTPUTS   : DOM updates
  * DEPENDS ON: src/ui/api.js, src/ui/voice.js, config/ui.js
  * PANEL NOTE: Every answer is shown with its proof (the passage and link); a refusal looks visibly different from an answer.
  */
@@ -17,12 +18,22 @@ const els = {
   log: $("chat-log"), form: $("ask-form"), query: $("query"), send: $("send-btn"),
   chips: $("sample-chips"), pill: $("status-pill"), largeText: $("large-text-toggle"),
   micGroup: $("mic-group"), micBtn: $("mic-btn"), micLang: $("mic-lang"),
+  pickerOptions: $("picker-options"), changeLang: $("change-lang"), currentLang: $("current-lang"),
 };
 
 // WHY: the API contract asks for a session_id so follow-up questions can share context later.
-const sessionId = (crypto.randomUUID && crypto.randomUUID()) || String(Date.now());
-let answerCount = 0;   // gives each answer's passage cards unique element ids
+let sessionId = newSessionId();
+let uiLang = null;        // language picked on the opening page: "en" | "hi" | "gu"
+let statusKey = null;     // which server-status text the pill shows (re-translated when the language changes)
+let answerCount = 0;      // gives each answer's passage cards unique element ids
 let busy = false;
+
+function newSessionId() {
+  return (crypto.randomUUID && crypto.randomUUID()) || String(Date.now());
+}
+
+/** All UI text for the picked language. */
+const S = () => CONFIG.STRINGS[uiLang] || CONFIG.STRINGS.en;
 
 /** Small DOM helper: el("p", {class: "x"}, "text", childNode). Text is always inserted as text, never HTML. */
 function el(tag, attrs = {}, ...children) {
@@ -36,32 +47,109 @@ function el(tag, attrs = {}, ...children) {
   return node;
 }
 
-/** Which UI-string set and speech voice to use: Hinglish is Hindi written in Latin script. */
-function langKey(resp) {
+/** Which language an ANSWER is in (for its badge and voice): Hinglish is Hindi written in Latin script. */
+function answerLang(resp) {
   if (resp.lang === "hi" && resp.code_mixed) return "hinglish";
-  return CONFIG.STRINGS[resp.lang] ? resp.lang : "en";
+  return CONFIG.LANG_LABELS[resp.lang] ? resp.lang : "en";
 }
 
-/** HTML lang attribute for an answer, so screen readers and fonts pick the right language. */
+/** HTML lang attribute values, so screen readers and fonts pick the right language. */
 const htmlLang = { en: "en", hi: "hi", gu: "gu", hinglish: "hi-Latn" };
+
+/** "2026-10-27" -> the date written in the page language (month names in Gujarati/Hindi). */
+function formatDate(iso) {
+  // WHY: noon UTC so the day can't shift in any time zone; FALLBACK: show the raw text if the browser can't format.
+  try {
+    return new Intl.DateTimeFormat(`${uiLang}-IN`, { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" })
+      .format(new Date(`${iso}T12:00:00Z`));
+  } catch {
+    return iso;
+  }
+}
 
 function scrollToBottom() {
   window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
 }
 
 // ---------------------------------------------------------------------------
-// Rendering
+// Language: picker on the opening page, and translating the static page
+// ---------------------------------------------------------------------------
+
+/** Put the picked language's words into every element marked data-i18n / data-i18n-attr in index.html. */
+function applyLanguage() {
+  const s = S();
+  document.documentElement.lang = uiLang;
+  document.title = s.appName;
+  document.querySelectorAll("[data-i18n]").forEach((node) => { node.textContent = s[node.dataset.i18n] ?? ""; });
+  document.querySelectorAll("[data-i18n-attr]").forEach((node) => {
+    for (const pair of node.dataset.i18nAttr.split(",")) {
+      const [attr, key] = pair.split(":");
+      node.setAttribute(attr, s[key] ?? "");
+    }
+  });
+  els.currentLang.textContent = CONFIG.LANG_LABELS[uiLang];
+
+  // Example questions in the picked language.
+  els.chips.replaceChildren(...(CONFIG.SAMPLE_QUESTIONS[uiLang] || []).map((q) =>
+    el("button", { class: "chip", type: "button", onclick: () => submitQuestion(q) }, q)));
+
+  // WHY: people usually speak the language they picked, so the mic starts there (they can still switch).
+  els.micLang.value = uiLang;
+  renderStatusPill();
+}
+
+/** Show the opening page with one big button per language. */
+function showPicker() {
+  document.body.classList.add("picking");
+  els.pickerOptions.replaceChildren(...CONFIG.UI_LANGUAGES.map((lang) =>
+    el("button", { class: "picker-btn", type: "button", lang, onclick: () => chooseLanguage(lang) },
+      CONFIG.LANG_LABELS[lang])));
+  els.pickerOptions.firstChild?.focus();
+}
+
+/** User picked a language: translate the page and open the app. */
+function chooseLanguage(lang) {
+  // WHY: a new language starts a fresh conversation, so old cards in another language don't linger on screen.
+  if (uiLang && uiLang !== lang) {
+    els.log.replaceChildren();
+    sessionId = newSessionId();
+  }
+  uiLang = lang;
+  try { localStorage.setItem("ys-lang", lang); } catch {}
+  applyLanguage();
+  document.body.classList.remove("picking");
+  autoGrow();   // WHY: the box can only be measured once visible; sizes it to one line (no needless scrollbar)
+  els.query.focus();
+}
+
+function setupLanguage() {
+  // Mic menu: one entry per language, each written in its own script.
+  els.micLang.replaceChildren(...["en", "hi", "gu"].map((l) =>
+    el("option", { value: l, lang: l }, CONFIG.LANG_LABELS[l])));
+  els.changeLang.addEventListener("click", showPicker);
+
+  let saved = null;
+  if (CONFIG.REMEMBER_LANGUAGE) {
+    // WHY: wrapped in try because storage can be blocked (private mode); then we just show the picker.
+    try { saved = localStorage.getItem("ys-lang"); } catch {}
+  }
+  if (saved && CONFIG.UI_LANGUAGES.includes(saved)) chooseLanguage(saved);
+  else showPicker();
+}
+
+// ---------------------------------------------------------------------------
+// Rendering answers
 // ---------------------------------------------------------------------------
 
 /** Answer text with every "[S1]" turned into a button that jumps to that passage card. */
-function renderAnswerText(text, prefix) {
-  const p = el("p", { class: "answer-text" });
+function renderAnswerText(text, prefix, lang) {
+  const p = el("p", { class: "answer-text", lang: htmlLang[lang] });
   // WHY: split keeps the [S#] markers as separate parts, so the text around them stays plain text (no HTML injection).
   for (const part of text.split(/(\[S\d+\])/)) {
     const m = part.match(/^\[(S\d+)\]$/);
     if (!m) { p.append(part); continue; }
     p.append(el("button", {
-      class: "cite-ref", type: "button", "aria-label": `Source ${m[1]}`,
+      class: "cite-ref", type: "button", "aria-label": `${S().sources} ${m[1]}`,
       onclick: () => {
         const card = document.getElementById(`${prefix}-${m[1]}`);
         if (!card) return;
@@ -75,99 +163,91 @@ function renderAnswerText(text, prefix) {
 }
 
 /** One source passage card: id, scheme name, passage text, official link. */
-function renderPassage(c, prefix, strings) {
+function renderPassage(c, prefix) {
   return el("article", { class: "passage", id: `${prefix}-${c.id}`, tabindex: "-1" },
     el("div", { class: "passage-head" },
       c.id ? el("span", { class: "passage-id" }, `[${c.id}]`) : null,
       el("span", {}, c.scheme_name || "")),
     el("p", { class: "passage-text" }, c.passage || c.text || ""),
     c.source_url
-      ? el("a", { href: c.source_url, target: "_blank", rel: "noopener noreferrer" }, `${strings.openPage} ↗`)
+      ? el("a", { href: c.source_url, target: "_blank", rel: "noopener noreferrer" }, `${S().openPage} ↗`)
       : null);
 }
 
-/** "Listen" button that reads the answer aloud in its language. */
-function renderListenButton(text, key, strings) {
+/** "Listen" button that reads the answer aloud in the answer's language. */
+function renderListenButton(text, lang) {
   if (!CONFIG.ENABLE_VOICE_OUTPUT || !ttsSupported()) return null;
   const note = el("p", { class: "toast", hidden: "" });
   const btn = el("button", {
     class: "btn btn-small", type: "button",
     onclick: () => {
-      const r = speak(text, key);
+      const r = speak(text, lang);
       // FALLBACK: no voice installed for this language -> tell the user instead of failing silently.
       if (!r.ok) {
         note.textContent = r.reason === "no_voice"
-          ? `No ${CONFIG.LANG_LABELS[key]} voice is installed in this browser.`
-          : "This browser can't read text aloud.";
+          ? S().errors.noVoice.replace("{lang}", CONFIG.LANG_LABELS[lang])
+          : S().errors.noTts;
         note.hidden = false;
       }
     },
-  }, `🔊 ${strings.listen}`);
+  }, `🔊 ${S().listen}`);
   return el("div", {}, btn, note);
 }
 
-/** A normal answer, or a refusal, from a 200 response. */
+/** A normal answer, or a refusal, from a 200 response. Labels in the page language, answer in its own. */
 function renderAnswer(resp) {
-  const key = langKey(resp);
-  const strings = CONFIG.STRINGS[key];
+  const s = S();
+  const lang = answerLang(resp);
   const prefix = `a${++answerCount}`;
   const refused = Boolean(resp.refused);
 
-  const card = el("article", { class: refused ? "card card-refused" : "card", lang: htmlLang[key] });
-  const head = el("div", { class: "card-head" },
-    el("span", { class: "lang-badge", title: "Detected language" }, CONFIG.LANG_LABELS[key]),
-    renderListenButton(resp.answer || "", key, strings));
-  card.append(head);
+  const card = el("article", { class: refused ? "card card-refused" : "card" });
+  card.append(el("div", { class: "card-head" },
+    el("span", { class: "lang-badge", title: s.detectedLanguage }, CONFIG.LANG_LABELS[lang]),
+    renderListenButton(resp.answer || "", lang)));
 
   if (refused) {
     // WHY: icon + title + colour, so a refusal is never mistaken for an answer (colour alone isn't enough).
-    card.append(el("p", { class: "state-title" }, "⚠️ ", strings.refusedTitle));
+    card.append(el("p", { class: "state-title" }, "⚠️ ", s.refusedTitle));
   }
-  card.append(renderAnswerText(resp.answer || "", prefix));
+  card.append(renderAnswerText(resp.answer || "", prefix, lang));
 
   const cites = resp.citations || [];
   if (cites.length) {
-    const box = el("section", { class: "sources", "aria-label": strings.sources },
-      el("p", { class: "sources-title" }, strings.sources));
-    cites.forEach((c) => box.append(renderPassage(c, prefix, strings)));
+    const box = el("section", { class: "sources", "aria-label": s.sources },
+      el("p", { class: "sources-title" }, s.sources));
+    cites.forEach((c) => box.append(renderPassage(c, prefix)));
     card.append(box);
   }
   if (!refused) {
-    card.append(renderEligibilityButtons(cites, key, strings));
-    card.append(el("p", { class: "disclaimer" }, strings.disclaimer.replace("{date}", CONFIG.DATA_AS_OF)));
+    card.append(renderEligibilityButtons(cites));
+    card.append(el("p", { class: "disclaimer" }, s.disclaimer.replace("{date}", formatDate(CONFIG.DATA_AS_OF))));
   }
   if (typeof resp.latency_ms === "number") {
     card.append(el("p", { class: "meta" }, `${(resp.latency_ms / 1000).toFixed(1)} s`));
   }
 
-  if (CONFIG.AUTO_SPEAK_ANSWERS && CONFIG.ENABLE_VOICE_OUTPUT) speak(resp.answer || "", key);
+  if (CONFIG.AUTO_SPEAK_ANSWERS && CONFIG.ENABLE_VOICE_OUTPUT) speak(resp.answer || "", lang);
   return card;
 }
 
 /** The LLM is down but retrieval worked: show the official passages with a plain explanation. */
 function renderFallbackPassages(body) {
-  const strings = CONFIG.STRINGS.en;   // no detected language in a 503 body, so use English
   const prefix = `a${++answerCount}`;
   const card = el("article", { class: "card card-refused" },
-    el("p", { class: "state-title" }, "⚠️ ", strings.aiUnavailable));
+    el("p", { class: "state-title" }, "⚠️ ", S().aiUnavailable));
   const box = el("section", { class: "sources" });
   (body.fallback_passages || []).forEach((p, i) =>
-    box.append(renderPassage({ ...p, id: p.id || `S${i + 1}` }, prefix, strings)));
+    box.append(renderPassage({ ...p, id: p.id || `S${i + 1}` }, prefix)));
   card.append(box);
   return card;
 }
 
-const ERROR_MESSAGES = {
-  timeout: "The server took too long to answer. Please try again.",
-  network: "Can't reach the server. Check the connection and try again.",
-  server: "Something went wrong on the server. Please try again.",
-  empty_query: "Please type or say a question.",
-};
-
-/** Network / timeout / server error: say what happened and how to recover. */
-function renderError(err) {
+/** Network / timeout / server / voice error, in the page language. */
+function renderError(kindOrMessage) {
+  const text = S().errors[kindOrMessage] || kindOrMessage;
   return el("article", { class: "card card-error", role: "alert" },
-    el("p", { class: "state-title" }, "✖ ", ERROR_MESSAGES[err.kind] || err.message));
+    el("p", { class: "state-title" }, "✖ ", text));
 }
 
 // ---------------------------------------------------------------------------
@@ -182,7 +262,7 @@ function schemeIdOf(c) {
 }
 
 /** One "Check if I'm eligible for X" button per scheme cited in the answer. */
-function renderEligibilityButtons(cites, key, strings) {
+function renderEligibilityButtons(cites) {
   if (!CONFIG.ENABLE_ELIGIBILITY) return null;
   const schemes = new Map();   // scheme id -> display name, in citation order, no duplicates
   for (const c of cites) {
@@ -195,8 +275,8 @@ function renderEligibilityButtons(cites, key, strings) {
     row.append(el("button", {
       class: "btn btn-small btn-elig", type: "button",
       // WHY: disable after one click so a double tap doesn't start two checklists.
-      onclick: (e) => { e.currentTarget.disabled = true; startChecklist(id, name, key); },
-    }, strings.checkEligibility.replace("{scheme}", name)));
+      onclick: (e) => { e.currentTarget.disabled = true; startChecklist(id, name); },
+    }, S().checkEligibility.replace("{scheme}", name)));
   }
   return row;
 }
@@ -204,8 +284,9 @@ function renderEligibilityButtons(cites, key, strings) {
 const STATUS_ICON = { met: "✅", not_met: "❌", unknown: "❓" };
 
 /** Draw the checklist card for one engine response; onAnswer(field, value) is called when the user answers. */
-function renderChecklist(card, res, schemeName, strings, onAnswer) {
-  card.replaceChildren(el("h3", { class: "elig-title" }, `${strings.eligibilityTitle}: ${schemeName}`));
+function renderChecklist(card, res, schemeName, onAnswer) {
+  const s = S();
+  card.replaceChildren(el("h3", { class: "elig-title" }, `${s.eligibilityTitle}: ${schemeName}`));
   let firstControl = null;
 
   if (res.question) {
@@ -225,7 +306,7 @@ function renderChecklist(card, res, schemeName, strings, onAnswer) {
       const form = el("form", { class: "options", onsubmit: (e) => {
         e.preventDefault();
         if (input.value !== "") onAnswer(q.field, Number(input.value));
-      } }, input, el("button", { class: "btn btn-primary", type: "submit" }, strings.ok));
+      } }, input, el("button", { class: "btn btn-primary", type: "submit" }, s.ok));
       firstControl = input;
       box.append(form);
     }
@@ -233,7 +314,7 @@ function renderChecklist(card, res, schemeName, strings, onAnswer) {
   } else {
     // WHY: words + icon, not colour alone, so the verdict is clear to colour-blind users and screen readers.
     card.append(el("p", { class: `verdict verdict-${res.verdict}`, role: "status" },
-      strings.verdict[res.verdict] || res.verdict));
+      s.verdict[res.verdict] || res.verdict));
   }
 
   const list = el("ul", { class: "checklist" });
@@ -241,33 +322,32 @@ function renderChecklist(card, res, schemeName, strings, onAnswer) {
     list.append(el("li", { class: `check-${item.status}` },
       el("span", { class: "check-icon", "aria-hidden": "true" }, STATUS_ICON[item.status] || "❓"),
       el("span", { class: "check-text" }, item.criterion),
-      el("span", { class: "check-status" }, strings.status[item.status] || item.status)));
+      el("span", { class: "check-status" }, s.status[item.status] || item.status)));
   }
   card.append(list);
 
   const source = res.checklist.find((i) => i.source)?.source;
-  if (source) card.append(el("a", { href: source, target: "_blank", rel: "noopener noreferrer", class: "elig-source" }, `${strings.openPage} ↗`));
+  if (source) card.append(el("a", { href: source, target: "_blank", rel: "noopener noreferrer", class: "elig-source" }, `${s.openPage} ↗`));
 
   // WHY: move keyboard focus to the new question so keyboard and screen-reader users can answer straight away.
   if (firstControl) firstControl.focus({ preventScroll: true });
 }
 
-/** Run the follow-up loop for one scheme: ask, record the answer, ask again until the engine stops. */
-function startChecklist(schemeId, schemeName, key) {
-  const strings = CONFIG.STRINGS[key];
-  const lang = CONFIG.ELIGIBILITY_LANG[key] || "en";
+/** Run the follow-up loop for one scheme in the page language: ask, record the answer, repeat until the engine stops. */
+function startChecklist(schemeId, schemeName) {
+  const lang = uiLang;
   const answers = {};   // lives only in this page: no personal data is stored (PLAN §4.6)
-  const card = el("article", { class: "card card-elig", lang: htmlLang[lang] || "en" });
+  const card = el("article", { class: "card card-elig" });
   els.log.append(card);
 
   const step = async () => {
-    card.replaceChildren(el("p", { class: "thinking", "aria-busy": "true" }, strings.eligibilityTitle));
+    card.replaceChildren(el("p", { class: "thinking", "aria-busy": "true" }, S().eligibilityTitle));
     try {
       const res = await eligibility(schemeId, answers, lang);
-      renderChecklist(card, res, schemeName, strings, (field, value) => { answers[field] = value; step(); });
+      renderChecklist(card, res, schemeName, (field, value) => { answers[field] = value; step(); });
     } catch (err) {
       // FALLBACK: no criteria for this scheme yet, or the server is down -> say so; the answer above still stands.
-      const msg = err.kind === "unknown_scheme" ? strings.noChecklist : (ERROR_MESSAGES[err.kind] || err.message);
+      const msg = err.kind === "unknown_scheme" ? S().noChecklist : (S().errors[err.kind] || err.message);
       card.replaceChildren(el("p", { class: "state-title" }, "⚠️ ", msg));
     }
     scrollToBottom();
@@ -287,7 +367,7 @@ async function submitQuestion(text) {
   busy = true;
   els.send.disabled = true;
   els.log.append(el("div", { class: "msg-user" }, q));
-  const pending = el("p", { class: "thinking", "aria-busy": "true" }, "Searching the scheme documents");
+  const pending = el("p", { class: "thinking", "aria-busy": "true" }, S().thinking);
   els.log.append(pending);
   els.query.value = "";
   autoGrow();
@@ -299,7 +379,7 @@ async function submitQuestion(text) {
   } catch (err) {
     if (err instanceof ApiError && err.kind === "llm_unavailable") node = renderFallbackPassages(err.data);
     else {
-      node = renderError(err instanceof ApiError ? err : new ApiError("server", String(err)));
+      node = renderError(err instanceof ApiError ? err.kind : "server");
       // FALLBACK: put the question back in the box so the user doesn't have to retype or re-speak it.
       els.query.value = q;
       autoGrow();
@@ -323,12 +403,6 @@ function autoGrow() {
 // Setup
 // ---------------------------------------------------------------------------
 
-function setupSamples() {
-  for (const s of CONFIG.SAMPLE_QUESTIONS) {
-    els.chips.append(el("button", { class: "chip", type: "button", onclick: () => submitQuestion(s) }, s));
-  }
-}
-
 function setupLargeText() {
   let on = CONFIG.LARGE_TEXT_DEFAULT;
   // WHY: remember the choice per device; wrapped in try because storage can be blocked (private mode).
@@ -348,43 +422,43 @@ function setupLargeText() {
 function setupMic() {
   // FALLBACK: no speech recognition (e.g. Firefox) or switched off -> hide the mic; typing always works.
   if (!CONFIG.ENABLE_VOICE_INPUT || !sttSupported()) { els.micGroup.hidden = true; return; }
-  els.micLang.value = CONFIG.DEFAULT_MIC_LANG;
   let stop = null;
   els.micBtn.addEventListener("click", () => {
     if (stop) { stop(); return; }   // second click stops listening
     els.micBtn.setAttribute("aria-pressed", "true");
-    els.query.placeholder = "Listening…";
+    els.query.placeholder = S().listening;
     stop = startListening(els.micLang.value, {
       // WHY: show the transcript in the box first, so a wrong recognition can be fixed before sending.
       onResult: (text) => { els.query.value = text; autoGrow(); els.query.focus(); },
       onError: (code) => {
-        const msg = code === "not-allowed"
-          ? "Microphone permission was denied. You can type instead."
-          : "Couldn't hear that. Please try again or type your question.";
-        els.log.append(renderError(new ApiError("voice", msg)));
+        els.log.append(renderError(code === "not-allowed" ? "micDenied" : "micFailed"));
         scrollToBottom();
       },
       onEnd: () => {
         stop = null;
         els.micBtn.setAttribute("aria-pressed", "false");
-        els.query.placeholder = "Type your question… / अपना सवाल लिखें… / તમારો પ્રશ્ન લખો…";
+        els.query.placeholder = S().placeholder;
       },
     });
   });
 }
 
+/** Translate and colour the server-status pill from the last known status. */
+function renderStatusPill() {
+  const classes = { mock: "pill-mock", offline: "pill-mock", live: "pill-ok", aiDown: "pill-bad", unreachable: "pill-bad" };
+  els.pill.textContent = statusKey ? S().pill[statusKey] : "";
+  els.pill.className = `pill ${classes[statusKey] || ""}`;
+}
+
 async function setupStatus() {
   if (CONFIG.USE_MOCK) {
     // MOCK: honest disclosure on screen, so nobody mistakes demo fixtures for real answers.
-    els.pill.textContent = "Mock data";
-    els.pill.className = "pill pill-mock";
-    return;
+    statusKey = "mock";
+  } else {
+    const h = await health();
+    statusKey = !h ? "unreachable" : h.offline_mode ? "offline" : h.llm === "down" ? "aiDown" : "live";
   }
-  const h = await health();
-  if (!h) { els.pill.textContent = "Server unreachable"; els.pill.className = "pill pill-bad"; }
-  else if (h.offline_mode) { els.pill.textContent = "Offline mode"; els.pill.className = "pill pill-mock"; }
-  else if (h.llm === "down") { els.pill.textContent = "AI summary down"; els.pill.className = "pill pill-bad"; }
-  else { els.pill.textContent = "Live"; els.pill.className = "pill pill-ok"; }
+  if (uiLang) renderStatusPill();
 }
 
 els.form.addEventListener("submit", (e) => { e.preventDefault(); submitQuestion(els.query.value); });
@@ -394,8 +468,7 @@ els.query.addEventListener("keydown", (e) => {
   if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); submitQuestion(els.query.value); }
 });
 
-setupSamples();
 setupLargeText();
-autoGrow();   // WHY: size the empty box to one line on load, otherwise it shows a needless scrollbar
 setupMic();
 setupStatus();
+setupLanguage();
