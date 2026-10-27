@@ -276,3 +276,7 @@ body:not(.picking) .lang-picker { display: none; }
 /* Listen button while the voice is being prepared (IndicTTS takes a few seconds on a laptop CPU). */
 .btn-listen[data-state="loading"] { opacity: 0.8; cursor: progress; }
 .btn-listen[data-state="playing"] { background: var(--accent); border-color: var(--ink); }
+
+/* Machine translation under the official passage: visibly secondary, so the original wording stays the proof. */
+.passage-translation { margin-top: 0.4rem; padding-top: 0.4rem; border-top: 1px dashed var(--line); }
+.translation-label { margin: 0.3rem 0 0; font-size: 0.8rem; font-weight: 700; color: var(--ink-soft); }

@@ -72,7 +72,8 @@ export async function eligibility(schemeId, answers, lang) {
   const timer = setTimeout(() => ctrl.abort(), CONFIG.REQUEST_TIMEOUT_MS);
   let res;
   try {
-    res = await fetch(`${CONFIG.API_BASE}/api/eligibility`, {
+    // WHY its own base: the real rules engine runs on the UI dev server until the API's route stops being a MOCK.
+    res = await fetch(`${CONFIG.ELIGIBILITY_BASE}/api/eligibility`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ scheme_id: schemeId, answers, lang }),

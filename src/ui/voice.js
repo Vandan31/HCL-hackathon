@@ -122,47 +122,95 @@ export function speak(text, langKey) {
 // IndicTTS (component 10): the team's own speech service, src/tts/server.py
 // ---------------------------------------------------------------------------
 
-let currentAudio = null;   // the answer playing now; a new one (or Stop) ends it
+let currentAudio = null;   // the sentence playing now
+let playback = 0;          // bumped by every new answer and by Stop, so an older sentence loop knows to quit
 
 /** Stop any answer that is being read aloud (IndicTTS audio or browser voice). */
 export function stopSpeaking() {
+  playback++;
   if (currentAudio) { currentAudio.pause(); currentAudio = null; }
   if (ttsSupported()) window.speechSynthesis.cancel();
 }
 
 /**
- * Read an answer aloud, preferring the IndicTTS service (AI4Bharat voices chosen by ear: D-020).
- * langKey: "en" | "hi" | "gu" | "hinglish". Hinglish is sent as "hi"; the service converts it to Devanagari.
- * onEnd() is called when playback finishes or is stopped.
+ * Split an answer into sentences for the voice. Very short pieces are joined to the previous one,
+ * so the voice doesn't pause every few words.
+ * WHY sentences: a real 7-sentence Gujarati answer took 36 s to synthesise in one go (measured), all before the
+ * first word; one sentence takes a few seconds, and the next is made while this one plays.
+ */
+export function splitSentences(text) {
+  const clean = text.replace(/\s*\[S\d+\]/g, "");
+  // Split after . ! ? or the Hindi danda when a space follows ("1.5 lakh" stays whole), and at line breaks.
+  const parts = clean.split(/(?<=[.!?।])\s+|\n+/).map((x) => x.trim()).filter(Boolean);
+  const out = [];
+  for (const part of parts) {
+    if (out.length && out[out.length - 1].length < CONFIG.TTS_MIN_CHUNK_CHARS) out[out.length - 1] += " " + part;
+    else out.push(part);
+  }
+  return out;
+}
+
+/** Ask the IndicTTS service for one sentence. Returns an audio Blob, or null (service off, slow, 422/503). */
+async function fetchSentence(text, lang) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), CONFIG.TTS_TIMEOUT_MS);
+  try {
+    const res = await fetch(`${CONFIG.TTS_BASE}/api/tts`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text, lang }),
+      signal: ctrl.signal,
+    });
+    return res.ok ? await res.blob() : null;   // FALLBACK: 422 (e.g. mr/ta) or 503 -> caller uses the browser voice
+  } catch (e) {
+    return null;                               // FALLBACK: service not running, too slow, or blocked
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/** Play one sentence; resolves when it ends, is stopped, or can't play. */
+function playBlob(blob, id) {
+  return new Promise((resolve) => {
+    if (id !== playback) return resolve();
+    const url = URL.createObjectURL(blob);
+    const audio = new Audio(url);
+    currentAudio = audio;
+    const finish = () => { URL.revokeObjectURL(url); resolve(); };
+    audio.onended = finish;
+    audio.onpause = finish;                    // Stop pressed (pause) also ends this sentence
+    audio.play().catch(finish);                // e.g. the browser blocked autoplay
+  });
+}
+
+/**
+ * Read an answer aloud, preferring the IndicTTS service (AI4Bharat voices chosen by ear: D-020), sentence by
+ * sentence: the first sentence plays after a few seconds and the next one is made while it plays.
+ * langKey: "en" | "hi" | "gu" | "hinglish" (sent as "hi"; the service converts it to Devanagari).
+ * onEnd() is called when the whole answer finishes or is stopped.
  * Returns {ok: true, via: "indictts" | "browser"} or {ok: false, reason: "no_voice" | "unsupported"}.
  */
 export async function speakAnswer(text, langKey, { onEnd } = {}) {
   stopSpeaking();
+  const id = playback;
   if (CONFIG.USE_INDIC_TTS) {
-    const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), CONFIG.TTS_TIMEOUT_MS);
-    try {
-      const res = await fetch(`${CONFIG.TTS_BASE}/api/tts`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text, lang: langKey === "hinglish" ? "hi" : langKey }),
-        signal: ctrl.signal,
-      });
-      if (res.ok) {
-        const url = URL.createObjectURL(await res.blob());
-        const audio = new Audio(url);
-        currentAudio = audio;
-        const done = () => { URL.revokeObjectURL(url); if (currentAudio === audio) currentAudio = null; onEnd && onEnd(); };
-        audio.onended = done;
-        audio.onpause = () => { if (audio.currentTime < audio.duration) done(); };   // stopped early
-        await audio.play();
-        return { ok: true, via: "indictts" };
-      }
-      // FALLBACK: 422 (e.g. Marathi/Tamil not in IndicTTS here) or 503 (model failed) -> browser voice below.
-    } catch (e) {
-      // FALLBACK: speech service not running, slow, or blocked -> browser voice below.
-    } finally {
-      clearTimeout(timer);
+    const lang = langKey === "hinglish" ? "hi" : langKey;
+    const sentences = splitSentences(text);
+    const first = sentences.length ? await fetchSentence(sentences[0], lang) : null;
+    if (id !== playback) { onEnd && onEnd(); return { ok: true, via: "indictts" }; }   // stopped while loading
+    if (first) {
+      (async () => {
+        let blob = first;
+        for (let i = 0; i < sentences.length && blob && id === playback; i++) {
+          // Make the NEXT sentence while this one plays, so there is (almost) no gap between them.
+          const ahead = i + 1 < sentences.length ? fetchSentence(sentences[i + 1], lang) : Promise.resolve(null);
+          await playBlob(blob, id);
+          blob = id === playback ? await ahead : null;   // FALLBACK: a later sentence failed -> stop quietly
+        }
+        if (id === playback) currentAudio = null;
+        onEnd && onEnd();
+      })();
+      return { ok: true, via: "indictts" };
     }
   }
   const r = speak(text, langKey);

@@ -58,7 +58,7 @@ function answerLang(resp) {
 }
 
 /** HTML lang attribute values, so screen readers and fonts pick the right language. */
-const htmlLang = { en: "en", hi: "hi", gu: "gu", hinglish: "hi-Latn" };
+const htmlLang = { en: "en", hi: "hi", gu: "gu", hinglish: "hi-Latn", mr: "mr", ta: "ta" };
 
 /** "2026-10-27" -> the date written in the page language (month names in Gujarati/Hindi). */
 function formatDate(iso) {
@@ -236,12 +236,26 @@ function renderAnswerText(text, prefix, lang) {
 }
 
 /** One source passage card: id, scheme name, passage text, official link. */
-function renderPassage(c, prefix) {
+function renderPassage(c, prefix, answerLangKey) {
+  // Contract (Harsh, 2026-10-27): citations carry passage_lang, translation, translation_lang. The ORIGINAL
+  // official wording is always shown first; a machine translation, if any, sits below it, clearly labelled.
+  const passageLang = c.passage_lang || c.lang;
+  const wanted = answerLangKey === "hinglish" ? "hi" : answerLangKey;
+  let translation = null;
+  if (c.translation) {
+    translation = el("div", { class: "passage-translation", lang: htmlLang[c.translation_lang] || c.translation_lang || "" },
+      el("p", { class: "translation-label" }, `${S().machineTranslation} (${CONFIG.LANG_LABELS[c.translation_lang] || c.translation_lang})`),
+      el("p", { class: "passage-text" }, c.translation));
+  } else if (wanted && passageLang && passageLang !== wanted && answerLangKey !== "en") {
+    // FALLBACK: no translation row for this passage -> say so, rather than leave the user wondering.
+    translation = el("p", { class: "translation-label" }, S().translationMissing);
+  }
   return el("article", { class: "passage", id: `${prefix}-${c.id}`, tabindex: "-1" },
     el("div", { class: "passage-head" },
       c.id ? el("span", { class: "passage-id" }, `[${c.id}]`) : null,
       el("span", {}, c.scheme_name || "")),
-    el("p", { class: "passage-text" }, c.passage || c.text || ""),
+    el("p", { class: "passage-text", lang: htmlLang[passageLang] || passageLang || "" }, c.passage || c.text || ""),
+    translation,
     c.source_url ? externalLink(c.source_url, S().openPage) : null);
 }
 
@@ -303,7 +317,7 @@ function renderAnswer(resp) {
   if (cites.length) {
     const box = el("section", { class: "sources", "aria-label": s.sources },
       el("p", { class: "sources-title" }, s.sources));
-    cites.forEach((c) => box.append(renderPassage(c, prefix)));
+    cites.forEach((c) => box.append(renderPassage(c, prefix, lang)));
     card.append(box);
   }
   if (!refused) {
@@ -324,7 +338,7 @@ function renderFallbackPassages(body) {
     el("p", { class: "state-title" }, icon("⚠️"), S().aiUnavailable));
   const box = el("section", { class: "sources" });
   (body.fallback_passages || []).forEach((p, i) =>
-    box.append(renderPassage({ ...p, id: p.id || `S${i + 1}` }, prefix)));
+    box.append(renderPassage({ ...p, id: p.id || `S${i + 1}` }, prefix, uiLang)));
   card.append(box);
   return card;
 }
@@ -342,9 +356,10 @@ function renderError(kindOrMessage) {
 
 /** Scheme id behind a citation, or null. */
 function schemeIdOf(c) {
-  // MOCK: "scheme_id" in citations is an assumption, not yet in the /api/ask contract (to settle with comp/api
-  // at integration). Fallback: the chunk_id prefix ("pm-kisan#benefits#0" -> "pm-kisan"), a naming convention only.
-  return c.scheme_id || (c.chunk_id || "").split("#")[0] || null;
+  // "scheme_id" isn't in the /api/ask citation shape yet (asked of comp/api on the BOARD). Fallback per the data
+  // contract (docs/DATA_FORMAT.md): chunk_id = "<scheme_id>:<section>:<lang>", e.g. "agnipath:eligibility:en".
+  // The "#" split keeps the UI's own mock ids ("pm-kisan#benefits#0") working too.
+  return c.scheme_id || (c.chunk_id || "").split(/[:#]/)[0] || null;
 }
 
 /** One "Check if I'm eligible for X" button per scheme cited in the answer. */

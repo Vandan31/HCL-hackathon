@@ -10,8 +10,11 @@
 
 export const CONFIG = {
   // --- Backend connection -------------------------------------------------
-  API_BASE: "",               // DEMO-KNOB: "" = same server that serves the UI; set "http://localhost:8000" if the API runs separately
-  USE_MOCK: true,             // DEMO-KNOB: true = /api/ask answered by the in-browser mock; set false at integration
+  API_BASE: "http://127.0.0.1:8000",  // DEMO-KNOB: Harsh's API (src/api/main.py, uvicorn). "" = same server as the UI
+  // DEMO-KNOB: where eligibility questions go. "" = the UI dev server (src/ui/dev_server.py), which runs Vaidehi's
+  // real rules engine; Harsh's /api/eligibility is still a MOCK. Set to API_BASE once he wires it to next_question.
+  ELIGIBILITY_BASE: "",
+  USE_MOCK: false,            // DEMO-KNOB: false = real answers from Harsh's API; true = the in-browser mock (offline UI work)
                               // (/api/eligibility always goes to API_BASE: src/ui/dev_server.py serves it until comp/api does)
   MOCK_DELAY_MS: 700,         // DEMO-KNOB: fake network delay so loading states are visible when using the mock
   MOCK_FORCE_ERROR: null,     // DEMO-KNOB: null | "llm_unavailable" | "network" to click-test the error screens
@@ -41,7 +44,8 @@ export const CONFIG = {
   AUTO_SPEAK_SPOKEN_QUESTIONS: true, // DEMO-KNOB: a question asked with the mic gets its answer read aloud (typed ones: Listen)
   USE_INDIC_TTS: true,        // DEMO-KNOB: read answers with the team's IndicTTS service (src/tts); false = browser voice only
   TTS_BASE: "http://127.0.0.1:5600",   // DEMO-KNOB: where src/tts/server.py runs
-  TTS_TIMEOUT_MS: 20000,      // DEMO-KNOB: a long Gujarati answer takes ~4-7 s on a laptop CPU (measured); then use the browser voice
+  TTS_TIMEOUT_MS: 15000,      // DEMO-KNOB: max wait for ONE sentence (~2-6 s measured on a laptop CPU); then the browser voice
+  TTS_MIN_CHUNK_CHARS: 40,    // DEMO-KNOB: sentences shorter than this are joined to the previous one (fewer pauses)
   // (the mic listens in the page language; the dropdown beside it switches the whole page)
 
   // --- Eligibility checklist (bonus) ----------------------------------------
@@ -78,11 +82,12 @@ export const CONFIG = {
   },
 
   // WHY: speech recognition must be told the language before listening; it can't auto-detect.
-  SPEECH_LANG: { en: "en-IN", hi: "hi-IN", gu: "gu-IN", hinglish: "en-IN" },
+  SPEECH_LANG: { en: "en-IN", hi: "hi-IN", gu: "gu-IN", hinglish: "en-IN", mr: "mr-IN", ta: "ta-IN" },
 
   // Language names, each written in its own script so anyone can find theirs. Used on the picker,
   // the mic menu and the badge that shows which language an answer is in.
-  LANG_LABELS: { en: "English", hi: "हिन्दी", gu: "ગુજરાતી", hinglish: "Hinglish" },
+  // mr / ta: the API can answer in Marathi and Tamil too (Harsh, 2026-10-27), so the answer badge must name them.
+  LANG_LABELS: { en: "English", hi: "हिन्दी", gu: "ગુજરાતી", hinglish: "Hinglish", mr: "मराठी", ta: "தமிழ்" },
 
   // WHY: every word on the page comes from here, in the language picked on the opening page, so a
   // Gujarati user never has to read English to use the app. Answers themselves come back in the
@@ -109,6 +114,8 @@ export const CONFIG = {
       detectedLanguage: "Language of this answer",
       sources: "Sources",
       openPage: "Open official page",
+      machineTranslation: "Machine translation",
+      translationMissing: "Translation not available",
       newTab: "opens in a new tab",
       listen: "Listen",
       preparingAudio: "Preparing audio…",
@@ -165,6 +172,8 @@ export const CONFIG = {
       detectedLanguage: "इस जवाब की भाषा",
       sources: "स्रोत",
       openPage: "आधिकारिक पेज खोलें",
+      machineTranslation: "मशीनी अनुवाद",
+      translationMissing: "अनुवाद उपलब्ध नहीं",
       newTab: "नए टैब में खुलता है",
       listen: "सुनें",
       preparingAudio: "आवाज़ तैयार हो रही है…",
@@ -221,6 +230,8 @@ export const CONFIG = {
       detectedLanguage: "આ જવાબની ભાષા",
       sources: "સ્ત્રોત",
       openPage: "સત્તાવાર પેજ ખોલો",
+      machineTranslation: "મશીન અનુવાદ",
+      translationMissing: "અનુવાદ ઉપલબ્ધ નથી",
       newTab: "નવા ટેબમાં ખૂલે છે",
       listen: "સાંભળો",
       preparingAudio: "અવાજ તૈયાર થઈ રહ્યો છે…",
