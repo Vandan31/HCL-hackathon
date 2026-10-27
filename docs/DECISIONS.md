@@ -114,3 +114,20 @@
   gives `not_eligible` for RTI age 42, `likely_eligible` for a fully answered widow-pension case.
 - **Panel answer:** "Every rule quotes the sentence it came from, and a person ticks it off before it's trusted."
 - **Change if:** a human reviewer corrects a rule (edit the JSON, set `verified: true`).
+
+## D-012 · Retrieval runs on multilingual-e5-small with MIN_SCORE = 0.82 · retrieval/eval · 2026-10-27
+- **Decision:** `EMBED_MODEL = intfloat/multilingual-e5-small`, refusal threshold `MIN_SCORE = 0.82`
+  (config/retrieval.py). The threshold is calibrated for this model only.
+- **Alternatives:** BGE-M3 (planned in D-003): crashed out of memory (segfault on first encode; 5.9 GB RAM,
+  0.6 GB free; weights 2.27 GB). Threshold 0.83: more refusals but false refusal 0.115 (> 0.1 target).
+- **Evidence:** Measured, `scripts/eval.py data/eval/questions.jsonl --sweep --model intfloat/multilingual-e5-small`
+  on 98 team-written questions (D-010; 78 answerable, 20 null), 137 English chunks:
+  recall@5 0.949 with no threshold (en 1.0, hi 0.923, gu 0.923), p50 29 ms / p95 37 ms per query (laptop CPU).
+  Top-1 scores overlap: answerable 0.800–0.928, unanswerable 0.775–0.854, so no threshold meets both targets.
+  At 0.82: recall@5 0.910, false refusal 0.090, refusal recall 0.60 (12 of 20 refused).
+  BM25-only for comparison: recall@5 0.577 (en 1.0, hi 0.462, gu 0.269).
+- **Panel answer:** "Search alone refuses 60% of off-topic questions without ever calling the AI; the answer
+  engine's grounding and citation checks (D-004) are the second gate for the rest. We picked the threshold from
+  a measured sweep, keeping false refusals under 10%."
+- **Change if:** a machine with ≥ 16 GB RAM is available (re-test BGE-M3 and re-sweep), or Hindi/Gujarati queries
+  are translated to English before search (expected to sharpen the score gap; not measured).
