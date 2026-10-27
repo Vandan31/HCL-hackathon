@@ -1,0 +1,16 @@
+# COMPONENT : tts
+# PURPOSE   : Packages for the speech-output service only (kept separate: ~1 GB installed, not needed by the rest of the app).
+# PANEL NOTE: Pinned to versions measured working on Windows / Python 3.10 on 2026-10-27.
+#
+# Install into its own virtual environment (outside OneDrive, so thousands of files don't sync):
+#   python -m venv %USERPROFILE%\indic-tts\.venv
+#   %USERPROFILE%\indic-tts\.venv\Scripts\python -m pip install -r src/tts/requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu
+# Models (not pip): gu.zip and hi.zip from https://github.com/AI4Bharat/Indic-TTS/releases/tag/v1-checkpoints-release
+# unzipped into %USERPROFILE%\indic-tts\checkpoints  (see CHECKPOINT_DIR in config/tts.py).
+
+# WHY torch 2.8: from 2.9, coqui-tts needs torchcodec + ffmpeg for audio I/O; 2.8 doesn't, and we only write WAV.
+torch==2.8.0
+torchaudio==2.8.0
+# WHY coqui-tts: maintained continuation of the "TTS" package AI4Bharat's own inference uses; installs on Windows without compiling.
+coqui-tts==0.28.0
+soundfile
