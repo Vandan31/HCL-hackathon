@@ -59,7 +59,7 @@ class TestRealEngine(unittest.TestCase):
     def test_routing(self):
         self.assertEqual(self.engine.route(DEMO[0][2], "gu"), ("gu", "gu"))
         self.assertEqual(self.engine.route(DEMO[2][2], "en"), ("en+hi", "en"))
-        self.assertEqual(self.engine.route(DEMO[3][2], "hi"), ("en+hi", "en"))   # Hinglish -> code-mixed voice
+        self.assertEqual(self.engine.route(DEMO[3][2], "hi"), ("hi", "hinglish"))   # Hinglish -> Devanagari -> Hindi voice
 
     def test_speaks_demo_answers_fast_enough(self):
         for name, lang, text in DEMO:

@@ -22,9 +22,27 @@ LANGS = ["gu", "hi", "en"]        # DEMO-KNOB: languages to load at start (each 
 # Hinglish written in Latin letters, so it serves both.
 MODEL_FOR_LANG = {"gu": "gu", "hi": "hi", "en": "en+hi"}
 LATIN_MODEL = "en+hi"             # WHY: any answer mostly in Latin letters (English, Hinglish) is routed to this model
-# DEMO-KNOB: the en+hi model has four voices (female, male, hindifemale, hindimale). Hinglish sounds more natural in
-# the Hindi-accented ones, so a Hinglish request for "female" uses "hindifemale". English keeps female/male.
+# --- Hinglish (Hindi written in Latin letters) -----------------------------------------------------------
+# DEMO-KNOB: "devanagari" = convert Hinglish to Devanagari and speak it with the Hindi model (chosen by ear on
+# 2026-10-27: sample C sounded most natural); "latin" = read the Latin letters with the en+hi model (old way).
+# FALLBACK: if the converter (hindi-xlit) isn't installed, "latin" is used automatically.
+HINGLISH_MODE = "devanagari"
+# Used only in "latin" mode: the en+hi model's Hindi-accented voices.
 HINGLISH_VOICE = {"female": "hindifemale", "male": "hindimale"}
+# DEMO-KNOB: common Hinglish words with their correct Devanagari spelling. Checked before the converter model,
+# because it gets some frequent words wrong (measured: "par" -> पड़, "aur" -> अउर्). Add a line when a word sounds wrong.
+HINGLISH_WORDS = {
+    "par": "पर", "aur": "और", "hai": "है", "hain": "हैं", "ka": "का", "ki": "की", "ke": "के", "ko": "को", "se": "से",
+    "mein": "में", "me": "में", "nahi": "नहीं", "nahin": "नहीं", "kya": "क्या", "ye": "ये", "yeh": "यह", "wo": "वो",
+    "woh": "वह", "aap": "आप", "aapke": "आपके", "aapko": "आपको", "aapka": "आपका", "apne": "अपने", "liye": "लिए",
+    "chahiye": "चाहिए", "milega": "मिलेगा", "milta": "मिलता", "milte": "मिलते", "hota": "होता", "hoga": "होगा",
+    "kaise": "कैसे", "kahan": "कहाँ", "kab": "कब", "kitna": "कितना", "kitne": "कितने", "sakte": "सकते",
+    "sakta": "सकता", "tak": "तक", "bhi": "भी", "ya": "या", "agar": "अगर", "sirf": "सिर्फ़", "saal": "साल",
+    "paisa": "पैसा", "paise": "पैसे", "jankari": "जानकारी", "jaankari": "जानकारी", "kripya": "कृपया",
+    "maaf": "माफ़", "kijiye": "कीजिए", "dekhiye": "देखिए", "jaiye": "जाइए", "nazdeeki": "नज़दीकी",
+    "kendra": "केंद्र", "sarkar": "सरकार", "sarkari": "सरकारी", "wale": "वाले", "wala": "वाला", "seedhe": "सीधे",
+}
+XLIT_CACHE_ITEMS = 5000           # DEMO-KNOB: converted words remembered in memory (~53 ms each to convert, measured)
 DEFAULT_SPEAKER = "female"        # used for warm-up and any language not listed below
 # DEMO-KNOB: voice used when a request doesn't name one. Picked by ear on 2026-10-27 from A/B samples:
 # Hindi sounded most natural with the Hindi model's male voice; Hinglish with a female voice.

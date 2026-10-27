@@ -14,3 +14,6 @@ torchaudio==2.8.0
 # WHY coqui-tts: maintained continuation of the "TTS" package AI4Bharat's own inference uses; installs on Windows without compiling.
 coqui-tts==0.28.0
 soundfile
+# WHY hindi-xlit: converts Hinglish to Devanagari so the Hindi voice reads it naturally (chosen by ear). MIT, 45 MB,
+# bundles an AI4Bharat IndicXlit-based model; no extra dependencies. Audited: no network or shell calls (2026-10-27).
+hindi-xlit==1.0.1

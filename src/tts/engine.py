@@ -19,8 +19,9 @@ from collections import OrderedDict
 
 import soundfile as sf
 
-from config.tts import (CACHE_DIR, CHECKPOINT_DIR, DEFAULT_SPEAKER, HINGLISH_DEFAULT_SPEAKER, HINGLISH_VOICE, LANGS,
-                        LATIN_MODEL, MEMORY_CACHE_ITEMS, MODEL_FOR_LANG, VOICE_FOR_LANG, WARM_UP)
+from config.tts import (CACHE_DIR, CHECKPOINT_DIR, DEFAULT_SPEAKER, HINGLISH_DEFAULT_SPEAKER, HINGLISH_MODE,
+                        HINGLISH_VOICE, LANGS, LATIN_MODEL, MEMORY_CACHE_ITEMS, MODEL_FOR_LANG, VOICE_FOR_LANG, WARM_UP)
+from src.tts.hinglish import HinglishConverter
 from src.tts.normalize import is_speakable, normalize
 
 WARM_UP_TEXT = {"gu": "નમસ્તે.", "hi": "नमस्ते.", "en+hi": "Namaste. Hello."}
@@ -54,6 +55,8 @@ class TTSEngine:
         self.cache = OrderedDict()            # (lang, speaker, text) -> wav bytes, most recent last
         self.cache_lock = threading.Lock()
         CACHE_DIR.mkdir(parents=True, exist_ok=True)
+        # Hinglish -> Devanagari converter (~0.1 s to load, measured); None-model if hindi-xlit isn't installed.
+        self.hinglish = HinglishConverter("load" if HINGLISH_MODE == "devanagari" else None)
         # Load each needed model folder once (two languages could share one model).
         for lang in dict.fromkeys(MODEL_FOR_LANG[l] for l in langs):
             t0 = time.perf_counter()
@@ -80,13 +83,19 @@ class TTSEngine:
         return [l for l in LANGS if MODEL_FOR_LANG[l] in self.models]
 
     def route(self, text: str, lang: str):
-        """(model folder, text-rule language) for a request, or None if nothing loaded can speak it."""
+        """(model folder, mode) for a request, or None if nothing loaded can speak it.
+        mode: "gu" | "hi" | "en" | "hinglish" (Hinglish converted to Devanagari, then read by the Hindi model)."""
         if lang not in self.langs:
             return None
-        if lang == "en" or not is_speakable(text):
-            # WHY: English, and Hinglish ("hi" written in Latin letters), are read by the code-mixed en+hi model;
-            # the gu/hi models only know their own script and would skip every letter.
-            return (LATIN_MODEL, "en") if LATIN_MODEL in self.models else None
+        latin = (LATIN_MODEL, "en") if LATIN_MODEL in self.models else None
+        if lang == "en":
+            return latin
+        if not is_speakable(text):
+            # Hinglish ("hi" in Latin letters). Preferred: convert to Devanagari for the Hindi voice (chosen by ear).
+            if lang == "hi" and HINGLISH_MODE == "devanagari" and self.hinglish.available and "hi" in self.models:
+                return "hi", "hinglish"
+            # FALLBACK: no converter -> the code-mixed en+hi model reads the Latin letters (gu/hi models can't).
+            return latin
         return MODEL_FOR_LANG[lang], lang
 
     def speakers(self, lang: str):
@@ -110,8 +119,8 @@ class TTSEngine:
     def default_speaker(self, text: str, lang: str) -> str:
         """Voice to use when the request names none (chosen by ear: see VOICE_FOR_LANG in config/tts.py)."""
         routed = self.route(text, lang)
-        if routed and routed[0] == LATIN_MODEL and lang == "hi":
-            return HINGLISH_DEFAULT_SPEAKER
+        if routed and lang == "hi" and (routed[1] == "hinglish" or routed[0] == LATIN_MODEL):
+            return HINGLISH_DEFAULT_SPEAKER   # Hinglish keeps its own voice even though plain Hindi is male
         return VOICE_FOR_LANG.get(lang, DEFAULT_SPEAKER)
 
     def synthesize(self, text: str, lang: str, speaker: str | None = None):
@@ -120,8 +129,11 @@ class TTSEngine:
         routed = self.route(text, lang)
         if routed is None:
             raise UnsupportedLanguage(lang)
-        model, rule_lang = routed
+        model, mode = routed
         speaker = speaker or self.default_speaker(text, lang)
+        rule_lang = mode
+        if mode == "hinglish":
+            text, rule_lang = self.hinglish.convert(text), "hi"   # then numbers/₹ are spoken the Hindi way
         if model == LATIN_MODEL and lang == "hi":
             speaker = HINGLISH_VOICE.get(speaker, speaker)   # Hinglish -> the Hindi-accented voice of the en+hi model
         if speaker not in self.models[model].tts_model.speaker_manager.name_to_id:
