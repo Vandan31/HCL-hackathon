@@ -1,0 +1,42 @@
+# COMPONENT : all (main app: API + language detection + retrieval + answer engine + speech-to-text + tests)
+# PURPOSE   : One install for everything except speech OUTPUT (TTS has its own file, see below).
+# PANEL NOTE: Pinned to versions resolved on Windows 11 / Python 3.13 on 2026-10-27.
+#
+# Setup (Windows, from the repo root; Python 3.13):
+#   python -m venv .venv
+#   .venv\Scripts\python -m pip install -r requirements.txt
+#   If pip fails with "filename or extension is too long" (PyTorch's deep folders), create the venv at a
+#   short path instead, e.g.  python -m venv C:\ys-venv   (the Microsoft Store Python path is too long).
+#
+# Models (not pip; git-ignored):
+#   IndicLID: indiclid-ftn.zip + indiclid-ftr.zip from
+#     https://github.com/AI4Bharat/IndicLID/releases/tag/v1.0  -> unzip into models/indiclid/
+#     (missing -> language detection falls back to rules automatically)
+#   BGE-M3 (~2.2 GB) and faster-whisper models download on first use from Hugging Face.
+#
+# Speech OUTPUT (Vaidehi): src/tts/requirements.txt, in its OWN venv. It pins torch 2.8 on
+# Python 3.10, which conflicts with torch below, so never install both into one environment.
+
+# --- API (Harsh) ---
+fastapi==0.158.0
+uvicorn[standard]==0.54.0      # WHY [standard]: uvloop/httptools for faster request handling
+pydantic==2.14.1
+httpx==0.28.1                  # FastAPI TestClient + outbound HTTP
+
+# --- Answer engine (Harsh) ---
+anthropic==2.3.0               # Claude API client
+
+# --- Language detection (Vandan) ---
+fasttext-predict==0.9.2.4      # WHY not `fasttext`: no Windows/Python 3.13 wheel; this prediction-only build runs IndicLID
+
+# --- Retrieval (Vandan) ---
+numpy==2.4.4
+rank-bm25==0.2.2               # keyword search
+sentence-transformers==6.2.0   # BGE-M3 meaning search
+torch==2.14.1                  # needed by sentence-transformers (CPU build on Windows; CUDA build on Linux)
+
+# --- Speech input (voice questions) ---
+faster-whisper==1.2.1          # speech-to-text + detected language -> detect_language(speech_hint=...)
+
+# --- Tests ---
+pytest==9.1.1
