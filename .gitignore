@@ -34,3 +34,8 @@ job.*.err
 Thumbs.db
 .vscode/
 .claude/settings.local.json
+
+# Downloaded models and caches (IndicLID ~540 MB, embedding cache)
+models/
+*.bin
+.cache/
