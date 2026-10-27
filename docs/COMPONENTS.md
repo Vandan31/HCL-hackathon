@@ -11,7 +11,7 @@
   Bonus: voice in/out, Hinglish, eligibility checklist via follow-up questions.
 - **Working name / pitch:** Yojana Saathi. *Ask in your language, get the answer with proof, or an honest "I don't know".*
 - **Languages (final, Harsh 2026-10-27):** English, Hindi, Gujarati, Marathi, Tamil + Hinglish (`hi` + `code_mixed`). Replies and refusals are always in the input's language.
-- **Team & time:** 4 people, 5–6 hours. Stack: Option 1 (FastAPI + BM25/BGE-M3 hybrid + **Gemini free tier, Groq fallback** (D-017) + IndicTrans2 for passage translations + AI4Bharat IndicTTS + HTML/JS).
+- **Team & time:** 4 people, 5–6 hours. Stack: Option 1 (FastAPI + BM25/BGE-M3 hybrid + **Gemini free tier, Groq fallback** (D-019) + IndicTrans2 for passage translations + AI4Bharat IndicTTS + HTML/JS).
 - **Data rule:** myScheme pages are collected **by hand** (Terms of Use ban bots/scrapers). Agents never fetch them.
 
 ## Status legend

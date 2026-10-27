@@ -7,7 +7,6 @@
 
 | Component | Agent / person | Branch | Started (date time) | Files touched |
 |-----------|----------------|--------|---------------------|---------------|
-| 6. UI (mic input fix) | Vaidehi/claude | `Vaidehi` | 2026-10-27 17:00 | `src/ui/`, `config/ui.js`, `tests/ui/` |
 | C: language + retrieval + eval | Vandan/claude | `comp/retrieval` | 2026-10-27 | `src/lang/`, `src/retrieval/`, `scripts/eval.py`, `data/eval/`, `config/lang.py`, `config/retrieval.py`, `tests/lang/`, `tests/retrieval/` |
 | API + answer engine (#4, #5) | harsh/claude | `harsh` | 2026-10-27 11:19 | `src/api/`, `src/answer/`, `config/api.py`, `config/answer.py`, `tests/api/`, `tests/answer/`, `requirements.txt`, `pytest.ini` |
 
@@ -29,12 +28,23 @@ _Announce here before editing shared files (config, requirements, API contracts)
   for the most-used new fields: `state` (9 schemes), `citizen_of_india` (5), `annual_family_income` (4),
   `social_category` (4), `applicant_type` (3). Without them the checklist stops after `age`/`gender`/`occupation`.
 
+- **2026-10-27 · Vandan → @Harsh · retrieval behaviour for answer/API (`comp/retrieval`, D-012, D-013).**
+  1. `search()` now refuses itself: `[]` unless the best chunk scores ≥ 0.81 AND clearly stands out (z ≥ 2.8).
+     Your `MIN_SCORE = 0.35` gate stays a harmless safety net (every non-empty result has a top score ≥ 0.81).
+     Two knobs are both called `MIN_SCORE` (config/retrieval.py vs config/answer.py): the retrieval one is the real dial.
+  2. Model is `multilingual-e5-small` (BGE-M3 crashed out of memory on a 6 GB laptop). Contract unchanged.
+  3. Please warm up at startup, or the first question waits ~16 s (IndicLID) + embedding load: in `src/api/main.py`
+     after the imports: `detect("warm up"); search("warm up", "en")`.
+  4. Measured on the 98-question set: recall@5 0.936, right scheme first 0.923, false refusal 0.064, search refuses
+     75% of off-topic questions; the other 25% (PAN–Aadhaar, pension increase, ITR date, driving licence) must be
+     caught by your `not_in_documents` LLM check. Weakest language: Gujarati (false refusal 0.154).
+
 - **2026-10-27 · Vaidehi → Harsh: speech output (component 10) is built; please wire or proxy it.** Separate service
   `src/tts/` on port 5600 (own venv, see `src/tts/requirements.txt`; not in the team requirements.txt). Contract:
   `POST /api/tts {text, lang: "gu"|"hi"|"en", speaker?: "female"|"male"}` → 200 `audio/wav`; Hinglish = `lang "hi"` in
   Latin letters (handled automatically); 400 bad_json/empty_text/text_too_long/unknown_speaker; 422 unsupported_lang
   (e.g. `mr`, `ta` from the new lang interface → UI uses the browser voice) / unsupported_script; 503 model_unavailable;
-  `GET /api/tts/health`. Decisions D-012, D-013, D-014.
+  `GET /api/tts/health`. Decisions D-014, D-015, D-016.
 
 - **2026-10-27 · Vaidehi → Harsh (comp/api), to settle at integration; nothing changed in shared files:**
   the UI + eligibility code assumes (1) each `/api/ask` citation carries `"scheme_id"` (UI falls back to the
@@ -51,12 +61,16 @@ _Announce here before editing shared files (config, requirements, API contracts)
 - 2026-10-27 11:19 · harsh (integrator): creating root `requirements.txt` (fastapi, uvicorn, pytest, httpx) and `pytest.ini`. Others: post new packages here and Harsh adds them.
 
 - **2026-10-27 · Vaidehi → Harsh: merged `harsh` into `Vaidehi` (on top of Vandan's + Jaya's main). Please check:**
-  (1) your decisions renumbered to avoid clashes with main: D-006 → **D-016** (API mock-first), D-007 → **D-017**
+  (1) your decisions renumbered to avoid clashes with main: D-006 → **D-018** (API mock-first), D-007 → **D-019**
   (Gemini/Groq); references updated in your text. (2) `requirements.txt`: Vandan's full list kept, `fastapi` set to
   your tested **0.162.0** (was 0.158.0), `anthropic` line removed (imported nowhere; you call Gemini/Groq over httpx).
   (3) COMPONENTS `detect_language`: kept Vandan's newer signature (any ISO code + `source`, `supported`,
   `speech_hint`) plus a line with your en/hi/gu/mr/ta + `Taml`; please confirm it's what you two agreed.
   (4) Your `src/__init__.py` / `tests/__init__.py` are kept; Vaidehi's suites still pass with them.
+
+- **2026-10-27 · Vaidehi → everyone: decision numbers keep colliding** (3 times today: D-006, D-007…, D-012…).
+  Proposal: right before adding a decision, `git pull` main and take the next free number in DECISIONS.md; if two
+  branches still clash, the one merged later renumbers. Vaidehi's are now **D-014 to D-017** (after Vandan's D-012/D-013).
 
 ## Handoff log (newest on top)
 
@@ -69,8 +83,15 @@ _Announce here before editing shared files (config, requirements, API contracts)
 - Next step: ...
 -->
 
+### 2026-10-27 17:20 · 6. UI (mic input fix) · Vaidehi/claude
+- Changed: pressing the mic now (1) asks for microphone permission first with a clear message, (2) shows "starting…", then "listening… speak now" only when audio is really captured (pulsing red), (3) shows the words live while you speak, (4) gives a clear, translated message for every failure: blocked, no microphone, no internet, nothing heard, didn't start in 8 s, browser without voice input (mic stays visible). Knobs: `MIC_START_TIMEOUT_MS`, `VOICE_AUTO_SEND` (off: text lands in the box to check first).
+- Why: before, pressing the mic looked dead: Chrome waited on its permission bubble while the UI already said "Listening…" (measured: no event for 6 s).
+- Tested: `tests/ui` → OK; Chrome with a simulated speech engine: speak / blocked / no mic / no internet / no speech / timeout / unsupported / auto-send all correct; REAL microphone: asking → starting → listening → idle with real room speech transcribed into the box, no console errors.
+- Note: browser speech recognition uses Google's servers (needs internet). The team's Whisper path (Vandan's `speech_hint`) has no API route yet.
+- Next step: UI wiring to Harsh's API; then speak answers automatically when `lastInputWasVoice` (component 10).
+
 ### 2026-10-27 16:30 · 6. UI (3D syllables on landing page) · Vaidehi/claude
-- Changed: small syllables of English, Hindi and Gujarati float in 3D behind the language card (`src/ui/landing3d.js`). Three.js r170 (MIT) saved in `src/ui/vendor/three/` (675 KB + LICENSE) so it works offline; loaded only on the landing page. Letters drawn with the browser's text engine (Three.js 3D text can't shape Devanagari/Gujarati). Knobs: `ENABLE_3D_LANDING`, `LANDING_GLYPH_COUNT`, `LANDING_GLYPHS` in `config/ui.js`. D-015.
+- Changed: small syllables of English, Hindi and Gujarati float in 3D behind the language card (`src/ui/landing3d.js`). Three.js r170 (MIT) saved in `src/ui/vendor/three/` (675 KB + LICENSE) so it works offline; loaded only on the landing page. Letters drawn with the browser's text engine (Three.js 3D text can't shape Devanagari/Gujarati). Knobs: `ENABLE_3D_LANDING`, `LANDING_GLYPH_COUNT`, `LANDING_GLYPHS` in `config/ui.js`. D-017.
 - Safeguards: no Three.js / no WebGL → plain landing page; hidden from screen readers; one still frame under "reduce motion"; pauses when the tab is hidden; fully stopped and GPU memory freed once a language is chosen.
 - Tested: `tests/ui` → OK (new: Three.js local + licensed, never from a CDN); Chrome: renders, no console errors; measured 60 frames/s on the landing page (= browser refresh rate) and 0 frames/s after choosing a language.
 - Next step: UI wiring after teammates (unchanged).
@@ -81,7 +102,7 @@ _Announce here before editing shared files (config, requirements, API contracts)
 - Next step: UI wiring after teammates (unchanged).
 
 ### 2026-10-27 15:10 · 10. Final output (accent fix: Hindi + Hinglish) · Vaidehi/claude
-- Changed: picked by ear from A/B samples (Vaidehi): Hindi now uses the Hindi model's **male** voice (`VOICE_FOR_LANG`); Hinglish is **converted to Devanagari** and read by the Hindi model's female voice (`HINGLISH_MODE = "devanagari"`). New `src/tts/hinglish.py`: fixed word lists first (`HINGLISH_WORDS`, scheme names, acronyms), then `hindi-xlit` (MIT, 45 MB, IndicXlit-based, audited: no network/shell calls) at beam 1, with a word cache and clean-up of stray zero-width/halant characters. FALLBACK: without hindi-xlit, Hinglish uses the en+hi Latin voice. English unchanged (confirmed correct by ear). D-014.
+- Changed: picked by ear from A/B samples (Vaidehi): Hindi now uses the Hindi model's **male** voice (`VOICE_FOR_LANG`); Hinglish is **converted to Devanagari** and read by the Hindi model's female voice (`HINGLISH_MODE = "devanagari"`). New `src/tts/hinglish.py`: fixed word lists first (`HINGLISH_WORDS`, scheme names, acronyms), then `hindi-xlit` (MIT, 45 MB, IndicXlit-based, audited: no network/shell calls) at beam 1, with a word cache and clean-up of stray zero-width/halant characters. FALLBACK: without hindi-xlit, Hinglish uses the en+hi Latin voice. English unchanged (confirmed correct by ear). D-016.
 - Tested: system Python `tests/tts` → OK (4 real-model tests skipped there); TTS venv: `tests.tts.test_hinglish` → 7 OK (real converter reproduces the hand-written demo sentence exactly), `tests.tts.test_engine_real` → 3 OK; Hinglish full sentence 2.8 s incl. conversion. Demo answers re-generated. Bug caught by tests: `[S1]` markers were being converted ("[?1]"); now stripped first.
 - Open: Vaidehi to confirm the two final samples (`Desktop/tts-final-check`). From Vandan's lang update: `lang` may now be any ISO code (`mr`, `ta`…) → the UI badge must not default to "English" for those (fix during UI wiring).
 - Next step: UI wiring after teammates.

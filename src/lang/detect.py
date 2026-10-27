@@ -141,7 +141,13 @@ def _detect_text(text):
             # PANEL: Why reply in Roman script? -> people who type Hinglish often can't read
             # Devanagari comfortably; we mirror how they wrote.
             return _result("hi", "Latn", True, min(1.0, ratio * 2), "rules")
-        # Layer 2: IndicLID roman model: catches romanised Gujarati/Marathi/Tamil/... and English.
+        # Layer 2: English function words ("how do I ... my"). Measured: IndicLID alone called
+        # "How do I renew my passport?" Bengali.
+        words = [w.lower() for w in _LATIN_WORD.findall(text)]
+        english = sum(1 for w in words if w in cfg.ENGLISH_WORDS)
+        if english >= cfg.ENGLISH_MIN_WORDS and english / len(words) >= cfg.ENGLISH_MIN_RATIO:
+            return _result("en", "Latn", False, min(1.0, english / len(words) * 2), "rules")
+        # Layer 3: IndicLID roman model: catches romanised Gujarati/Marathi/Tamil/... and English.
         guess = _lid_predict(text, "Latn")
         if guess:
             lang, prob = guess
