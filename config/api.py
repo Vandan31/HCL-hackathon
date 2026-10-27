@@ -18,6 +18,10 @@ USE_MOCK_SEARCH = os.getenv("USE_MOCK_SEARCH", "false").lower() == "true"
 
 # DEMO-KNOB: True = serve cached demo answers, no LLM call (Wi-Fi-off safety net on stage).
 OFFLINE_MODE = os.getenv("OFFLINE_MODE", "false").lower() == "true"
+# DEMO-KNOB: True = answer a recorded demo question from the cache (instant, same answer every time) and every OTHER
+# question live. Unlike OFFLINE_MODE, unrecorded questions still get a real answer, not passages only.
+# Added by Vaidehi (2026-10-27, with her approval; flagged for Harsh on docs/BOARD.md).
+CACHE_FIRST = os.getenv("CACHE_FIRST", "false").lower() == "true"
 
 # DEMO-KNOB: True = save every successful live answer into the offline cache. Run the demo questions once
 # with Wi-Fi on and this set, then switch it off.

@@ -19,8 +19,8 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from config.answer import GEMINI_MODEL, GROQ_MODEL, KEY_COOLDOWN_S, LLM_TIMEOUT_S, TRANSLATIONS_PATH
-from config.api import (AUDIT_PATH, CACHE_PATH, CORS_ORIGINS, OFFLINE_MODE, RECORD_CACHE, USE_MOCK_SEARCH,
-                        USE_MOCKS)
+from config.api import (AUDIT_PATH, CACHE_FIRST, CACHE_PATH, CORS_ORIGINS, OFFLINE_MODE, RECORD_CACHE,
+                        USE_MOCK_SEARCH, USE_MOCKS)
 from src.answer.generate import answer as answer_fn
 from src.answer.llm_pool import KeyPool, LLMUnavailable, entries_from_env, load_env_file
 from src.answer.translations import build_citation, load_translations
@@ -130,8 +130,9 @@ def ask(req: AskRequest):
     if USE_MOCKS:
         # MOCK: fixture answers so the UI can be built before the real pipeline is merged.
         return {**mock_ask(req.query), "latency_ms": ms()}
-    if OFFLINE_MODE and (hit := CACHE.get(req.query)) is not None:
-        # FALLBACK: Wi-Fi-off demo -> recorded real answer, no LLM call.
+    if (OFFLINE_MODE or CACHE_FIRST) and (hit := CACHE.get(req.query)) is not None:
+        # FALLBACK: Wi-Fi-off demo -> recorded real answer, no LLM call. CACHE_FIRST (demo): recorded answer
+        # for the demo questions, live pipeline for everything else.
         return {**hit, "latency_ms": ms()}
 
     lang_info = detect(req.query)
