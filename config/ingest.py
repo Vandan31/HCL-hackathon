@@ -18,9 +18,10 @@ CHUNKS_PATH = "data/processed/chunks.jsonl"
 # DATA_FORMAT §2 asks for ~100-300 words per chunk and a split above ~400.
 MAX_WORDS = 400
 
-# MOCK: none of the pasted pages included their myScheme URL and agents may not look it up (D-001).
-# The team chose this placeholder on 2026-10-27; replace per scheme in data/schemes/<id>.json.
-SOURCE_URL_MISSING = "not available"
+# MOCK: none of the pasted pages included their own myScheme URL and agents may not look it up (D-001).
+# The team chose the myScheme search page as a stand-in link (2026-10-27, D-008); replace it per scheme
+# in data/schemes/<id>.json with the real page URL (the converter keeps a URL once it is set).
+SOURCE_URL_MISSING = "https://www.myscheme.gov.in/search"
 
 # Written into every converted scheme file (DATA_FORMAT §1: shows the data is dated and hand-collected).
 COLLECTED_ON = "2026-10-27"

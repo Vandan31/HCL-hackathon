@@ -73,9 +73,10 @@
 - **Change if:** pages arrive with FAQ answers (map them to a section after asking Vandan), or hi/gu text
   is added (paste it into the JSON; re-run `build_chunks`).
 
-## D-008 · source_url = "not available" for now · data · 2026-10-27
-- **Decision:** team chose (Jaya, 2026-10-27) to write `"not available"` as `source_url.en` because none of
-  the 26 pasted pages included its URL and agents may not look them up (D-001). Tagged `MOCK` in config.
-- **Panel answer:** "The links were not captured on collection day; the passage and scheme name are still
-  shown, and the links are a one-line fix per scheme file."
-- **Change if:** someone pastes the real myScheme URLs into `data/schemes/<id>.json` (converter keeps them).
+## D-008 · source_url = myScheme search page for now · data · 2026-10-27
+- **Decision:** team chose (Jaya, 2026-10-27) to use `https://www.myscheme.gov.in/search` as `source_url.en`
+  for all 26 schemes, because none of the pasted pages included its own URL and agents may not look them
+  up (D-001). Replaces the first placeholder "not available". Tagged `MOCK` in config/ingest.py.
+- **Panel answer:** "The link opens myScheme's search, where the scheme name on the card finds the page;
+  per-scheme links are a one-line fix in each scheme file."
+- **Change if:** someone pastes the real myScheme page URLs into `data/schemes/<id>.json` (converter keeps them).
