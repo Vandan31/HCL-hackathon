@@ -272,3 +272,7 @@ body:not(.picking) .lang-picker { display: none; }
   .check-status { grid-column: 2; white-space: normal; }
   .elig-actions .btn { white-space: normal; text-align: left; height: auto; padding: 0.4rem 0.75rem; }
 }
+
+/* Listen button while the voice is being prepared (IndicTTS takes a few seconds on a laptop CPU). */
+.btn-listen[data-state="loading"] { opacity: 0.8; cursor: progress; }
+.btn-listen[data-state="playing"] { background: var(--accent); border-color: var(--ink); }

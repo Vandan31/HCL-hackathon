@@ -38,6 +38,10 @@ export const CONFIG = {
   VOICE_AUTO_SEND: false,     // DEMO-KNOB: true sends a spoken question as soon as it is recognised (no button press)
   ENABLE_VOICE_OUTPUT: true,  // DEMO-KNOB: false hides the "Listen" buttons
   AUTO_SPEAK_ANSWERS: false,  // DEMO-KNOB: true reads every answer aloud as soon as it arrives
+  AUTO_SPEAK_SPOKEN_QUESTIONS: true, // DEMO-KNOB: a question asked with the mic gets its answer read aloud (typed ones: Listen)
+  USE_INDIC_TTS: true,        // DEMO-KNOB: read answers with the team's IndicTTS service (src/tts); false = browser voice only
+  TTS_BASE: "http://127.0.0.1:5600",   // DEMO-KNOB: where src/tts/server.py runs
+  TTS_TIMEOUT_MS: 20000,      // DEMO-KNOB: a long Gujarati answer takes ~4-7 s on a laptop CPU (measured); then use the browser voice
   // (the mic listens in the page language; the dropdown beside it switches the whole page)
 
   // --- Eligibility checklist (bonus) ----------------------------------------
@@ -107,6 +111,8 @@ export const CONFIG = {
       openPage: "Open official page",
       newTab: "opens in a new tab",
       listen: "Listen",
+      preparingAudio: "Preparing audio…",
+      stopAudio: "Stop",
       refusedTitle: "Not in my documents",
       aiUnavailable: "AI summary is unavailable right now. These are the most relevant official passages:",
       disclaimer: "Information from official scheme pages as of {date}. The final decision rests with the department.",
@@ -161,6 +167,8 @@ export const CONFIG = {
       openPage: "आधिकारिक पेज खोलें",
       newTab: "नए टैब में खुलता है",
       listen: "सुनें",
+      preparingAudio: "आवाज़ तैयार हो रही है…",
+      stopAudio: "रोकें",
       refusedTitle: "मेरे दस्तावेज़ों में नहीं है",
       aiUnavailable: "AI सारांश अभी उपलब्ध नहीं है। ये सबसे संबंधित आधिकारिक अंश हैं:",
       disclaimer: "जानकारी {date} तक के आधिकारिक योजना पेजों से। अंतिम निर्णय विभाग का होगा।",
@@ -215,6 +223,8 @@ export const CONFIG = {
       openPage: "સત્તાવાર પેજ ખોલો",
       newTab: "નવા ટેબમાં ખૂલે છે",
       listen: "સાંભળો",
+      preparingAudio: "અવાજ તૈયાર થઈ રહ્યો છે…",
+      stopAudio: "બંધ કરો",
       refusedTitle: "મારા દસ્તાવેજોમાં નથી",
       aiUnavailable: "AI સારાંશ હાલમાં ઉપલબ્ધ નથી. આ સૌથી સંબંધિત સત્તાવાર અંશો છે:",
       disclaimer: "માહિતી {date} સુધીના સત્તાવાર યોજના પેજ પરથી. અંતિમ નિર્ણય વિભાગનો રહેશે.",

@@ -11,7 +11,7 @@
 
 import { CONFIG } from "../../config/ui.js";
 import { ask, eligibility, health, ApiError } from "./api.js";
-import { ensureMicPermission, sttSupported, ttsSupported, startListening, speak } from "./voice.js";
+import { ensureMicPermission, sttSupported, ttsSupported, startListening, speakAnswer, stopSpeaking } from "./voice.js";
 import { startLanding3D } from "./landing3d.js";   // small; Three.js itself loads only when the landing page shows
 
 const $ = (id) => document.getElementById(id);
@@ -123,7 +123,8 @@ function applyLanguage() {
 
   // Example questions in the picked language (lang per chip: some are Hinglish on a Hindi page).
   els.chips.replaceChildren(...(CONFIG.SAMPLE_QUESTIONS[uiLang] || []).map((q) =>
-    el("button", { class: "chip", type: "button", lang: textLang(q), onclick: () => submitQuestion(q) }, q)));
+    el("button", { class: "chip", type: "button", lang: textLang(q),
+      onclick: () => { lastInputWasVoice = false; submitQuestion(q); } }, q)));   // a tapped example is not a spoken question
 
   // The dropdown beside the mic shows the page language too (it switches the whole page, see setupLanguage).
   els.micLang.value = uiLang;
@@ -165,6 +166,7 @@ function chooseLanguage(lang) {
     els.log.replaceChildren();
     sessionId = newSessionId();
   }
+  stopSpeaking();   // WHY: an answer read aloud in the old language shouldn't keep playing
   uiLang = lang;
   try { localStorage.setItem("ys-lang", lang); } catch {}
   applyLanguage();
@@ -245,22 +247,36 @@ function renderPassage(c, prefix) {
 
 /** "Listen" button that reads the answer aloud in the answer's language. */
 function renderListenButton(text, lang) {
-  if (!CONFIG.ENABLE_VOICE_OUTPUT || !ttsSupported()) return null;
+  // Shown when IndicTTS is on (works even if the browser has no voice for the language) or the browser can speak.
+  if (!CONFIG.ENABLE_VOICE_OUTPUT || !(CONFIG.USE_INDIC_TTS || ttsSupported())) return null;
   const note = el("p", { class: "toast", hidden: "" });
-  const btn = el("button", {
-    class: "btn btn-small", type: "button",
-    onclick: () => {
-      const r = speak(text, lang);
-      // FALLBACK: no voice installed for this language -> tell the user instead of failing silently.
-      if (!r.ok) {
-        note.textContent = r.reason === "no_voice"
-          ? S().errors.noVoice.replace("{lang}", CONFIG.LANG_LABELS[lang])
-          : S().errors.noTts;
-        note.hidden = false;
-      }
-    },
-  }, icon("🔊 "), S().listen);
-  return el("div", {}, btn, note);
+  const label = el("span", {}, S().listen);
+  const btn = el("button", { class: "btn btn-small btn-listen", type: "button" }, icon("🔊 "), label);
+  let state = "idle";   // idle | loading | playing
+  const setState = (next) => {
+    state = next;
+    btn.dataset.state = next;
+    btn.setAttribute("aria-busy", String(next === "loading"));
+    label.textContent = next === "loading" ? S().preparingAudio : next === "playing" ? S().stopAudio : S().listen;
+  };
+  const play = async () => {
+    if (state === "playing") { stopSpeaking(); setState("idle"); return; }   // second press stops
+    if (state === "loading") return;
+    note.hidden = true;
+    setState("loading");
+    const r = await speakAnswer(text, lang, { onEnd: () => setState("idle") });
+    if (r.ok) { if (state === "loading") setState("playing"); return; }
+    setState("idle");
+    // FALLBACK: neither IndicTTS nor a browser voice could speak it -> say so instead of failing silently.
+    note.textContent = r.reason === "no_voice"
+      ? S().errors.noVoice.replace("{lang}", CONFIG.LANG_LABELS[lang])
+      : S().errors.noTts;
+    note.hidden = false;
+  };
+  btn.addEventListener("click", play);
+  const box = el("div", {}, btn, note);
+  box.play = play;   // lets submitQuestion() start it automatically for spoken questions
+  return box;
 }
 
 /** A normal answer, or a refusal, from a 200 response. Labels in the page language, answer in its own. */
@@ -271,9 +287,11 @@ function renderAnswer(resp) {
   const refused = Boolean(resp.refused);
 
   const card = el("article", { class: refused ? "card card-refused" : "card" });
+  const listen = renderListenButton(resp.answer || "", lang);
+  card.listen = listen;   // so submitQuestion() can read a spoken question's answer aloud
   card.append(el("div", { class: "card-head" },
     el("span", { class: "lang-badge", title: s.detectedLanguage }, CONFIG.LANG_LABELS[lang]),
-    renderListenButton(resp.answer || "", lang)));
+    listen));
 
   if (refused) {
     // WHY: icon + title + colour, so a refusal is never mistaken for an answer (colour alone isn't enough).
@@ -296,7 +314,6 @@ function renderAnswer(resp) {
     card.append(el("p", { class: "meta" }, `${(resp.latency_ms / 1000).toFixed(1)} s`));
   }
 
-  if (CONFIG.AUTO_SPEAK_ANSWERS && CONFIG.ENABLE_VOICE_OUTPUT) speak(resp.answer || "", lang);
   return card;
 }
 
@@ -461,6 +478,13 @@ async function submitQuestion(text) {
   busy = false;
   els.send.disabled = false;
   scrollToBottom();
+  // Decided with the team: a question asked by voice gets its answer read aloud; typed ones use Listen.
+  const spoken = lastInputWasVoice;
+  lastInputWasVoice = false;
+  if (node.listen && CONFIG.ENABLE_VOICE_OUTPUT &&
+      (CONFIG.AUTO_SPEAK_ANSWERS || (spoken && CONFIG.AUTO_SPEAK_SPOKEN_QUESTIONS))) {
+    node.listen.play();
+  }
 }
 
 /** Let the textarea grow with its content up to the CSS max-height. */

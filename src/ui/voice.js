@@ -117,3 +117,60 @@ export function speak(text, langKey) {
   window.speechSynthesis.speak(utter);
   return { ok: true };
 }
+
+// ---------------------------------------------------------------------------
+// IndicTTS (component 10): the team's own speech service, src/tts/server.py
+// ---------------------------------------------------------------------------
+
+let currentAudio = null;   // the answer playing now; a new one (or Stop) ends it
+
+/** Stop any answer that is being read aloud (IndicTTS audio or browser voice). */
+export function stopSpeaking() {
+  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+  if (ttsSupported()) window.speechSynthesis.cancel();
+}
+
+/**
+ * Read an answer aloud, preferring the IndicTTS service (AI4Bharat voices chosen by ear: D-020).
+ * langKey: "en" | "hi" | "gu" | "hinglish". Hinglish is sent as "hi"; the service converts it to Devanagari.
+ * onEnd() is called when playback finishes or is stopped.
+ * Returns {ok: true, via: "indictts" | "browser"} or {ok: false, reason: "no_voice" | "unsupported"}.
+ */
+export async function speakAnswer(text, langKey, { onEnd } = {}) {
+  stopSpeaking();
+  if (CONFIG.USE_INDIC_TTS) {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), CONFIG.TTS_TIMEOUT_MS);
+    try {
+      const res = await fetch(`${CONFIG.TTS_BASE}/api/tts`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text, lang: langKey === "hinglish" ? "hi" : langKey }),
+        signal: ctrl.signal,
+      });
+      if (res.ok) {
+        const url = URL.createObjectURL(await res.blob());
+        const audio = new Audio(url);
+        currentAudio = audio;
+        const done = () => { URL.revokeObjectURL(url); if (currentAudio === audio) currentAudio = null; onEnd && onEnd(); };
+        audio.onended = done;
+        audio.onpause = () => { if (audio.currentTime < audio.duration) done(); };   // stopped early
+        await audio.play();
+        return { ok: true, via: "indictts" };
+      }
+      // FALLBACK: 422 (e.g. Marathi/Tamil not in IndicTTS here) or 503 (model failed) -> browser voice below.
+    } catch (e) {
+      // FALLBACK: speech service not running, slow, or blocked -> browser voice below.
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+  const r = speak(text, langKey);
+  if (r.ok) {
+    // The browser voice has no reliable "finished" event across browsers; poll until it stops talking.
+    const poll = setInterval(() => { if (!window.speechSynthesis.speaking) { clearInterval(poll); onEnd && onEnd(); } }, 250);
+    return { ok: true, via: "browser" };
+  }
+  onEnd && onEnd();
+  return r;
+}
