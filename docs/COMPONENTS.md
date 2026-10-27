@@ -31,7 +31,7 @@
 | 7 | Eligibility checklist | `src/eligibility/`, `config/eligibility.py` | D. Vaidehi | WORKING (tested, MOCK criteria) | Add questions for Jaya's new fields: `state`, `citizen_of_india`, `annual_family_income`, `social_category`, `applicant_type` (BOARD notice, D-011); criteria are drafts (`verified: false`) until a human checks; Harsh wires `/api/eligibility` to `next_question` |
 | 8 | Evaluation | `scripts/eval.py`, `data/eval/` | C. Vandan | TODO | Label sample questions with scheme ids; 20 unanswerable questions; metrics table (PLAN §6) |
 | 9 | Demo & pitch | `docs/pitch/` | D. Vaidehi + A. Harsh | IN PROGRESS (architecture diagram done: `docs/pitch/architecture.svg`) | Deck draft; 90-s demo script (PLAN §9); offline mode + backup video |
-| 10 | Final output: text + speech (IndicTTS) | `src/tts/`, `config/tts.py`, `src/ui/` | D. Vaidehi | IN PROGRESS: speech backend WORKING (tested, real models: gu, hi, English, Hinglish); UI wiring waits for teammates | UI: auto-play `/api/tts` audio when the question was spoken, Listen otherwise, browser-voice fallback on 422/503; Harsh to confirm `/api/tts` (BOARD) |
+| 10 | Final output: text + speech (IndicTTS) | `src/tts/`, `config/tts.py`, `src/ui/` | D. Vaidehi | WORKING (tested): IndicTTS backend + UI playback (auto for spoken questions, browser-voice fallback) | Connect UI to Harsh's API (`USE_MOCK: false`) and test spoken questions end to end; Gujarati listening check by a native speaker |
 
 ## Interfaces (contracts between components): freeze at 0:45
 
