@@ -7,6 +7,7 @@
 
 | Component | Agent / person | Branch | Started (date time) | Files touched |
 |-----------|----------------|--------|---------------------|---------------|
+| 10. Final output: UI plays IndicTTS voice | Vaidehi/claude | `Vaidehi` | 2026-10-27 18:10 | `src/ui/`, `config/ui.js`, `tests/ui/` |
 | C: language + retrieval + eval | Vandan/claude | `comp/retrieval` | 2026-10-27 | `src/lang/`, `src/retrieval/`, `scripts/eval.py`, `data/eval/`, `config/lang.py`, `config/retrieval.py`, `tests/lang/`, `tests/retrieval/` |
 | API + answer engine (#4, #5) | harsh/claude | `harsh` | 2026-10-27 11:19 | `src/api/`, `src/answer/`, `config/api.py`, `config/answer.py`, `tests/api/`, `tests/answer/`, `requirements.txt`, `pytest.ini` |
 
