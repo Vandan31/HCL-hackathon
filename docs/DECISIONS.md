@@ -114,3 +114,39 @@
   gives `not_eligible` for RTI age 42, `likely_eligible` for a fully answered widow-pension case.
 - **Panel answer:** "Every rule quotes the sentence it came from, and a person ticks it off before it's trusted."
 - **Change if:** a human reviewer corrects a rule (edit the JSON, set `verified: true`).
+
+## D-012 · Retrieval runs on multilingual-e5-small (threshold superseded by D-013) · retrieval/eval · 2026-10-27
+- **Decision:** `EMBED_MODEL = intfloat/multilingual-e5-small`, refusal threshold `MIN_SCORE = 0.82`
+  (config/retrieval.py). The threshold is calibrated for this model only.
+- **Alternatives:** BGE-M3 (planned in D-003): crashed out of memory (segfault on first encode; 5.9 GB RAM,
+  0.6 GB free; weights 2.27 GB). Threshold 0.83: more refusals but false refusal 0.115 (> 0.1 target).
+- **Evidence:** Measured, `scripts/eval.py data/eval/questions.jsonl --sweep --model intfloat/multilingual-e5-small`
+  on 98 team-written questions (D-010; 78 answerable, 20 null), 137 English chunks:
+  recall@5 0.949 with no threshold (en 1.0, hi 0.923, gu 0.923), p50 29 ms / p95 37 ms per query (laptop CPU).
+  Top-1 scores overlap: answerable 0.800–0.928, unanswerable 0.775–0.854, so no threshold meets both targets.
+  At 0.82: recall@5 0.910, false refusal 0.090, refusal recall 0.60 (12 of 20 refused).
+  BM25-only for comparison: recall@5 0.577 (en 1.0, hi 0.462, gu 0.269).
+- **Panel answer:** "Search alone refuses 60% of off-topic questions without ever calling the AI; the answer
+  engine's grounding and citation checks (D-004) are the second gate for the rest. We picked the threshold from
+  a measured sweep, keeping false refusals under 10%."
+- **Change if:** a machine with ≥ 16 GB RAM is available (re-test BGE-M3 and re-sweep), or Hindi/Gujarati queries
+  are translated to English before search (expected to sharpen the score gap; not measured).
+
+## D-013 · BM25 only for languages with documents + "stands-out" refusal gate · retrieval · 2026-10-27
+- **Decision:** (1) BM25 joins the RRF fusion only when the question's language has chunks (`BM25_SAME_LANG_ONLY`);
+  Hindi/Gujarati questions use dense search alone while chunks are English-only (D-009). (2) A question gets
+  passages only if the best chunk scores ≥ `MIN_SCORE` 0.81 **and** stands ≥ `MIN_Z` 2.8 standard deviations above
+  the average chunk; otherwise `search()` returns `[]`. (3) English function-word rule before IndicLID.
+- **Alternatives tested (Measured, same 98 questions):** hubness corrections (mean-centering, CSLS): no gain
+  (right-scheme-first 0.936–0.962 vs 0.974 baseline); absolute score only (D-012): refusal 0.60 at false refusal 0.090.
+- **Evidence:** Measured, `scripts/eval.py data/eval/questions.jsonl --sweep` (e5-small, IndicLID on):
+  recall@5 0.936, right scheme first 0.923, false refusal 0.064, refusal recall 0.75, language accuracy 1.0,
+  p50 29 ms / p95 41 ms. Per language: en 1.0/1.0/0.0/0.714 · hi 0.962/0.962/0.038/0.714 · gu 0.846/0.808/0.154/0.833
+  (recall / first / false refusal / refusal). Before (D-012 config): recall 0.910, refusal 0.60, first ≈0.60.
+  Refusal signal separation (AUC): z-score 0.947 vs raw top score 0.886.
+- **Caveat:** thresholds were tuned and measured on the same 98 team-written questions (no held-out set), so
+  expect lower numbers on the organisers' questions. z depends on corpus size: re-run the sweep if chunks change a lot.
+- **Panel answer:** "Keyword search can't match a Hindi question to English text, so we only use it where it can
+  help; and we refuse when no passage clearly stands out, which caught 75% of off-topic questions before any AI call."
+- **Change if:** chunks get Hindi/Gujarati text (BM25 turns back on automatically), or the organisers' questions
+  show a different trade-off in the sweep.

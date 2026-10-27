@@ -42,6 +42,7 @@ def mode(request, monkeypatch):
     # English that mentions Hindi scheme names must stay English
     ("How to apply for PM Kisan Samman Nidhi", "en", "Latn", False),
     ("apply online", "en", "Latn", False),                           # IndicLID alone: Gujarati
+    ("How do I renew my passport?", "en", "Latn", False),            # IndicLID alone: Bengali (eval)
     # Devanagari with a scheme name in English is still plain Hindi
     ("PM किसान का पैसा कब आएगा?", "hi", "Deva", False),              # IndicLID alone: Kashmiri
     # Mostly Latin letters with a Devanagari tail -> treated as Hinglish (reply in Roman Hindi)
