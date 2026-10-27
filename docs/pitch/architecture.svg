@@ -1,0 +1,203 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1530" height="1010" viewBox="0 0 1530 1010">
+<rect id="background" width="1530" height="1010" fill="#fffbe6"/>
+<g id="title">
+<text x="40" y="52" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="30" font-weight="800" fill="#2b2200" text-anchor="start">Yojana Saathi: system architecture</text>
+<text x="40" y="84" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="17" font-weight="400" fill="#5c4a10" text-anchor="start">Every answer is grounded in the scheme documents and cited, or clearly refused.</text>
+</g>
+<g id="lane-offline">
+<rect x="20" y="110" width="1490" height="150" rx="18" fill="#fff6d6" stroke="#efdf9c" stroke-width="1.5"/>
+<text x="40" y="138" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="14" font-weight="700" fill="#7a5600" text-anchor="start">OFFLINE (once, before the demo)</text>
+</g>
+<g id="lane-online">
+<rect x="20" y="275" width="1490" height="555" rx="18" fill="none" stroke="#efdf9c" stroke-width="1.5"/>
+<text x="40" y="303" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="14" font-weight="700" fill="#7a5600" text-anchor="start">ONLINE (every question, target &lt; 5 s)</text>
+</g>
+<g id="data-schemes">
+<rect x="340" y="150" width="250" height="95" rx="14" fill="#fff0cc" stroke="#7a5600" stroke-width="2"/>
+<text x="465.0" y="181.5" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="18" font-weight="700" fill="#2b2200" text-anchor="middle">25 scheme pages</text>
+<text x="465.0" y="209.5" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="15" font-weight="400" fill="#5c4a10" text-anchor="middle">myScheme, copied by hand</text>
+<text x="465.0" y="231.5" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="15" font-weight="400" fill="#5c4a10" text-anchor="middle">English + Hindi</text>
+</g>
+<g id="ingest-chunk">
+<rect x="640" y="150" width="250" height="95" rx="14" fill="#fff0cc" stroke="#7a5600" stroke-width="2"/>
+<text x="765.0" y="181.5" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="18" font-weight="700" fill="#2b2200" text-anchor="middle">Chunk by section</text>
+<text x="765.0" y="209.5" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="15" font-weight="400" fill="#5c4a10" text-anchor="middle">eligibility, benefits,</text>
+<text x="765.0" y="231.5" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="15" font-weight="400" fill="#5c4a10" text-anchor="middle">documents, how to apply</text>
+</g>
+<g id="search-index">
+<rect x="940" y="150" width="250" height="95" rx="14" fill="#fff0cc" stroke="#7a5600" stroke-width="2"/>
+<text x="1065.0" y="181.5" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="18" font-weight="700" fill="#2b2200" text-anchor="middle">Search index</text>
+<text x="1065.0" y="209.5" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="15" font-weight="400" fill="#5c4a10" text-anchor="middle">BM25 + embeddings</text>
+<text x="1065.0" y="231.5" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="15" font-weight="400" fill="#5c4a10" text-anchor="middle">in memory, no vector DB</text>
+</g>
+<g id="evaluation">
+<rect x="1240" y="150" width="250" height="95" rx="14" fill="#fff0cc" stroke="#7a5600" stroke-width="2"/>
+<text x="1365.0" y="181.5" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="18" font-weight="700" fill="#2b2200" text-anchor="middle">Evaluation</text>
+<text x="1365.0" y="209.5" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="15" font-weight="400" fill="#5c4a10" text-anchor="middle">100 sample questions</text>
+<text x="1365.0" y="231.5" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="15" font-weight="400" fill="#5c4a10" text-anchor="middle">+ 20 unanswerable</text>
+</g>
+<g id="a-schemes-chunk">
+<polyline points="590,197 640,197" fill="none" stroke="#2b2200" stroke-width="2.2"/>
+<polygon points="640,197 628.0,203.0 628.0,191.0" fill="#2b2200"/>
+</g>
+<g id="a-chunk-index">
+<polyline points="890,197 940,197" fill="none" stroke="#2b2200" stroke-width="2.2"/>
+<polygon points="940,197 928.0,203.0 928.0,191.0" fill="#2b2200"/>
+</g>
+<g id="citizen-input">
+<rect x="40" y="320" width="250" height="130" rx="14" fill="#2b2200" stroke="#2b2200" stroke-width="2"/>
+<text x="165.0" y="369.0" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="18" font-weight="700" fill="#ffd43b" text-anchor="middle">Citizen asks</text>
+<text x="165.0" y="397.0" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="15" font-weight="400" fill="#fffbe6" text-anchor="middle">text or speech</text>
+<text x="165.0" y="419.0" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="15" font-weight="400" fill="#fffbe6" text-anchor="middle">en · hi · gu · Hinglish</text>
+</g>
+<g id="speech-to-text">
+<rect x="340" y="320" width="250" height="130" rx="14" fill="#ffd43b" stroke="#7a5600" stroke-width="2"/>
+<text x="465.0" y="369.0" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="18" font-weight="700" fill="#2b2200" text-anchor="middle">Speech to text</text>
+<text x="465.0" y="397.0" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="15" font-weight="400" fill="#2b2200" text-anchor="middle">Whisper / Web Speech</text>
+<text x="465.0" y="419.0" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="15" font-weight="400" fill="#2b2200" text-anchor="middle">only if spoken</text>
+</g>
+<g id="language-id">
+<rect x="640" y="320" width="250" height="130" rx="14" fill="#fffef7" stroke="#7a5600" stroke-width="2" stroke-dasharray="6 4"/>
+<text x="765.0" y="369.0" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="18" font-weight="700" fill="#2b2200" text-anchor="middle">Language ID (LID)</text>
+<text x="765.0" y="397.0" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="15" font-weight="400" fill="#5c4a10" text-anchor="middle">script + Hinglish rules</text>
+<text x="765.0" y="419.0" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="15" font-weight="400" fill="#5c4a10" text-anchor="middle">→ query + language tag</text>
+</g>
+<g id="retrieval-engine">
+<rect x="940" y="320" width="250" height="130" rx="14" fill="#ffd43b" stroke="#7a5600" stroke-width="2"/>
+<text x="1065.0" y="369.0" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="18" font-weight="700" fill="#2b2200" text-anchor="middle">Retrieval engine</text>
+<text x="1065.0" y="397.0" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="15" font-weight="400" fill="#2b2200" text-anchor="middle">cross-lingual, top-K</text>
+<text x="1065.0" y="419.0" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="15" font-weight="400" fill="#2b2200" text-anchor="middle">BM25 + BGE-M3 → RRF</text>
+</g>
+<g id="reranker">
+<rect x="1240" y="320" width="250" height="130" rx="14" fill="#ffd43b" stroke="#7a5600" stroke-width="2"/>
+<text x="1365.0" y="369.0" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="18" font-weight="700" fill="#2b2200" text-anchor="middle">Reranker</text>
+<text x="1365.0" y="397.0" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="15" font-weight="400" fill="#2b2200" text-anchor="middle">vector similarity</text>
+<text x="1365.0" y="419.0" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="15" font-weight="400" fill="#2b2200" text-anchor="middle">top-K + metadata</text>
+</g>
+<g id="a-input-stt">
+<polyline points="290,385.0 340,385.0" fill="none" stroke="#2b2200" stroke-width="2.2"/>
+<polygon points="340,385.0 328.0,391.0 328.0,379.0" fill="#2b2200"/>
+</g>
+<g id="a-stt-lid">
+<polyline points="590,385.0 640,385.0" fill="none" stroke="#2b2200" stroke-width="2.2"/>
+<polygon points="640,385.0 628.0,391.0 628.0,379.0" fill="#2b2200"/>
+</g>
+<g id="a-lid-retrieval">
+<polyline points="890,385.0 940,385.0" fill="none" stroke="#2b2200" stroke-width="2.2"/>
+<polygon points="940,385.0 928.0,391.0 928.0,379.0" fill="#2b2200"/>
+</g>
+<g id="a-retrieval-rerank">
+<polyline points="1190,385.0 1240,385.0" fill="none" stroke="#2b2200" stroke-width="2.2"/>
+<polygon points="1240,385.0 1228.0,391.0 1228.0,379.0" fill="#2b2200"/>
+<text x="1215.0" y="373.0" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="14" font-weight="600" fill="#5c4a10" text-anchor="middle">top-K</text>
+</g>
+<g id="a-index-retrieval">
+<polyline points="1065.0,245 1065.0,320" fill="none" stroke="#2b2200" stroke-width="2.2"/>
+<polygon points="1065.0,320 1059.0,308.0 1071.0,308.0" fill="#2b2200"/>
+</g>
+<g id="a-eval-rerank">
+<polyline points="1365.0,245 1365.0,320" fill="none" stroke="#7a5600" stroke-width="2.2" stroke-dasharray="7 5"/>
+<polygon points="1365.0,320 1359.0,308.0 1371.0,308.0" fill="#7a5600"/>
+<text x="1435.0" y="290" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="14" font-weight="600" fill="#5c4a10" text-anchor="middle">tunes threshold</text>
+</g>
+<g id="decision-threshold">
+<polygon points="1365.0,487 1480.0,545 1365.0,603 1250.0,545" fill="#fffef7" stroke="#7a5600" stroke-width="2" stroke-dasharray="6 4"/>
+<text x="1365.0" y="541" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="16" font-weight="700" fill="#2b2200" text-anchor="middle">score ≥</text>
+<text x="1365.0" y="561" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="16" font-weight="700" fill="#2b2200" text-anchor="middle">threshold?</text>
+</g>
+<g id="a-rerank-decision">
+<polyline points="1365.0,450 1365.0,487" fill="none" stroke="#2b2200" stroke-width="2.2"/>
+<polygon points="1365.0,487 1359.0,475.0 1371.0,475.0" fill="#2b2200"/>
+</g>
+<g id="answer-engine">
+<rect x="940" y="480" width="250" height="130" rx="14" fill="#ffd43b" stroke="#7a5600" stroke-width="2"/>
+<text x="1065.0" y="518.0" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="18" font-weight="700" fill="#2b2200" text-anchor="middle">Answer with citations</text>
+<text x="1065.0" y="546.0" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="15" font-weight="400" fill="#2b2200" text-anchor="middle">LLM: only top passages</text>
+<text x="1065.0" y="568.0" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="15" font-weight="400" fill="#2b2200" text-anchor="middle">IndicTrans2 → user&#x27;s lang</text>
+<text x="1065.0" y="590.0" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="15" font-weight="400" fill="#2b2200" text-anchor="middle">rule: cited ids must exist</text>
+</g>
+<g id="ui-output">
+<rect x="640" y="480" width="250" height="130" rx="14" fill="#fffef7" stroke="#7a5600" stroke-width="2" stroke-dasharray="6 4"/>
+<text x="765.0" y="518.0" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="18" font-weight="700" fill="#2b2200" text-anchor="middle">UI: answer + proof</text>
+<text x="765.0" y="546.0" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="15" font-weight="400" fill="#5c4a10" text-anchor="middle">source passage cards</text>
+<text x="765.0" y="568.0" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="15" font-weight="400" fill="#5c4a10" text-anchor="middle">language badge, links</text>
+<text x="765.0" y="590.0" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="15" font-weight="400" fill="#5c4a10" text-anchor="middle">labels in en / hi / gu</text>
+</g>
+<g id="text-to-speech">
+<rect x="340" y="480" width="250" height="130" rx="14" fill="#ffd43b" stroke="#7a5600" stroke-width="2"/>
+<text x="465.0" y="529.0" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="18" font-weight="700" fill="#2b2200" text-anchor="middle">Text to speech</text>
+<text x="465.0" y="557.0" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="15" font-weight="400" fill="#2b2200" text-anchor="middle">Indic TTS / browser</text>
+<text x="465.0" y="579.0" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="15" font-weight="400" fill="#2b2200" text-anchor="middle">in the user&#x27;s language</text>
+</g>
+<g id="citizen-output">
+<rect x="40" y="480" width="250" height="130" rx="14" fill="#2b2200" stroke="#2b2200" stroke-width="2"/>
+<text x="165.0" y="529.0" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="18" font-weight="700" fill="#ffd43b" text-anchor="middle">Citizen gets</text>
+<text x="165.0" y="557.0" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="15" font-weight="400" fill="#fffbe6" text-anchor="middle">text + speech</text>
+<text x="165.0" y="579.0" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="15" font-weight="400" fill="#fffbe6" text-anchor="middle">with the source</text>
+</g>
+<g id="a-decision-answer">
+<polyline points="1250.0,545 1190,545" fill="none" stroke="#2b2200" stroke-width="2.2"/>
+<polygon points="1190,545 1202.0,539.0 1202.0,551.0" fill="#2b2200"/>
+<text x="1220.0" y="533" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="14" font-weight="600" fill="#5c4a10" text-anchor="middle">found</text>
+</g>
+<g id="a-answer-ui">
+<polyline points="940,545.0 890,545.0" fill="none" stroke="#2b2200" stroke-width="2.2"/>
+<polygon points="890,545.0 902.0,539.0 902.0,551.0" fill="#2b2200"/>
+</g>
+<g id="a-ui-tts">
+<polyline points="640,545.0 590,545.0" fill="none" stroke="#2b2200" stroke-width="2.2"/>
+<polygon points="590,545.0 602.0,539.0 602.0,551.0" fill="#2b2200"/>
+</g>
+<g id="a-tts-citizen">
+<polyline points="340,545.0 290,545.0" fill="none" stroke="#2b2200" stroke-width="2.2"/>
+<polygon points="290,545.0 302.0,539.0 302.0,551.0" fill="#2b2200"/>
+</g>
+<g id="refusal">
+<rect x="1240" y="670" width="250" height="115" rx="14" fill="#fffef7" stroke="#7a5600" stroke-width="2" stroke-dasharray="6 4"/>
+<text x="1365.0" y="711.5" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="18" font-weight="700" fill="#2b2200" text-anchor="middle">Clear refusal</text>
+<text x="1365.0" y="739.5" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="15" font-weight="400" fill="#5c4a10" text-anchor="middle">template, user&#x27;s language</text>
+<text x="1365.0" y="761.5" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="15" font-weight="400" fill="#5c4a10" text-anchor="middle">+ next step: CSC, helpline</text>
+</g>
+<g id="eligibility">
+<rect x="340" y="670" width="250" height="115" rx="14" fill="#fffef7" stroke="#7a5600" stroke-width="2" stroke-dasharray="6 4"/>
+<text x="465.0" y="711.5" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="18" font-weight="700" fill="#2b2200" text-anchor="middle">Eligibility checklist</text>
+<text x="465.0" y="739.5" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="15" font-weight="400" fill="#5c4a10" text-anchor="middle">rules on verified criteria</text>
+<text x="465.0" y="761.5" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="15" font-weight="400" fill="#5c4a10" text-anchor="middle">met / not met / verify</text>
+</g>
+<g id="a-decision-refusal">
+<polyline points="1365.0,603 1365.0,670" fill="none" stroke="#2b2200" stroke-width="2.2"/>
+<polygon points="1365.0,670 1359.0,658.0 1371.0,658.0" fill="#2b2200"/>
+<text x="1415.0" y="641.5" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="14" font-weight="600" fill="#5c4a10" text-anchor="middle">not found</text>
+</g>
+<g id="a-answer-refusal">
+<polyline points="1065.0,610 1065.0,727 1240,727" fill="none" stroke="#7a5600" stroke-width="2.2"/>
+<polygon points="1240,727 1228.0,733.0 1228.0,721.0" fill="#7a5600"/>
+<text x="1172.5" y="718" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="14" font-weight="600" fill="#5c4a10" text-anchor="middle">citation check fails</text>
+</g>
+<g id="a-refusal-ui">
+<polyline points="1365.0,785 1365.0,810 830,810 830,610" fill="none" stroke="#2b2200" stroke-width="2.2"/>
+<polygon points="830,610 836.0,622.0 824.0,622.0" fill="#2b2200"/>
+<text x="1097.5" y="802" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="14" font-weight="600" fill="#5c4a10" text-anchor="middle">shown in the UI</text>
+</g>
+<g id="a-ui-eligibility">
+<polyline points="700,610 700,727.5 590,727.5" fill="none" stroke="#2b2200" stroke-width="2.2"/>
+<polygon points="590,727.5 602.0,721.5 602.0,733.5" fill="#2b2200"/>
+<polygon points="700,610 706.0,622.0 694.0,622.0" fill="#2b2200"/>
+<text x="770" y="717.5" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="14" font-weight="600" fill="#5c4a10" text-anchor="middle">“Am I eligible?”</text>
+</g>
+<g id="legend">
+<text x="40" y="872" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="14" font-weight="700" fill="#7a5600" text-anchor="start">KEY</text>
+<rect x="40" y="886" width="34" height="22" rx="5" fill="#ffd43b" stroke="#7a5600" stroke-width="1.5"/>
+<text x="84" y="902" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="15" font-weight="400" fill="#2b2200" text-anchor="start">AI model</text>
+<rect x="270" y="886" width="34" height="22" rx="5" fill="#fffef7" stroke="#7a5600" stroke-width="1.5" stroke-dasharray="6 4"/>
+<text x="314" y="902" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="15" font-weight="400" fill="#2b2200" text-anchor="start">Rules, no AI (dashed)</text>
+<rect x="500" y="886" width="34" height="22" rx="5" fill="#fff0cc" stroke="#7a5600" stroke-width="1.5"/>
+<text x="544" y="902" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="15" font-weight="400" fill="#2b2200" text-anchor="start">Data / offline</text>
+<rect x="730" y="886" width="34" height="22" rx="5" fill="#2b2200" stroke="#7a5600" stroke-width="1.5"/>
+<text x="774" y="902" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="15" font-weight="400" fill="#2b2200" text-anchor="start">Citizen</text>
+</g>
+<g id="fallbacks">
+<text x="40" y="950" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="14" font-weight="700" fill="#7a5600" text-anchor="start">FALLBACKS</text>
+<text x="40" y="975" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="15" font-weight="400" fill="#5c4a10" text-anchor="start">LLM down → show the official passages without a summary  ·  no mic → type  ·  no network → cached demo answers  ·  unknown eligibility → “verify at office”, never a guess</text>
+</g>
+</svg>
