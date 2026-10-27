@@ -15,7 +15,7 @@ from typing import Callable, Mapping
 
 import httpx
 
-# WHY: Gemini keys are tried before any Groq key (Harsh's decision, D-007).
+# WHY: Gemini keys are tried before any Groq key (Harsh's decision, D-017).
 PROVIDER_ORDER = ("gemini", "groq")
 ENV_VARS = {"gemini": "GEMINI_API_KEYS", "groq": "GROQ_API_KEYS"}
 

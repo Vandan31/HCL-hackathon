@@ -22,7 +22,7 @@ KEY_COOLDOWN_S = 60
 
 # DEMO-KNOB: model names, filled in on the day from AI Studio / Groq console (free-tier models).
 # Empty string = that provider is skipped. PANEL: why two providers? -> free-tier limits are per
-# project/account, so a second provider adds real capacity; more keys on one account don't (D-007).
+# project/account, so a second provider adds real capacity; more keys on one account don't (D-017).
 # Picked 2026-10-27 from the models these keys can list (GET /v1beta/models, GET /openai/v1/models):
 # gemini-3.5-flash-lite: free tier, 1.7 s measured; gemini-3.8-flash timed out / 503 "high demand" on 2026-10-27.
 # gpt-oss-120b is Groq's largest general-purpose model.

@@ -115,3 +115,18 @@ HINGLISH_WORDS = {
 # DEMO-KNOB: minimum number of Hindi words before we call text Hinglish.
 # WHY: protects very short English queries (one stray match in 2 words would be 50%).
 HINGLISH_MIN_WORDS = 2
+
+# English function words, checked after Hinglish and before IndicLID. WHY: measured, IndicLID's roman
+# model labelled "How do I renew my passport?" as Bengali (0.56); a sentence full of "how/do/my" is English.
+# Scheme words (loan, card, pension) are left out: Hinglish and romanised Gujarati questions use them too.
+ENGLISH_WORDS = {
+    "the", "a", "an", "is", "are", "was", "were", "be", "do", "does", "did", "i", "my", "you", "your",
+    "how", "what", "when", "where", "which", "who", "why", "can", "could", "should", "will", "would",
+    "for", "of", "to", "in", "on", "at", "with", "and", "or", "not", "this", "that", "it", "there",
+    "from", "by", "am", "have", "has", "get", "need", "much", "many", "any", "if", "under",
+}
+
+# DEMO-KNOB: English words needed (count and share of Latin words) to call Roman text English
+# without asking the model.
+ENGLISH_MIN_WORDS = 2
+ENGLISH_MIN_RATIO = 0.3

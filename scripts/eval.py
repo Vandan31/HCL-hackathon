@@ -27,7 +27,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from config import retrieval as cfg  # noqa: E402
 from src.lang.detect import detect_language  # noqa: E402
-from src.retrieval.search import Retriever, load_chunks  # noqa: E402
+from src.retrieval.search import Retriever, load_chunks, passes_gate  # noqa: E402
 
 
 def load_questions(path):
@@ -36,34 +36,37 @@ def load_questions(path):
 
 
 def run(questions, retriever, k):
-    """Run every question once with NO score threshold, keeping raw scores for later filtering."""
+    """Rank every question once with NO refusal gate, keeping the gate stats for later filtering."""
     rows = []
-    saved_min, saved_bm25_min = cfg.MIN_SCORE, cfg.BM25_MIN_SCORE
-    # WHY: collect everything once (threshold 0) so --sweep can test many thresholds
-    # without re-running the model for each one.
-    cfg.MIN_SCORE, cfg.BM25_MIN_SCORE = -1.0, -1.0
-    try:
-        for q in questions:
-            t0 = time.perf_counter()
-            lang_info = detect_language(q["question"])
-            hits = retriever.search(q["question"], lang_info["lang"], k=k)
-            ms = (time.perf_counter() - t0) * 1000
-            rows.append({**q, "detected": lang_info, "latency_ms": round(ms, 1),
-                         "hits": [(h["scheme_id"], h["score"]) for h in hits]})
-    finally:
-        cfg.MIN_SCORE, cfg.BM25_MIN_SCORE = saved_min, saved_bm25_min
+    # WHY: rank once and store the gate stats so --sweep can test many thresholds without
+    # re-running the model; the gate itself is the same passes_gate() that search() uses.
+    for q in questions:
+        t0 = time.perf_counter()
+        lang_info = detect_language(q["question"])
+        order, scores, _, stats = retriever.rank(q["question"], lang_info["lang"])
+        ms = (time.perf_counter() - t0) * 1000
+        hits = [(retriever.chunks[i]["scheme_id"], round(float(scores[i]), 4)) for i in order[:k]]
+        rows.append({**q, "detected": lang_info, "latency_ms": round(ms, 1), "hits": hits,
+                     "gate": stats})
     return rows
 
 
-def metrics(rows, threshold):
-    """Compute the metric table for one refusal threshold."""
+def metrics(rows, dense, min_score=None, min_z=None):
+    """Compute the metric table for one refusal setting (None = values from config)."""
     answerable = [r for r in rows if r.get("expected_scheme")]
     unanswerable = [r for r in rows if not r.get("expected_scheme")]
 
     def kept(r):
-        return [s for s, score in r["hits"] if score >= threshold]
+        if not passes_gate(r["gate"], dense, min_score, min_z):
+            return []
+        if dense:
+            return [s for s, _ in r["hits"]]
+        # BM25-only: same per-passage floor as search()
+        return [s for s, score in r["hits"] if score >= (cfg.BM25_MIN_SCORE if min_score is None else min_score)]
 
     recall = [r["expected_scheme"] in kept(r) for r in answerable]
+    # Right scheme as the FIRST passage: what the answer engine leans on most.
+    top1 = [kept(r)[:1] == [r["expected_scheme"]] for r in answerable]
     false_refusal = [not kept(r) for r in answerable]
     refused = [not kept(r) for r in unanswerable]
     lang_ok = [r["detected"]["lang"] == r["lang"] for r in rows if r.get("lang")]
@@ -76,7 +79,8 @@ def metrics(rows, threshold):
         return lat[min(len(lat) - 1, int(p * len(lat)))] if lat else None
 
     return {"n": len(rows), "n_answerable": len(answerable), "n_unanswerable": len(unanswerable),
-            "recall_at_k": pct(recall), "false_refusal_rate": pct(false_refusal),
+            "recall_at_k": pct(recall), "top1_accuracy": pct(top1),
+            "false_refusal_rate": pct(false_refusal),
             "refusal_recall": pct(refused), "lang_accuracy": pct(lang_ok),
             "p50_ms": quantile(0.5), "p95_ms": quantile(0.95)}
 
@@ -101,22 +105,33 @@ def main():
     retriever = Retriever(load_chunks(a.chunks), use_dense=not a.bm25_only, model_name=a.model)
     mode = f"dense={retriever.model_name}" if retriever.embeddings is not None else "BM25-only"
     rows = run(load_questions(a.questions), retriever, a.k)
-    threshold = cfg.MIN_SCORE if retriever.embeddings is not None else cfg.BM25_MIN_SCORE
+    dense = retriever.embeddings is not None
+    gate = f"MIN_SCORE={cfg.MIN_SCORE} MIN_Z={cfg.MIN_Z}" if dense else f"BM25_MIN_SCORE={cfg.BM25_MIN_SCORE}"
 
-    print(f"Measured on {len(rows)} questions | {mode} | k={a.k} | threshold={threshold}")
-    print_table("OVERALL", metrics(rows, threshold))
+    print(f"Measured on {len(rows)} questions | {mode} | k={a.k} | {gate}")
+    print_table("OVERALL", metrics(rows, dense))
     for lang in sorted({r.get("lang") for r in rows if r.get("lang")}):
-        print_table(f"LANG = {lang}", metrics([r for r in rows if r.get("lang") == lang], threshold))
+        print_table(f"LANG = {lang}", metrics([r for r in rows if r.get("lang") == lang], dense))
 
     if a.sweep:
-        # Higher threshold -> more refusals: refusal_recall goes up, but so do false refusals.
-        # Pick the value where both are acceptable, then set MIN_SCORE in config/retrieval.py.
-        print("\nMIN_SCORE sweep   recall@k  false_refusal  refusal_recall")
-        steps = [x / 100 for x in range(20, 80, 5)] if retriever.embeddings is not None \
-            else [0.5, 1, 2, 3, 4, 5, 6, 8, 10]
-        for t in steps:
-            m = metrics(rows, t)
-            print(f"  {t:<14}  {m['recall_at_k']!s:<8}  {m['false_refusal_rate']!s:<13}  {m['refusal_recall']}")
+        # Stricter gate -> more refusals: refusal_recall goes up, but so do false refusals.
+        # Pick the setting where both are acceptable, then set it in config/retrieval.py.
+        def line(label, m):
+            print(f"  {label:<14}  {m['recall_at_k']!s:<8}  {m['top1_accuracy']!s:<6}  "
+                  f"{m['false_refusal_rate']!s:<13}  {m['refusal_recall']}")
+        head = "recall@k  top1    false_refusal  refusal_recall"
+        if dense:
+            print(f"\nMIN_Z sweep (MIN_SCORE={cfg.MIN_SCORE})  {head}")
+            for t in [x / 100 for x in range(200, 361, 10)]:
+                line(f"MIN_Z {t}", metrics(rows, dense, min_z=t))
+            print(f"\nMIN_SCORE sweep (MIN_Z={cfg.MIN_Z})  {head}")
+            # WHY up to 0.95: e5 cosine scores sit around 0.77-0.93 (D-012)
+            for t in [x / 100 for x in range(70, 96, 1)]:
+                line(f"MIN_SCORE {t}", metrics(rows, dense, min_score=t))
+        else:
+            print(f"\nBM25_MIN_SCORE sweep  {head}")
+            for t in [0.5, 1, 2, 3, 4, 5, 6, 8, 10]:
+                line(f"BM25 {t}", metrics(rows, dense, min_score=t))
 
     if a.json:
         with open(a.json, "w", encoding="utf-8") as f:
