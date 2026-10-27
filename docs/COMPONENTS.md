@@ -27,7 +27,7 @@
 | 3 | Retrieval | `src/retrieval/`, `config/retrieval.py` | C. Vandan | TODO | BM25 + BGE-M3 + RRF over `data/processed/`; MOCK chunks until ingest is ready |
 | 4 | Answer engine | `src/answer/`, `config/answer.py` | A. Harsh | WORKING (live-tested 2026-10-27) | record demo answers with `RECORD_CACHE=true` once real retrieval is merged |
 | 5 | API | `src/api/`, `config/api.py` | A. Harsh | WORKING (tested) | `USE_MOCKS=false` runs detect → search → answer (lang/retrieval MOCKed until merged); offline cache + audit log done. Next: swap in real src/lang + src/retrieval at integration; record demo answers with `RECORD_CACHE=true` |
-| 6 | UI + voice | `src/ui/`, `config/ui.js` | D. Vaidehi | WORKING (tested, MOCK API; accessibility pass done) | Set `USE_MOCK: false` in `config/ui.js` once `/api/ask` is live; test en/hi/gu/Hinglish end to end; test mic + voices on the demo laptop |
+| 6 | UI + voice | `src/ui/`, `config/ui.js` | D. Vaidehi | WORKING (tested end to end with Harsh's real API, 2026-10-27) | Show passage translations once `translations.jsonl` exists; native-speaker look at the Gujarati/Hindi UI text |
 | 7 | Eligibility checklist | `src/eligibility/`, `config/eligibility.py` | D. Vaidehi | WORKING (tested, MOCK criteria) | Add questions for Jaya's new fields: `state`, `citizen_of_india`, `annual_family_income`, `social_category`, `applicant_type` (BOARD notice, D-011); criteria are drafts (`verified: false`) until a human checks; Harsh wires `/api/eligibility` to `next_question` |
 | 8 | Evaluation | `scripts/eval.py`, `data/eval/` | C. Vandan | TODO | Label sample questions with scheme ids; 20 unanswerable questions; metrics table (PLAN §6) |
 | 9 | Demo & pitch | `docs/pitch/` | D. Vaidehi + A. Harsh | IN PROGRESS (architecture diagram done: `docs/pitch/architecture.svg`) | Deck draft; 90-s demo script (PLAN §9); offline mode + backup video |
@@ -90,7 +90,7 @@ Search space = the 20–30 myScheme pages ONLY. IndicQA is for retrieval testing
 | Eval set = 98 questions written by our team (organisers' 100 not provided; team decision D-010) | Disclosed: ours, not the organisers' | data/eval/questions.jsonl |
 | Eligibility `criteria`: agent drafts from scheme text, not yet human-checked (`verified: false`) | Draft (D-011) | data/schemes/*.json |
 | Scheme text is English only; answers translated by the LLM at answer time (D-009) | Design choice | data/schemes/*.json |
-| `/api/ask` answers in the UI | MOCK (`CONFIG.USE_MOCK`, "Mock data" label on screen) | src/ui/mock_api.js, src/ui/mock/ask_fixtures.json |
+| `/api/ask` answers in the UI | Real since 2026-10-27 (`USE_MOCK: false`); the in-browser mock stays for offline UI work | src/ui/mock_api.js |
 | Eligibility criteria for 3 schemes | MOCK (simplified, not verified) | src/eligibility/mock_schemes.json |
 | `/api/eligibility` route | MOCK dev stand-in until comp/api | src/ui/dev_server.py |
 | `/api/ask` and `/api/eligibility` responses | MOCK (fixture data, `USE_MOCKS` knob) | src/api/mocks.py |
