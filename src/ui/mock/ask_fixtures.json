@@ -1,0 +1,61 @@
+{
+  "_comment": "MOCK: hand-written demo responses for /api/ask, used only while CONFIG.USE_MOCK is true. Not real retrieval output. Passage texts are short paraphrases for UI testing; the real passages come from data/schemes/ via the API.",
+  "topics": [
+    {
+      "id": "pm-kisan",
+      "match": ["kisan", "किसान", "કિસાન", "ખેડૂત", "farmer", "khedut"],
+      "confidence": 0.82,
+      "answers": {
+        "en": "Under PM-KISAN, landholding farmer families get ₹6,000 a year, paid in three instalments of ₹2,000 directly to their bank account [S1]. Income-tax payers are not eligible [S2].",
+        "hi": "पीएम-किसान के तहत भूमिधारक किसान परिवारों को साल में ₹6,000 तीन किस्तों में सीधे बैंक खाते में मिलते हैं [S1]। आयकर देने वाले पात्र नहीं हैं [S2]।",
+        "gu": "PM-KISAN હેઠળ જમીન ધરાવતા ખેડૂત પરિવારોને વર્ષે ₹6,000 ત્રણ હપ્તામાં સીધા બેંક ખાતામાં મળે છે [S1]. આવકવેરો ભરનારા પાત્ર નથી [S2].",
+        "hinglish": "PM-KISAN mein zameen wale kisan parivaron ko saal mein ₹6,000 teen kiston mein seedhe bank account mein milte hain [S1]. Income tax bharne wale eligible nahi hain [S2]."
+      },
+      "citations": [
+        {
+          "id": "S1",
+          "chunk_id": "pm-kisan#benefits#0",
+          "scheme_name": "PM-KISAN",
+          "passage": "MOCK passage: Financial benefit of ₹6,000 per year in three equal instalments of ₹2,000 to landholding farmer families, transferred to their bank accounts.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-kisan"
+        },
+        {
+          "id": "S2",
+          "chunk_id": "pm-kisan#exclusions#0",
+          "scheme_name": "PM-KISAN",
+          "passage": "MOCK passage: Families in which one or more members paid income tax in the last assessment year are excluded.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-kisan"
+        }
+      ]
+    },
+    {
+      "id": "pmay",
+      "match": ["awas", "आवास", "આવાસ", "house", "ghar", "घर", "ઘર"],
+      "confidence": 0.74,
+      "answers": {
+        "en": "For PM Awas Yojana you will usually need your Aadhaar card, an income certificate, bank account details and proof that you don't own a pucca house [S1].",
+        "hi": "पीएम आवास योजना के लिए आम तौर पर आधार कार्ड, आय प्रमाण पत्र, बैंक खाते का विवरण और यह प्रमाण कि आपके पास पक्का घर नहीं है, चाहिए [S1]।",
+        "gu": "PM આવાસ યોજના માટે સામાન્ય રીતે આધાર કાર્ડ, આવકનો દાખલો, બેંક ખાતાની વિગતો અને તમારી પાસે પાકું ઘર નથી તેનો પુરાવો જોઈએ [S1].",
+        "hinglish": "PM Awas Yojana ke liye aam taur par Aadhaar card, income certificate, bank account details aur yeh proof chahiye ki aapke paas pucca ghar nahi hai [S1]."
+      },
+      "citations": [
+        {
+          "id": "S1",
+          "chunk_id": "pmay#documents#0",
+          "scheme_name": "Pradhan Mantri Awas Yojana",
+          "passage": "MOCK passage: Documents required: Aadhaar card, income certificate, bank account details, and a declaration that the family does not own a pucca house.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmay-g"
+        }
+      ]
+    }
+  ],
+  "refusal": {
+    "match": ["passport", "पासपोर्ट", "પાસપોર્ટ", "income tax slab", "tax slab"],
+    "answers": {
+      "en": "Sorry, this information is not in my scheme documents. Please check myscheme.gov.in or visit your nearest CSC centre.",
+      "hi": "माफ़ कीजिए, यह जानकारी मेरे योजना दस्तावेज़ों में नहीं है। कृपया myscheme.gov.in देखें या नज़दीकी CSC केंद्र पर जाएँ।",
+      "gu": "માફ કરશો, આ માહિતી મારા યોજના દસ્તાવેજોમાં નથી. કૃપા કરીને myscheme.gov.in જુઓ અથવા નજીકના CSC કેન્દ્રની મુલાકાત લો.",
+      "hinglish": "Maaf kijiye, yeh jaankari mere scheme documents mein nahi hai. Kripya myscheme.gov.in dekhiye ya nazdeeki CSC centre jaiye."
+    }
+  }
+}

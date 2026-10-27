@@ -1,0 +1,64 @@
+<!doctype html>
+<!--
+COMPONENT : ui
+PURPOSE   : The one screen a citizen uses: ask in any of our languages (typed or spoken), read or hear the
+            answer, and see the official passage it came from.
+INPUTS    : user text or speech
+OUTPUTS   : rendered answer, passage cards, refusal or error messages
+DEPENDS ON: src/ui/app.js (logic), src/ui/styles.css, config/ui.js
+PANEL NOTE: Plain HTML/JS: no build step, loads fast on low-end phones, and anyone on the team can edit it live.
+
+HOW TO RUN (from the repo root):  python -m http.server 5500   then open  http://localhost:5500/src/ui/
+WHY a server: browsers block ES modules and fetch() on file:// pages.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Yojana Saathi</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <h1>Yojana Saathi <span class="brand-sub" lang="hi">योजना साथी</span></h1>
+      <p class="tagline">Ask about government schemes in English, हिन्दी, ગુજરાતી or Hinglish.</p>
+    </div>
+    <div class="topbar-actions">
+      <!-- Shows MOCK DATA / server status so nobody mistakes the mock for the real system. -->
+      <span id="status-pill" class="pill" role="status"></span>
+      <button id="large-text-toggle" class="btn btn-ghost" type="button" aria-pressed="false"
+              title="Large text">A<span class="big-a">A</span></button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="samples" aria-label="Example questions">
+      <p class="samples-label">Try asking:</p>
+      <div id="sample-chips" class="chips"></div>
+    </section>
+
+    <!-- role=log + aria-live: screen readers announce each new answer automatically. -->
+    <section id="chat-log" class="chat-log" role="log" aria-live="polite" aria-label="Conversation"></section>
+  </main>
+
+  <form id="ask-form" class="composer" autocomplete="off">
+    <div class="mic-group" id="mic-group">
+      <label class="visually-hidden" for="mic-lang">Language you will speak</label>
+      <select id="mic-lang" class="mic-lang" title="Language you will speak">
+        <option value="en">English</option>
+        <option value="hi">हिन्दी</option>
+        <option value="gu">ગુજરાતી</option>
+      </select>
+      <button id="mic-btn" class="btn btn-mic" type="button" aria-pressed="false" aria-label="Speak your question">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V22h2v-3.08A7 7 0 0 0 19 12h-2Z"/></svg>
+      </button>
+    </div>
+    <label class="visually-hidden" for="query">Your question</label>
+    <textarea id="query" class="query" rows="1" placeholder="Type your question… / अपना सवाल लिखें… / તમારો પ્રશ્ન લખો…"></textarea>
+    <button id="send-btn" class="btn btn-primary" type="submit">Ask</button>
+  </form>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
