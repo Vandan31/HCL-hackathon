@@ -24,5 +24,75 @@
     "how_to_apply": {
       "en": "Offline\nStep 1: The interested Candidate can apply through their Institute/College/University in the annexed application form.\nStep 2: In the application form, fill in all the mandatory fields, and attach copies of all the mandatory documents (self-attest, if required).\nStep 3: Submit the duly filled and signed application form along with the documents by post or E-mail to the Deputy Secretary (Admn.), Lokpal of India:\nPlot No.6, Phase-II, Vasant Kunj, Institutional Area, New Delhi-110070.\nEmail – lokpal.us@gov.in\nStep 4: Request a receipt or acknowledgment from the Deputy Secretary (Admn.), Lokpal of India to whom the application has been submitted. Ensure that the receipt contains essential details such as the date and time of submission, and a unique identification number (if applicable).\nNOTE: The final list of selected interns will be displayed on the Lokpal of India website/notice\\board.\nSelection Procedure:\nThe interns will be selected by a committee appointed by the Hon'ble Chairperson. Criteria for selection would be (1) the course pursued, and (2) academic performance."
     }
-  }
+  },
+  "criteria": [
+    {
+      "field": "occupation",
+      "op": "eq",
+      "value": "student",
+      "text_en": "Must be a student",
+      "source_text": "The applicant should be a student.",
+      "verified": false
+    },
+    {
+      "field": "education_level",
+      "op": "in",
+      "value": [
+        "undergraduate",
+        "postgraduate"
+      ],
+      "text_en": "Must be in a regular undergraduate or postgraduate degree course",
+      "source_text": "The applicant should be pursuing a regular undergraduate or postgraduate degree course in the field of Law, Political Science, Public Administration, Public Policy, Management, Economics, or Human Rights.",
+      "verified": false
+    },
+    {
+      "field": "field_of_study",
+      "op": "in",
+      "value": [
+        "law",
+        "political science",
+        "public administration",
+        "public policy",
+        "management",
+        "economics",
+        "human rights"
+      ],
+      "text_en": "Subject must be Law, Political Science, Public Administration, Public Policy, Management, Economics or Human Rights",
+      "source_text": "The applicant should be pursuing a regular undergraduate or postgraduate degree course in the field of Law, Political Science, Public Administration, Public Policy, Management, Economics, or Human Rights.",
+      "verified": false
+    },
+    {
+      "field": "class12_percent",
+      "op": "gte",
+      "value": 75,
+      "text_en": "Must have at least 75% in Class 12",
+      "source_text": "The applicant must have secured at least 75% or equivalent marks in the 12 class.",
+      "verified": false
+    },
+    {
+      "field": "ug_years_completed",
+      "op": "gte",
+      "value": 2,
+      "text_en": "Undergraduates must have completed at least two years of their course",
+      "source_text": "The undergraduate student must have completed at least two years of study in the undergraduate course.",
+      "verified": false,
+      "review_note": "Postgraduates meet this by answering the undergraduate years they completed."
+    },
+    {
+      "field": "degree_aggregate_percent",
+      "op": "gte",
+      "value": 55,
+      "text_en": "Must have at least 55% aggregate (undergraduates: years so far; postgraduates: graduation)",
+      "source_text": "The undergraduate student must have a minimum aggregate of 55% or equivalent marks in years completed till the date of application.",
+      "verified": false
+    },
+    {
+      "field": "has_own_laptop",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must have their own laptop for the internship",
+      "source_text": "The applicant must have his own laptop for the internship.",
+      "verified": false
+    }
+  ]
 }

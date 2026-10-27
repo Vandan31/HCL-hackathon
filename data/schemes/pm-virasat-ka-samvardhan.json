@@ -24,5 +24,33 @@
     "how_to_apply": {
       "en": "Online\nStep 01: Register/Login\nVisit the SIDH Portal (https://www.skillindiadigital.gov.in/), register as a Learner/Participant (Candidate) or log in if already registered, and complete e-KYC using your personal details.\nStep 02:Profile Setup\nCreate your account password/PIN, verify your mobile number via OTP, and ensure all profile details (name, date of birth, and contact information) are accurate and updated.\nStep 03:Explore Schemes & Courses\nAccess your dashboard and search for PM VIKAS and job roles. Use filters such as scheme, mode, and sector to find suitable courses or batches.\nStep 04:Show Interest / Apply for a Batch\nChoose a batch for your preferred job role and submit your interest or application. You may select up to five batches, which will be reviewed by the training partner /training centre.\nStep 05:Finalise Enrolment & Status\nAfter approval from the training partner / training centre, accept the invitation through your portal to confirm enrolment. Track your application status under the “Applications” section."
     }
-  }
+  },
+  "criteria": [
+    {
+      "field": "minority_or_ews",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must belong to one of the six notified minorities (Muslims, Christians, Sikhs, Buddhists, Jains, Parsis); some seats go to non-minority EWS candidates",
+      "source_text": "Indian nationals belonging to the six notified minority communities: Muslims, Christians, Sikhs, Buddhists, Jains, and Parsis",
+      "verified": false,
+      "review_note": "From the Details section; up to 25% (traditional skilling) / 15% (other components) of seats are for non-minority EWS."
+    },
+    {
+      "field": "age",
+      "op": "gte",
+      "value": 14,
+      "text_en": "Must be at least 14 years old (18 for the women leadership and entrepreneurship component)",
+      "source_text": "The Age of the applicant should be 14 to 45 years for skilling and education component and 18 to 45 years for Women Leadership and Entrepreneurship Component",
+      "verified": false,
+      "review_note": "Drafted for skilling/education (14+); the women component needs 18+."
+    },
+    {
+      "field": "age",
+      "op": "lte",
+      "value": 45,
+      "text_en": "Must be 45 years old or younger",
+      "source_text": "The Age of the applicant should be 14 to 45 years for skilling and education component and 18 to 45 years for Women Leadership and Entrepreneurship Component",
+      "verified": false
+    }
+  ]
 }

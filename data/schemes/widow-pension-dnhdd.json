@@ -24,5 +24,55 @@
     "how_to_apply": {
       "en": "Offline\nApplication Process:\nStep 1: The applicant can collect the application form from the office of the District Panchayat or Municipal Council of the concerned district. Alternatively, the application form can be downloaded from the official website.\nStep 2: The applicant should carefully fill out the application form and attach all necessary documents.\nStep 3: The duly filled application form, addressed to the Chief Executive Officer/Chief Officer of the concerned District Panchayat/Municipal Council, should be submitted to the Gram Panchayat/District Panchayat/Municipal Council of the concerned district.\nPost Application Process:\nStep 1: Field-level staff of the District Panchayat/Municipal Council will verify the submitted documents and scrutinize the application. They will also collect a life certificate from the beneficiaries annually.\nStep 2: The Chief Executive Officer/Chief Officer of the respective District Panchayat/Municipal Council will review and approve the applications.\nTimelines:\n•\tApplication process: The application may be processed within 30 (thirty) days from the date of receipt.\n•\tPayment disbursement: Once the application is approved by the Approving / Recommending authorities, the payment shall be disbursed into the bank account of the widow women by the fifth of every month.\nGrievance Redressal & Contact:\nFor any grievance, the aggrieved widow women may approach, the Chief Executive Officer/Chief Officer of District Panchayat/Municipal Council in the concerned district or District Collector of the concerned district or Department of Social Welfare."
     }
-  }
+  },
+  "criteria": [
+    {
+      "field": "state",
+      "op": "eq",
+      "value": "dadra and nagar haveli and daman and diu",
+      "text_en": "Must be a domicile of Dadra & Nagar Haveli and Daman & Diu",
+      "source_text": "The applicant should be a domicile of the Dadra & Nagar Haveli and Daman & Diu.",
+      "verified": false
+    },
+    {
+      "field": "marital_status",
+      "op": "eq",
+      "value": "widow",
+      "text_en": "Must be a widow (benefit stops on remarriage or a live-in relationship)",
+      "source_text": "The applicant should be a widow.",
+      "verified": false
+    },
+    {
+      "field": "age",
+      "op": "gte",
+      "value": 18,
+      "text_en": "Must be at least 18 years old",
+      "source_text": "The applicant should be between 18 and 59 years of age.",
+      "verified": false
+    },
+    {
+      "field": "age",
+      "op": "lte",
+      "value": 59,
+      "text_en": "Must be 59 years old or younger (at 60 she moves to the old-age pension)",
+      "source_text": "The applicant should be between 18 and 59 years of age.",
+      "verified": false
+    },
+    {
+      "field": "annual_income",
+      "op": "lte",
+      "value": 150000,
+      "text_en": "Annual income must not exceed ₹1.5 lakh",
+      "source_text": "The applicant's annual income should not exceed ₹1.5 lakh.",
+      "verified": false
+    },
+    {
+      "field": "receives_other_widow_pension",
+      "op": "eq",
+      "value": false,
+      "text_en": "Must not get money from any other widow pension scheme",
+      "source_text": "The applicant should not be receiving financial assistance under any other widow pension scheme.",
+      "verified": false
+    }
+  ]
 }

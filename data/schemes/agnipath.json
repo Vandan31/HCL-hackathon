@@ -27,5 +27,41 @@
     "how_to_apply": {
       "en": "Online\nEnrolment will be undertaken through an online centralized system for all three services with specialized rallies and campus interviews from recognized technical institutes such as Industrial Training Institutes and National Skills Qualifications Framework, among others.\nEnrolment will be based on an ‘All India All Class’ basis.\nThe candidates will be recruited as per the existing pattern of selection into the Armed Forces.\nIndian Army: Official Website\nIndian Navy: Official Website\nIndian Air Force: Official Website"
     }
-  }
+  },
+  "criteria": [
+    {
+      "field": "citizen_of_india",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must be a citizen of India",
+      "source_text": "The applicant must be a citizen of India.",
+      "verified": false
+    },
+    {
+      "field": "age",
+      "op": "gte",
+      "value": 17.5,
+      "text_en": "Must be at least 17.5 years old",
+      "source_text": "For the subsequent intakes, the age of the applicant should be between 17.5 to 21 years.",
+      "verified": false,
+      "review_note": "The 2022 intake allowed 17.5-23; drafted for the later intakes."
+    },
+    {
+      "field": "age",
+      "op": "lte",
+      "value": 21,
+      "text_en": "Must be 21 years old or younger",
+      "source_text": "For the subsequent intakes, the age of the applicant should be between 17.5 to 21 years.",
+      "verified": false,
+      "review_note": "The 2022 intake allowed up to 23; drafted for the later intakes."
+    },
+    {
+      "field": "meets_forces_standards",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must meet the education, physical and medical standards of the Army / Navy / Air Force",
+      "source_text": "The applicant must fulfill the educational qualifications and physical and medical standards set by the Indian Army / Indian Navy / Indian Air Force.",
+      "verified": false
+    }
+  ]
 }

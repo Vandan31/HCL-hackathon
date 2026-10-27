@@ -24,5 +24,48 @@
     "how_to_apply": {
       "en": "Offline\nStep 1 : The applicant must download and fill the prescribed application proforma and related forms available on the Ministry of Culture’s website.\nStep 2 : The applicant must submit the completed application in the prescribed format, along with all required documents (as per Para 8), to the Under Secretary, P.Arts-II Section, New Delhi.\nNote:\nThe application must be complete in all respects, as incomplete applications will not be entertained and will be rejected.\nThe application must include all mandatory documents, failing which it will not be considered and will be returned to the applicant organization."
     }
-  }
+  },
+  "criteria": [
+    {
+      "field": "applicant_type",
+      "op": "eq",
+      "value": "organisation",
+      "text_en": "Must be an organisation (society, trust or not-for-profit company), not an individual",
+      "source_text": "The organization must be registered as a society under the Registration of Societies Act (XXI of 1860) or under a similar Act, or as a Trust or Not-for-Profit Company for at least three years.",
+      "verified": false,
+      "review_note": "Organisation-only scheme."
+    },
+    {
+      "field": "registered_3_years",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must have been registered for at least three years",
+      "source_text": "The organization must be registered as a society under the Registration of Societies Act (XXI of 1860) or under a similar Act, or as a Trust or Not-for-Profit Company for at least three years.",
+      "verified": false
+    },
+    {
+      "field": "cultural_work_3_years",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must have worked actively in dance, drama, theatre, music, fine arts, Indology or literature for at least three years",
+      "source_text": "The organization must have a predominantly cultural profile and should have been actively working in fields such as dance, drama, theatre, music, fine arts, Indology, and literature for at least three years.",
+      "verified": false
+    },
+    {
+      "field": "can_fund_matching_share",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must be able to fund 40% of the project cost (10% in the North Eastern Region)",
+      "source_text": "The organization must be able to arrange 40% of the project cost (for Non-North Eastern Region projects) or 10% (for North Eastern Region projects) as its matching share.",
+      "verified": false
+    },
+    {
+      "field": "recommended_by_govt_agency",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must be inspected and recommended by a Central or State/UT government agency",
+      "source_text": "The organization must have been inspected and recommended by an appropriate agency of the Central Government or the concerned State Government/UT Administration.",
+      "verified": false
+    }
+  ]
 }

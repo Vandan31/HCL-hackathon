@@ -24,5 +24,56 @@
     "how_to_apply": {
       "en": "Online\nStep 01: The call for proposals will be notified through the website www.serbonline.in and www.serb.gov.in\nStep 02: Applicant(s) should first register on the online website.  Click here to register\nStep 03: After login, the applicant(s) are required to fill all the mandatory fields in the Profile Detail section under User Profile, which includes Bio-data, Photo, and Institute Address, etc.\nStep 04: Summary of the project proposal; Project Title (max 500 characters), Abstract of the proposed work (max 3000 characters), Keywords (max 6), Objectives of the project (max 1500 characters), Expected output and outcome of the proposal (max 1500 characters), have to be entered at the time of proposal submission.\nStep 05: Other relevant information of the proposal must be uploaded in a single PDF file not more than 10 MB as other technical documents (OTD).\nNote: The proposals will be evaluated through peer review processes as per SERB guidelines."
     }
-  }
+  },
+  "criteria": [
+    {
+      "field": "citizen_of_india",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must be an Indian citizen",
+      "source_text": "Indian citizens residing in India holding a Ph.D. degree in Science/Engineering or MS/MD in Medicine are eligible to apply.",
+      "verified": false
+    },
+    {
+      "field": "resident_of_india",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must be living in India",
+      "source_text": "Indian citizens residing in India holding a Ph.D. degree in Science/Engineering or MS/MD in Medicine are eligible to apply.",
+      "verified": false
+    },
+    {
+      "field": "has_phd_science_or_ms_md",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must hold a Ph.D. in Science/Engineering or an MS/MD in Medicine",
+      "source_text": "Indian citizens residing in India holding a Ph.D. degree in Science/Engineering or MS/MD in Medicine are eligible to apply.",
+      "verified": false
+    },
+    {
+      "field": "regular_position_state_or_private",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must hold a regular academic/research post at a State University/College or private academic institution",
+      "source_text": "The applicant(s) must hold a regular academic/research position in State Universities/ Colleges and private Academic Institutions.",
+      "verified": false
+    },
+    {
+      "field": "has_ongoing_project_or_fellowship",
+      "op": "eq",
+      "value": false,
+      "text_en": "Must not hold any ongoing research project or fellowship when applying",
+      "source_text": "Applicant should not hold any ongoing research projects or any fellowship at the time of submission of application.",
+      "verified": false
+    },
+    {
+      "field": "age",
+      "op": "lte",
+      "value": 50,
+      "text_en": "Must be 45 or younger (50 for SC/ST/OBC, physically challenged and women)",
+      "source_text": "The upper age limit for the award is 45 years at the time of the submission of the application.",
+      "verified": false,
+      "review_note": "Engine has no per-category rule: drafted at the relaxed limit so nobody is wrongly rejected; check the category before relying on it."
+    }
+  ]
 }

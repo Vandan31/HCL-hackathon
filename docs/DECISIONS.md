@@ -91,3 +91,26 @@
 - **Panel answer:** "Our source of truth is the official English page; the AI only translates the answer,
   and the proof card shows the exact official wording."
 - **Change if:** the demo needs native-language proof cards, or offline mode must answer in Hindi/Gujarati.
+
+## D-010 · Eval set = 98 team-written questions · eval/data · 2026-10-27
+- **Decision:** team chose (Jaya, 2026-10-27) to use the 98 questions in `data/eval/questions.jsonl` as the
+  official eval set in place of the organisers' 100, which were not provided: 3 per scheme (en / hi incl.
+  Hinglish / gu) for all 26 schemes + 20 unanswerable. Ids stay `mock-001`..`mock-098`.
+- **Why:** eval and refusal tuning can't wait; every scheme gets equal coverage in all three languages.
+- **Panel answer:** "The organisers didn't share their questions, so we wrote our own: 3 per scheme in three
+  languages plus 20 out-of-scope ones. They're ours, and we say so."
+- **Change if:** the organisers' questions arrive: copy them in exactly as asked and re-run the eval.
+
+## D-011 · Eligibility criteria drafted from scheme text, AND-only, lenient where unsure · data/eligibility · 2026-10-27
+- **Decision:** 124 draft rules for 26 schemes in `data/schemes/<id>.json` → `criteria`, in the eligibility
+  engine's format (`field`, `op`, `value`, `text_en`) plus `source_text` (the exact sentence, checked by a
+  test), `verified: false` (until a human checks) and `review_note` (where the text didn't fit a rule).
+  Field names are one shared list in `config/ingest.py` `CRITERIA_FIELDS`.
+- **Why:** the engine only does AND, so "60% (50% for some categories)" or "35 (40 with relaxation)" is drafted
+  at the lenient limit: wrongly telling an eligible citizen "not eligible" is the worse error; the
+  department still makes the final call. Vague conditions ("aptitude for research") stay as yes/no fields
+  that show "verify at office".
+- **Evidence:** Measured: `tests/ingest` 7 passed; Vaidehi's `rules.py` (branch `Vaidehi`) run on the drafts
+  gives `not_eligible` for RTI age 42, `likely_eligible` for a fully answered widow-pension case.
+- **Panel answer:** "Every rule quotes the sentence it came from, and a person ticks it off before it's trusted."
+- **Change if:** a human reviewer corrects a rule (edit the JSON, set `verified: true`).

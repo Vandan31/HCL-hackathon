@@ -24,5 +24,49 @@
     "how_to_apply": {
       "en": "Online\nStep 01: Visit the National Awards Portal: https://www.awards.gov.in.\nStep 02: Register/Login using the official credentials of the recommending authority.\nStep 03: Fill in the nomination form with complete details.\nStep 04: Preparation of nomination proposal is done with complete service records and ACR/APAR details.\nStep 05: Upload required documents and the submission of recommendation is made by State Government or Central Organization.\nPost-Application Process\nStep 01: Verification of ACR/APAR, vigilance, and service records is conducted thoroughly.\nStep 02: Screening and evaluation are undertaken by committees constituted under the Ministry of Home Affairs.\nStep 03: Final recommendation is prepared based on merit and eligibility conditions.\nStep 04: Approval is granted by the competent authority and the President of India after due consideration.\nStep 05: Announcement and conferment of the award are carried out on national occasions, where the medal and citation are formally presented to the selected awardees.\nProvision for Preparation of Duplicate Medal (In Case of Loss)\nIn exceptional cases, a duplicate medal shall be prepared only once.\nStep 01: The applicant should submit a copy of FIR for loss of medal with full justification through proper channel.\nStep 02: The cost of preparation shall be paid by the individual awardee through Bank Draft as suggested by India Government Mint.\nStep 03: A penalty of ₹10,000 (Rupees Ten Thousand only) shall be paid by the individual in favour of Pay and Accounts Officer, Ministry of Home Affairs, Government of India, through Demand Draft.\nStep 04: The duplicate medal will be issued only after verification and payment confirmation."
     }
-  }
+  },
+  "criteria": [
+    {
+      "field": "serving_police_or_capf",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must be a serving police officer or CAPF/CPO personnel",
+      "source_text": "The applicant should be a serving police officer or personnel of CAPFs/CPOs.",
+      "verified": false,
+      "review_note": "Nominated by the recommending authority, not by the officer."
+    },
+    {
+      "field": "years_of_service",
+      "op": "gte",
+      "value": 18,
+      "text_en": "Must have at least 18 years of service",
+      "source_text": "The applicant should have a minimum service of 18 years.",
+      "verified": false
+    },
+    {
+      "field": "clean_service_record",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must have a clean service record with no major penalties",
+      "source_text": "The applicant should have a clean service record without major penalties.",
+      "verified": false
+    },
+    {
+      "field": "meets_acr_requirements",
+      "op": "eq",
+      "value": true,
+      "text_en": "ACRs of the last 10 years: at least 8 Very Good or above, 1 Outstanding, none average",
+      "source_text": "The applicant should have at least 8 Very Good or above ACRs; at least 1 should be Outstanding.",
+      "verified": false,
+      "review_note": "Also: no more than 1 missing ACR, last year's ACR available."
+    },
+    {
+      "field": "shape_1_fitness",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must be physically fit (SHAPE 1; SHAPE 2 only in exceptional cases)",
+      "source_text": "The applicant should be physically fit and fall under SHAPE 1 category; relaxation to SHAPE 2 may be given in exceptional cases.",
+      "verified": false
+    }
+  ]
 }

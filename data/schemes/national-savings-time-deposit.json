@@ -24,5 +24,16 @@
     "how_to_apply": {
       "en": "Offline\nStep 1: Visit the nearest Post Office and collect the Account Opening Form and KYC Form.\nStep 2: Fill out the forms carefully and attach required documents (PAN, Aadhaar or valid ID proof, etc.).\nStep 3: Submit the completed forms along with documents at the Post Office counter.\nStep 4: Deposit the minimum amount (₹500) through cheque.\nStep 5: After verification, the account will be opened and details will be provided."
     }
-  }
+  },
+  "criteria": [
+    {
+      "field": "citizen_of_india",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must be a resident citizen of India",
+      "source_text": "The individual must be a resident citizen of India.",
+      "verified": false,
+      "review_note": "No age rule: a guardian can open an account for a minor; minors from 10 can operate their own."
+    }
+  ]
 }

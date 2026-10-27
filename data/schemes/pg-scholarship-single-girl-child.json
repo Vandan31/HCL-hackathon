@@ -27,5 +27,63 @@
     "how_to_apply": {
       "en": "Online\nProcedure for Applying\nStep-1: The candidates fulfilling the eligibility conditions are required to apply online on the National Scholarship Portal after initiation of the application process and notice to be published on the UGC website.\nStep-2: The host institution where the candidate is studying is required to verify the online\napplication.\nStep-3: It is expected from the institutions where students have taken admitted in the first year of PG course, that no tuition fees will be charged by the institute to girl students to pursue PG degree courses in Universities/Colleges/Institutions\nNotes\n1. Applications will be invited once a year on the National e-Scholarship Portal of the Government of India. 2. Short notifications will also be uploaded on the UGC website.\n3. Incomplete applications will be summarily rejected. Only verified online applications will be considered for the award of scholarship.\n4. Affidavit regarding Single girl child status may be uploaded as per format given in Annexure-II.\n5. Joining report as per Annexure-I has to be uploaded."
     }
-  }
+  },
+  "criteria": [
+    {
+      "field": "citizen_of_india",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must be a citizen of India",
+      "source_text": "The applicant must be a citizen of India.",
+      "verified": false
+    },
+    {
+      "field": "gender",
+      "op": "eq",
+      "value": "female",
+      "text_en": "Must be a girl",
+      "source_text": "The applicant must be the only girl child in the family.",
+      "verified": false
+    },
+    {
+      "field": "only_girl_child",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must be the only girl child with no brothers (twin daughters may also apply)",
+      "source_text": "The applicant must be the only girl child in the family.",
+      "verified": false
+    },
+    {
+      "field": "age",
+      "op": "lte",
+      "value": 30,
+      "text_en": "Must be 30 or younger at admission to the first year of PG",
+      "source_text": "The age of the applicant should not be more than 30 years at the time of admission in the first year of PG",
+      "verified": false
+    },
+    {
+      "field": "first_year_regular_pg",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must be admitted to a regular, full-time first-year Master's course",
+      "source_text": "The applicant must have taken admission to regular, full-time first-year Master's Degree courses in any designated university or a post-graduate college.",
+      "verified": false
+    },
+    {
+      "field": "professional_course",
+      "op": "eq",
+      "value": false,
+      "text_en": "Course must be non-professional",
+      "source_text": "The candidate should be pursuing a non-professional course and be taking regular classes from a recognized institution.",
+      "verified": false
+    },
+    {
+      "field": "distance_education",
+      "op": "eq",
+      "value": false,
+      "text_en": "Must not be studying through distance education",
+      "source_text": "Admission to PG Course in Distance education mode is not covered under the scheme.",
+      "verified": false
+    }
+  ]
 }

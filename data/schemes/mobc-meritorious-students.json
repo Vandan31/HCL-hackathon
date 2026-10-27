@@ -24,5 +24,37 @@
     "how_to_apply": {
       "en": "Offline\nStep 1: The Directorate of Welfare of Plains Tribes and Backward Classes, Assam, will advertise the scheme in print and electronic media, along with the prescribed format of the application form.\nStep 2: The interested applicant should take print of the prescribed format of the application form.\nStep 3: In the application form, fill in all the mandatory fields, paste the passport-sized photograph (signed across, if required), and attach copies of all the mandatory documents (self-attest, if required).\nStep 4: Submit the duly filled and signed application form along with the documents, within the prescribed period (if any), to the Director, WPT & BC, Assam.\n*Applicants are advised to retain a copy of the submitted application and acknowledgment for future reference.\nScrutiny and Approval\nStep 1: Applications are scrutinized by the Selection Committee.\nStep 2: Approved beneficiaries are selected based on merit and fund availability."
     }
-  }
+  },
+  "criteria": [
+    {
+      "field": "state",
+      "op": "eq",
+      "value": "assam",
+      "text_en": "Must belong to a community of Assam",
+      "source_text": "The applicant must belong to the Scheduled Tribe (Plain) / Other Backward Class / More Other Backward Class community of Assam.",
+      "verified": false
+    },
+    {
+      "field": "social_category",
+      "op": "in",
+      "value": [
+        "st",
+        "obc",
+        "mobc"
+      ],
+      "text_en": "Must belong to the Scheduled Tribe (Plain), OBC or MOBC community",
+      "source_text": "The applicant must belong to the Scheduled Tribe (Plain) / Other Backward Class / More Other Backward Class community of Assam.",
+      "verified": false,
+      "review_note": "ST must be ST (Plain)."
+    },
+    {
+      "field": "meets_mobc_merit_marks",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must have 80%+ in Class 10, 75%+ in Class 12, 70%+ in graduation or 65%+ in post-graduation",
+      "source_text": "Secured 80% or above in Matriculation (Class 10th).",
+      "verified": false,
+      "review_note": "Any one of the four levels qualifies; the engine has no OR rule, so this is one yes/no check."
+    }
+  ]
 }

@@ -24,5 +24,47 @@
     "how_to_apply": {
       "en": "Online\nRegistration Process:\nStep 1: Visit https://isel.guj.nic.in and register using your mobile number and email ID.\nStep 2: Log in with OTP and change the password.\nStep 3: Enter name, Aadhaar number, Ration Card number, and enrollment details correctly.\nStep 4: Provide parent/guardian contact details and complete registration.\nApplication Process:\nStep 1: Log in to https://isel.guj.nic.in and click “Apply.”\nStep 2: Enter course details and fill out the online form.\nStep 3: Upload all required documents in the specified format.\nStep 4: Visit the designated help center within 7 days for document verification and submit the application set and collect the acknowledgement receipt. (For students abroad – parent/guardian with Power of Attorney signs and submits documents).\nContact Us:\nKcg E-Mail Id: isel-kcg[at]gujgov[dot]edu[dot]in\nHelpline No: 9909039380 (10:30 AM to 6:00 PM)"
     }
-  }
+  },
+  "criteria": [
+    {
+      "field": "state",
+      "op": "eq",
+      "value": "gujarat",
+      "text_en": "Must be a resident of Gujarat",
+      "source_text": "The applicant must be a resident of Gujarat.",
+      "verified": false
+    },
+    {
+      "field": "occupation",
+      "op": "eq",
+      "value": "student",
+      "text_en": "Must be a student",
+      "source_text": "The applicant must be a student.",
+      "verified": false
+    },
+    {
+      "field": "hsc_percentile",
+      "op": "gte",
+      "value": 60,
+      "text_en": "Must have passed HSC (Class 12) with at least 60 percentile",
+      "source_text": "The applicant must have passed HSC (Higher Secondary Certificate) with at least 60 percentile.",
+      "verified": false
+    },
+    {
+      "field": "has_education_loan",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must have an education loan from a recognised bank for higher education in India or abroad",
+      "source_text": "The applicant must have taken an education loan from a recognized bank for pursuing higher education in India or abroad.",
+      "verified": false
+    },
+    {
+      "field": "annual_family_income",
+      "op": "lte",
+      "value": 600000,
+      "text_en": "Family income must not exceed ₹6,00,000 per year",
+      "source_text": "The applicant must have a family income not exceeding ₹6,00,000/- per year.",
+      "verified": false
+    }
+  ]
 }

@@ -27,5 +27,97 @@
     "how_to_apply": {
       "en": "Online\nStep 1: Visit the official website of the scheme and click on the “Login to Apply” button to start the application process. Carefully read all the instructions provided on the website before proceeding.\nStep 2: If you are a first-time user, click on “Registration for New User” and complete the registration process to create your account.\nStep 3: Select your Authentication ID from the available options, such as\nPDS (Ration Card)\nElection Photo ID Card (EPIC).\nStep 4: Enter your card number, select your name from the displayed list, and click on “Next” to continue.\nStep 5: Your EPIC ID will appear on the screen. If the details are correct, click on “Accept.” If the details are incorrect or rejected, manually enter your EPIC number and proceed.\nStep 6: Click on “Validate” to verify the entered EPIC number, and then click on “Next” to move to the application form.\nStep 7: Fill in all required details in the application form, upload the necessary documents, carefully review all the information, and click on “Submit.” After successful submission, you will receive a unique application number for future reference.\nSign In\nStep 1: Click on “Sign In” and choose your preferred sign-in method from Mobile Number, PDS, EPIC, or Member ID.\nStep 2: Enter your User ID and Password, then click on “Login” to access your account.\nStep 3: After logging in, click on “Apply for Services/Scheme” to start your application.\nStep 4: Fill in all the required details in the application form, upload the necessary documents, carefully review the information, and click on “Submit.”"
     }
-  }
+  },
+  "criteria": [
+    {
+      "field": "age",
+      "op": "gte",
+      "value": 18,
+      "text_en": "Must be at least 18 years old",
+      "source_text": "The applicant must be between 18 and 58 years of age.",
+      "verified": false,
+      "review_note": "Drafted for individual applicants; registered and unregistered entities have their own rules."
+    },
+    {
+      "field": "age",
+      "op": "lte",
+      "value": 58,
+      "text_en": "Must be 58 years old or younger",
+      "source_text": "The applicant must be between 18 and 58 years of age.",
+      "verified": false
+    },
+    {
+      "field": "has_driving_licence",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must hold a valid driving licence",
+      "source_text": "The applicant must hold a valid driving license.",
+      "verified": false
+    },
+    {
+      "field": "state",
+      "op": "eq",
+      "value": "meghalaya",
+      "text_en": "Must be a permanent resident of Meghalaya",
+      "source_text": "The applicant must be a permanent resident of Meghalaya.",
+      "verified": false
+    },
+    {
+      "field": "tourism_experience_years",
+      "op": "gte",
+      "value": 3,
+      "text_en": "Must have at least 3 years of experience in tourism services",
+      "source_text": "The applicant must have a minimum of 3 years of experience in the tourism service sector.",
+      "verified": false
+    },
+    {
+      "field": "credit_defaulter",
+      "op": "eq",
+      "value": false,
+      "text_en": "Must not be a credit defaulter with any bank",
+      "source_text": "The applicant shall not be a credit defaulter from any bank.",
+      "verified": false
+    },
+    {
+      "field": "govt_employee",
+      "op": "eq",
+      "value": false,
+      "text_en": "No one in the immediate family may be a serving or retired State/Central Government employee",
+      "source_text": "i. State and Central Government employees",
+      "verified": false,
+      "review_note": "Exclusions say 'not ordinarily considered' (not absolute); immediate family = spouse, parents, children up to 30."
+    },
+    {
+      "field": "psu_employee",
+      "op": "eq",
+      "value": false,
+      "text_en": "No one in the immediate family may work for a public sector undertaking",
+      "source_text": "ii. Employees of public sector undertakings, subsidiaries of public sector undertakings and divisions of public sector undertakings etc.",
+      "verified": false
+    },
+    {
+      "field": "political_office",
+      "op": "eq",
+      "value": false,
+      "text_en": "No one in the immediate family may hold or seek a political post such as MLA, MLC or MP",
+      "source_text": "iii. Any individual whose job is concerned with politics such MLAs, MLCs, MPs etc. or seeking to hold a similar position in government",
+      "verified": false
+    },
+    {
+      "field": "class1_contractor",
+      "op": "eq",
+      "value": false,
+      "text_en": "Must not be a registered class-1 contractor",
+      "source_text": "iv. Registered class-1 contractors",
+      "verified": false
+    },
+    {
+      "field": "govt_consultant",
+      "op": "eq",
+      "value": false,
+      "text_en": "Must not be a consultant currently engaged with the state or central government",
+      "source_text": "v. Consultants who are currently engaged with state or central government",
+      "verified": false
+    }
+  ]
 }

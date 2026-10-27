@@ -85,6 +85,34 @@ def test_split_breaks_one_long_line_at_sentences():
     assert parts[0].endswith(".")                               # cut at a sentence end, not mid-sentence
 
 
+def test_criteria_match_engine_format_and_quote_the_scheme():
+    # WHY: the eligibility engine silently treats a bad op or field as "unknown", so a typo would
+    # hide a rule instead of failing; and every rule must be traceable to the scheme's own words.
+    import glob
+    import json
+    import os
+    for path in glob.glob(os.path.join(cfg.SCHEMES_DIR, "*.json")):
+        with open(path, encoding="utf-8") as f:
+            s = json.load(f)
+        full = "\n".join(t for sec in s["sections"].values() for t in sec.values())
+        for c in s.get("criteria", []):
+            where = f"{s['id']}:{c.get('field')}"
+            assert c["op"] in cfg.CRITERIA_OPS, where
+            kind = cfg.CRITERIA_FIELDS[c["field"]]              # KeyError = field not in the shared list
+            values = c["value"] if isinstance(c["value"], list) else [c["value"]]
+            for v in values:
+                if kind == "bool":
+                    assert isinstance(v, bool), where
+                elif kind == "number":
+                    assert isinstance(v, (int, float)) and not isinstance(v, bool), where
+                else:
+                    assert v in kind, where                     # allowed lowercase string values
+            assert (c["op"] in {"in", "not_in"}) == isinstance(c["value"], list), where
+            assert c["text_en"].strip(), where
+            assert c["source_text"] in full, where              # quoted word for word
+            assert isinstance(c["verified"], bool), where
+
+
 def test_every_raw_page_has_an_id():
     # WHY: ids are permanent; a new page must get one deliberately in config/ingest.py.
     import glob

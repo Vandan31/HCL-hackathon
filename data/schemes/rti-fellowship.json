@@ -24,5 +24,55 @@
     "how_to_apply": {
       "en": "Offline\nFive sets of the application with enclosures in the prescribed proforma may be sent by post to:\nUnder Secretary (IR), Department of Personnel and Training, Government of India, North Block, New Delhi - 110 001"
     }
-  }
+  },
+  "criteria": [
+    {
+      "field": "rti_field_professional",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must be a professional in journalism (newspaper, magazine, radio, TV), civil society, or RTI research/training",
+      "source_text": "The applicant should be a professional in the field of journalism (newspaper/ magazine/ radio/ TV), Civil Society and research and training in the field of RTI.",
+      "verified": false
+    },
+    {
+      "field": "age",
+      "op": "gte",
+      "value": 25,
+      "text_en": "Must be at least 25 years old",
+      "source_text": "The applicant should be between 25 and 40 years of age.",
+      "verified": false
+    },
+    {
+      "field": "age",
+      "op": "lte",
+      "value": 40,
+      "text_en": "Must be 40 years old or younger",
+      "source_text": "The applicant should be between 25 and 40 years of age.",
+      "verified": false
+    },
+    {
+      "field": "proven_credentials",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must have proven credentials in their professional area",
+      "source_text": "The applicant should have proven credentials in his / her professional area.",
+      "verified": false
+    },
+    {
+      "field": "rti_experience",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must have some prior experience of work on the Right to Information",
+      "source_text": "The applicant should have some prior experience of work relating to the Right to Information.",
+      "verified": false
+    },
+    {
+      "field": "research_aptitude",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must have an aptitude for research",
+      "source_text": "The applicant should have an aptitude for research.",
+      "verified": false
+    }
+  ]
 }

@@ -24,5 +24,55 @@
     "how_to_apply": {
       "en": "Offline\nStep 1: The interested applicant should write the application on plain paper.\nStep 2: Attach copies of all the mandatory documents (self-attest, if required) along with the application.\nStep 3: Submit the duly filled and signed application along with the documents to the Sports, Youth and Cultural Activities Department."
     }
-  }
+  },
+  "criteria": [
+    {
+      "field": "state",
+      "op": "eq",
+      "value": "gujarat",
+      "text_en": "Must be a resident of Gujarat",
+      "source_text": "The applicant must be a resident of Gujarat.",
+      "verified": false
+    },
+    {
+      "field": "artist_with_contribution",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must be an artist with significant contributions to art and literature",
+      "source_text": "The applicant must be an artist who has made significant contributions in the field of art and literature.",
+      "verified": false
+    },
+    {
+      "field": "age",
+      "op": "gte",
+      "value": 60,
+      "text_en": "Must be 60 years old or above",
+      "source_text": "The applicant must be 60 years of age or above.",
+      "verified": false
+    },
+    {
+      "field": "annual_income",
+      "op": "lt",
+      "value": 7200,
+      "text_en": "Own income must be less than ₹600 per month (₹7,200 per year)",
+      "source_text": "The applicant must have a monthly income of less than ₹600/- (₹7,200/- annually).",
+      "verified": false
+    },
+    {
+      "field": "is_disabled",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must be physically disabled",
+      "source_text": "The applicant must be physically disabled.",
+      "verified": false
+    },
+    {
+      "field": "poor_economic_condition",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must be in poor economic condition",
+      "source_text": "The applicant must be in poor economic condition.",
+      "verified": false
+    }
+  ]
 }

@@ -24,5 +24,55 @@
     "how_to_apply": {
       "en": "Online\nStep 1: Visit the official website of the Dr. Ambedkar Antyodaya Vikas Nigam (SC).\nStep 2: On the top menu bar, click on \"Apply Now\".\nStep 3: Click on the loan scheme name.\nStep 4: Select the loan category and fill in the loan amount.\nStep 5: Fill out the Application Form, enter the following details:\nPersonal Information: Name, gender, date of birth, caste, etc.\nAddress Information: Permanent and correspondence address\nIncome Details: Monthly family income and source\nLoan Requirement: Amount needed, proposed use (e.g., business, self-employment)\nBank Account Details: For loan disbursement\nStep 6: Upload scanned copies of the Caste certificate, Income certificate, Aadhaar card, Passport-size photo, Bank passbook (first page), and Residence proof.\nStep 7: Double-check all details. Click on “Preview” to verify. If all details are correct, click “Submit”.\nStep 8: Applicant will receive an Application ID/Reference Number. Save or print the acknowledgement for future tracking."
     }
-  }
+  },
+  "criteria": [
+    {
+      "field": "state",
+      "op": "eq",
+      "value": "gujarat",
+      "text_en": "Must be a resident of Gujarat",
+      "source_text": "The applicant should be a resident of Gujarat.",
+      "verified": false
+    },
+    {
+      "field": "social_category",
+      "op": "eq",
+      "value": "sc",
+      "text_en": "Must belong to the Scheduled Caste (SC) category",
+      "source_text": "The applicant should belong to the Scheduled Caste (SC) category.",
+      "verified": false
+    },
+    {
+      "field": "aay_family",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must belong to an Antyodaya Anna Yojana (AAY) family",
+      "source_text": "The applicant should belong to an Antyodaya Anna Yojana (AAY) family.",
+      "verified": false
+    },
+    {
+      "field": "annual_family_income",
+      "op": "lte",
+      "value": 300000,
+      "text_en": "Annual family income must not exceed ₹3,00,000",
+      "source_text": "The applicant’s annual family income should not exceed ₹3,00,000/-.",
+      "verified": false
+    },
+    {
+      "field": "plans_own_business",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must intend to start or expand a small business or occupation",
+      "source_text": "The applicant should intend to start or expand a small business or occupation.",
+      "verified": false
+    },
+    {
+      "field": "can_provide_two_guarantors",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must be able to provide two guarantors",
+      "source_text": "The applicant should be able to provide two guarantors.",
+      "verified": false
+    }
+  ]
 }

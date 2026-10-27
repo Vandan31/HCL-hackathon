@@ -24,5 +24,40 @@
     "how_to_apply": {
       "en": "Online\nOffline\nOne can download UMANG App or visit website https://web.umang.gov.in/web_new/home\nThe citizen can login using mobile number and OTP.\nOnce logged In, citizen can search for NSAP.\nClick on “Apply Online”\nFill the basic details, choose the mode of payment of pension, upload photo and click on “Submit”.\nApply Now\nUMANG"
     }
-  }
+  },
+  "criteria": [
+    {
+      "field": "age",
+      "op": "gte",
+      "value": 18,
+      "text_en": "Must be 18 years old or above",
+      "source_text": "The age of the applicant should be 18 years and above.",
+      "verified": false
+    },
+    {
+      "field": "resident_of_india",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must be a resident of India",
+      "source_text": "The applicant should be a resident of India.",
+      "verified": false
+    },
+    {
+      "field": "disability_percent",
+      "op": "gt",
+      "value": 80,
+      "text_en": "Disability must be more than 80%",
+      "source_text": "The applicant’s disability should be more than 80%.",
+      "verified": false,
+      "review_note": "Dwarfs are also eligible; that exception can't be written as a rule here."
+    },
+    {
+      "field": "bpl_household",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must belong to a Below Poverty Line (BPL) household",
+      "source_text": "The applicant should belong to the Below Poverty Line.",
+      "verified": false
+    }
+  ]
 }

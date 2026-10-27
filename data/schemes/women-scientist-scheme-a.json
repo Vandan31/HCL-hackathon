@@ -27,5 +27,48 @@
     "how_to_apply": {
       "en": "Online\nStep 1: Register at the online portal https://online-wosa.gov.in/wosa/ using your active email ID. An auto generated mail will be received with ID and link to create password.\nStep 2: After logging in to the WOS-A portal, fill and submit full Project Proposal under WOS-A. Project Proposal Document (PPD) includes online submission and uploading the required documents in the said formats.\nStep 3: Before submission preview your full proposal to make sure that everything is correct and in order. You will not be allowed to edit the contents after submission.\nStep 4: You need to click on \"Final Submit\" button for final submission of proposal. Your proposal will remain save with your login ID and it may be saved in system and also can be printed.\nThere is no need to submit hard copy of proposal to DST."
     }
-  }
+  },
+  "criteria": [
+    {
+      "field": "gender",
+      "op": "eq",
+      "value": "female",
+      "text_en": "Must be a woman",
+      "source_text": "The applicant must be a FEMALE.",
+      "verified": false
+    },
+    {
+      "field": "holds_permanent_position",
+      "op": "eq",
+      "value": false,
+      "text_en": "Must be unemployed or not in a regular/permanent job",
+      "source_text": "The applicant must either be unemployed or in a position other than regular/permanent position.",
+      "verified": false
+    },
+    {
+      "field": "age",
+      "op": "gte",
+      "value": 27,
+      "text_en": "Must be at least 27 years old",
+      "source_text": "The age of the applicant must be between 27 and 57 years",
+      "verified": false
+    },
+    {
+      "field": "age",
+      "op": "lte",
+      "value": 62,
+      "text_en": "Must be 57 or younger (62 for SC/ST/OBC and physically challenged)",
+      "source_text": "The age of the applicant must be between 27 and 57 years (5 year relaxation for SC/ST/OBC and physically challenged candidates)",
+      "verified": false,
+      "review_note": "Engine has no per-category rule: drafted at the relaxed limit so nobody is wrongly rejected; check the category before relying on it."
+    },
+    {
+      "field": "has_science_pg_or_phd",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must hold at least an M.Sc.-level degree (or B.Tech/MBBS), M.Phil/M.Tech, or a Ph.D. in Basic or Applied Sciences",
+      "source_text": "Minimum Post Graduate degree, equivalent to M.Sc. in Basic or Applied Sciences or B.Tech. or MBBS or other equivalent professional qualifications.",
+      "verified": false
+    }
+  ]
 }

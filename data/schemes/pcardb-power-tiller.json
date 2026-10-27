@@ -24,5 +24,31 @@
     "how_to_apply": {
       "en": "Offline\nStep 1: The interested applicant should collect the application form by contacting the Secretary/ Special Officer of the Primary Cooperative Agriculture and Rural Development Bank.\nStep 2: In the application form, fill in all the mandatory fields, paste the passport-sized photograph (signed across, if required), and attach copies of all the mandatory documents (self-attest, if required).\nStep 3: Submit the duly filled and signed application form along with the documents to the concerned authority.\nStep 4: Request a receipt or acknowledgment from the concerned authority to whom the application has been submitted. Ensure that the receipt contains essential details such as the date and time of submission, and a unique identification number (if applicable)."
     }
-  }
+  },
+  "criteria": [
+    {
+      "field": "state",
+      "op": "eq",
+      "value": "tamil nadu",
+      "text_en": "Must be a resident of Tamil Nadu",
+      "source_text": "The beneficiary should be a resident of Tamil Nadu.",
+      "verified": false
+    },
+    {
+      "field": "occupation",
+      "op": "eq",
+      "value": "farmer",
+      "text_en": "Must be a farmer",
+      "source_text": "The beneficiary should be a farmer.",
+      "verified": false
+    },
+    {
+      "field": "loan_for_power_tiller",
+      "op": "eq",
+      "value": true,
+      "text_en": "The loan must be used only to buy a power tiller",
+      "source_text": "The beneficiary should have the intention to use the loan specifically for purchasing power tiller.",
+      "verified": false
+    }
+  ]
 }

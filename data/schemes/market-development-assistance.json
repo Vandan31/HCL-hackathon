@@ -24,5 +24,40 @@
     "how_to_apply": {
       "en": "Online\nRegistration Process\nStep 1: Accessing the Portal for Pre-requisite Registration\nThe applicant must access the Unified Galvanizing Organic Bio-Agro Resources Dhan portal of the Department of Drinking Water & Sanitation to register their Bio-Gas or Compressed Bio-Gas manufacturing units.\nStep 2: Submitting Details for Registration\nThe applicant must submit all necessary plant and operational details on the portal to obtain the mandatory registration number required to avail the assistance.\nStep 3: Intimation of Willingness to the Department\nThe applicant must submit a physical letter intimating their willingness to market the organic fertilizers to the Department of Fertilizers.\nStep 4: Submission of Annexures\nThe applicant must attach the required operational details as per Annexure-I (for Fertilizer Marketing Companies) or Annexure-II (for Manufacturers) along with the intimation letter for formal approval.\nStep 5: Registration on the Integrated Fertilizer Management System Portal\nThe applicant must register on the newly introduced module on the Integrated Fertilizer Management System portal where the Department of Fertilizers will allot a unique identification number to the manufacturing units.\nStep 6: Uploading Operational Data\nThe applicant must use the allotted identification number to upload the quantity of organic fertilizers produced, data relating to sales, Maximum Retail Price, remaining stock, and quality certificates on the Integrated Fertilizer Management System portal.\nPost-Application Processes\nStep 7: Quality Testing and Certification\nThe applicant must ensure batch-wise or dispatch-wise quality testing at accredited laboratories and get the test reports validated by the State Agriculture Department or State Energy Development Agency to receive the 'B2-MDA' certificate.\nStep 8: Generating Benefit Claims\nThe applicant must generate Direct Benefit Transfer claims through the Integrated Fertilizer Management System portal using the prescribed Annexure within two months from the month of sale.\nStep 9: Submission of Claim Documentation\nThe applicant must submit a copy of the Quality Certificate along with the claim for Market Development Assistance payment for that particular month to the Department of Fertilizers to receive the financial disbursement."
     }
-  }
+  },
+  "criteria": [
+    {
+      "field": "applicant_type",
+      "op": "eq",
+      "value": "organisation",
+      "text_en": "Must be an entity (manufacturer, marketer, distributor or Bio-Gas/CBG operator), not an individual",
+      "source_text": "The applicant must be a manufacturing-cum-marketing entity, a Compressed Bio-Gas operator, a Bio-gas operator, a marketer, or a distributor under the umbrella Galvanizing Organic Bio-Agro Resources Dhan initiative.",
+      "verified": false,
+      "review_note": "Organisation-only scheme: for citizens the checklist mainly says they can't apply."
+    },
+    {
+      "field": "gobardhan_registered_plant",
+      "op": "eq",
+      "value": true,
+      "text_en": "Bio-Gas/CBG plants must be registered on the Galvanizing Organic Bio-Agro Resources Dhan portal",
+      "source_text": "The applicant must register the Bio-Gas or Compressed Bio-Gas units with the Galvanizing Organic Bio-Agro Resources Dhan portal of the Department of Drinking Water & Sanitation as a pre-requisite condition.",
+      "verified": false
+    },
+    {
+      "field": "markets_fom_lfom_prom",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must market Fermented Organic Manure, Liquid Fermented Organic Manure or Phosphate Rich Organic Manure",
+      "source_text": "The applicant must market Fermented Organic Manure, Liquid Fermented Organic Manure, or enriched Phosphate Rich Organic Manure.",
+      "verified": false
+    },
+    {
+      "field": "meets_fco_specs",
+      "op": "eq",
+      "value": true,
+      "text_en": "Fertilisers must meet the Fertilizer Control Order, 1985 specifications",
+      "source_text": "The applicant must ensure the organic fertilizers conform to the specifications mentioned in the Fertilizer Control Order, 1985.",
+      "verified": false
+    }
+  ]
 }

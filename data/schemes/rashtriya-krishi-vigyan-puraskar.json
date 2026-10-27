@@ -24,5 +24,32 @@
     "how_to_apply": {
       "en": "Online\nRegistration:\nStep 1: Visit the official website and click on the Registration button.\nStep 2: Select your category: Individual or Organization.\nStep 3: Fill in the required details:\nIndividual: Name, Date of Birth, Nominator Type, Mobile, Email, Aadhaar Number.\nOrganization: Type, Authorized Person Name, Date of Birth, Organization Description, Designation, Mobile, Email, Aadhaar Number.\nStep 4: Click Submit to complete registration.\nApply:\nStep 1: Log in to the portal using your registered credentials.\nStep 2: Select the scheme from the list of awards and click \"Nominate / Apply Now\".\nStep 3: Fill in all mandatory fields in the online application form.\nStep 4: Click Submit to complete your application."
     }
-  }
+  },
+  "criteria": [
+    {
+      "field": "agri_scientist_public_institution",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must be an Indian agricultural scientist at an ICAR institute, public agricultural institution or Krishi Vigyan Kendra",
+      "source_text": "The applicant should be an Indian scientist working in agriculture or allied fields in ICAR institutes, public agricultural institutions, or Krishi Vigyan Kendras, and must have made significant contributions in India.",
+      "verified": false
+    },
+    {
+      "field": "clean_service_record",
+      "op": "eq",
+      "value": true,
+      "text_en": "No pending enquiry or major punishment in the last five years",
+      "source_text": "The applicant should have a clean service record, with no pending enquiry or major punishment in the last five years.",
+      "verified": false
+    },
+    {
+      "field": "age",
+      "op": "lt",
+      "value": 60,
+      "text_en": "Must be below 60 years old (below 45 for the young scientist category)",
+      "source_text": "The applicant can apply individually or as part of a team (maximum five members) for innovation and research awards, and must be below 60 years of age.",
+      "verified": false,
+      "review_note": "Young scientist category: below 45."
+    }
+  ]
 }

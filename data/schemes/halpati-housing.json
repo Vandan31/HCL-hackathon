@@ -24,5 +24,48 @@
     "how_to_apply": {
       "en": "Offline\nStep 1: The interested applicant should visit (during office hours) the Gandhinagar Head Office and Sub-Offices at Surat and Valsad and request a hard copy of the prescribed format of the application form from the staff exclusively entrusted to issue and collect filled-in applications.\nStep 2: In the application form, fill in all the mandatory fields, and attach copies of all the mandatory documents (self-attest, if required).\nStep 3: Submit the duly filled and signed application form along with the documents to the sub-offices located at Surat and Valsad.\nStep 4: Request a receipt or acknowledgment from the sub-offices located at Surat and Valsad to whom the application has been submitted. Ensure that the receipt contains essential details such as the date and time of submission and a unique identification number (if applicable)."
     }
-  }
+  },
+  "criteria": [
+    {
+      "field": "halpati_community",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must belong to the Halpati (Talaviya, Nayaka) Scheduled Tribe",
+      "source_text": "The applicant should belong to the Halpati (Talaviya, Nayaka) caste, which is recognized under Scheduled Tribes.",
+      "verified": false
+    },
+    {
+      "field": "state",
+      "op": "eq",
+      "value": "gujarat",
+      "text_en": "Must live in Gujarat",
+      "source_text": "The applicant should be a resident of South Gujarat districts: Surat, Tapi, Valsad, Navsari, Narmada, Bharuch, Chhotaudepur, or Vadodara.",
+      "verified": false
+    },
+    {
+      "field": "district",
+      "op": "in",
+      "value": [
+        "surat",
+        "tapi",
+        "valsad",
+        "navsari",
+        "narmada",
+        "bharuch",
+        "chhotaudepur",
+        "vadodara"
+      ],
+      "text_en": "Must live in Surat, Tapi, Valsad, Navsari, Narmada, Bharuch, Chhotaudepur or Vadodara district",
+      "source_text": "The applicant should be a resident of South Gujarat districts: Surat, Tapi, Valsad, Navsari, Narmada, Bharuch, Chhotaudepur, or Vadodara.",
+      "verified": false
+    },
+    {
+      "field": "rural_resident",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must live in a rural area of these districts",
+      "source_text": "The applicant should be a resident of rural areas within the specified districts.",
+      "verified": false
+    }
+  ]
 }

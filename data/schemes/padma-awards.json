@@ -24,5 +24,24 @@
     "how_to_apply": {
       "en": "Online\nNominations are invited between 15th March and 31st July each year.\nStep 01: The applicant visits the\nofficial Padma Awards Portal.\nStep 02: Register/Login using official credentials of the recommending authority\nStep 03: Fill in the nomination form with complete details\nStep 04: Upload required documents, including citation and verification certificate\nStep 05: Ensure accurate entry of nominee details (including Hindi name) and submit the application online before the deadline.\nPost-Application Process\nStep 01: The Committee evaluates candidates based on merit, impact, and public service contribution.\nStep 02: Recommendations are submitted to the Prime Minister and the President of India.\nStep 03: Final approval is granted by the President of India.\nStep 04: Awards are announced on Republic Day and presented at Rashtrapati Bhavan."
     }
-  }
+  },
+  "criteria": [
+    {
+      "field": "distinguished_service",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must have rendered distinguished or exceptional service in any field",
+      "source_text": "The applicant should have rendered distinguished or exceptional service in any field.",
+      "verified": false
+    },
+    {
+      "field": "serving_govt_employee",
+      "op": "eq",
+      "value": false,
+      "text_en": "Must not be a serving government employee (doctors and scientists are exempt)",
+      "source_text": "The applicant should not be a serving Government employee; however, doctors and scientists are exempted.",
+      "verified": false,
+      "review_note": "The exemption for doctors and scientists can't be written as a rule here."
+    }
+  ]
 }

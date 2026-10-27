@@ -24,5 +24,64 @@
     "how_to_apply": {
       "en": "Online\nRegistration\nStep 1: Visit the Official Website of eSamajkalyan.\nStep 2: In the right pane of the home page, click \"New User? Please Register Here!\".\nYou will be taken to the Registration Form.\nStep 3: In the form, provide all the mandatory fields, fill in the captcha code, and click \"Submit\" to complete the registration process. A popup will appear acknowledging successful registration and displaying your User ID for Login.\nApplication\nStep 1: Visit the Official Website of eSamajkalyan. In the \"Citizen Login\" section provided in the right pane of the home page, provide your User ID and Password, fill in the Captcha Code, then click \"Login\".\nStep 2: In the ribbon provided at the top of the website, click the \"Corporation\" menu, then click \"Gujarat State Divyangjan Finance and Development Corporation\". A list of schemes will be displayed. Select the scheme you intend to apply for.\nStep 3: You will be taken to the online application form of the scheme. In the form, provide all the mandatory fields and upload all the mandatory documents in the specified format and size. Carefully review all the information provided and the documents uploaded. Make corrections, if any.\nStep 4: Click \"Submit\" to submit your application. You'll receive a confirmation message. Note down your Application Number for future reference. You can also take a printout of the submitted application form.\nStep 5: Following the successful online submission, the applicant must take a printout of the final application form. Two identical physical copies of the complete application set, along with attached enclosures of all uploaded documents, must be prepared. These two copies must then be deposited at the respective District Office (District Social Welfare Officer (Developing Castes)) applicable to the student."
     }
-  }
+  },
+  "criteria": [
+    {
+      "field": "social_category",
+      "op": "eq",
+      "value": "sebc",
+      "text_en": "Must belong to the Socially and Educationally Backward Class (S.E.B.C.)",
+      "source_text": "The applicant must belong to the Socially and Educationally Backward Class (S.E.B.C.).",
+      "verified": false
+    },
+    {
+      "field": "annual_family_income",
+      "op": "lt",
+      "value": 1000000,
+      "text_en": "Family annual income must be less than ₹10,00,000",
+      "source_text": "The applicant's family annual income must be less than ₹10,00,000/- (Rupees Ten Lakh).",
+      "verified": false
+    },
+    {
+      "field": "class12_percent",
+      "op": "gte",
+      "value": 50,
+      "text_en": "Must have at least 60% in Class 12 (50% for NT/DNT, More Backward or Extremely Backward categories)",
+      "source_text": "The applicant must have secured a minimum of 60% or more marks in 12th standard.",
+      "verified": false,
+      "review_note": "Drafted at 50% so nobody is wrongly rejected; 50-59% is only valid for NT/DNT, More Backward or Extremely Backward categories."
+    },
+    {
+      "field": "studying_abroad",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must be pursuing higher education abroad",
+      "source_text": "The applicant must be pursuing higher education abroad.",
+      "verified": false
+    },
+    {
+      "field": "course_duration_years",
+      "op": "gte",
+      "value": 1,
+      "text_en": "Course must last at least one academic year (or two semesters)",
+      "source_text": "The course must be for a minimum duration of 1 (one) academic year or more, or at least two semesters.",
+      "verified": false
+    },
+    {
+      "field": "applied_within_6_months_abroad",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must apply before travelling abroad or within six months of arriving",
+      "source_text": "The applicant must apply before traveling abroad or within six months of arriving abroad.",
+      "verified": false
+    },
+    {
+      "field": "has_solvent_guarantor",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must provide one solvent guarantor",
+      "source_text": "The applicant must submit one solvent guarantor.",
+      "verified": false
+    }
+  ]
 }
