@@ -56,6 +56,11 @@ _Announce here before editing shared files (config, requirements, API contracts)
   the one merged later renumbers. Vaidehi adopted Harsh's numbering: hers are **D-018 to D-021**, Harsh's
   D-016/D-017; D-014/D-015 stay unused.
 
+- **2026-10-27 · Vaidehi → Harsh: UI now calls your API (`USE_MOCK: false`, `API_BASE` http://127.0.0.1:8000). Three asks:**
+  (1) add `scheme_id` to each citation (chunks already have it; the UI falls back to the `chunk_id` prefix before `:`, per DATA_FORMAT);
+  (2) wire `/api/eligibility` to `src/eligibility/rules.next_question(scheme_id, answers, lang)`: until then the UI sends
+  eligibility to the UI dev server (`ELIGIBILITY_BASE: ""`), which runs the real rules engine; (3) `/api/health` `index_chunks` reads 0.
+
 ## Handoff log (newest on top)
 
 <!--
@@ -66,6 +71,15 @@ _Announce here before editing shared files (config, requirements, API contracts)
 - Broken / open issues: ...
 - Next step: ...
 -->
+
+### 2026-10-27 19:10 · 6 + 10. UI connected to Harsh's API · Vaidehi/claude
+- Note: this work was started without a claim row on the board (missed); no one else was editing `src/ui/` at the time.
+- Changed: `config/ui.js` `USE_MOCK: false`, `API_BASE` = Harsh's API, new `ELIGIBILITY_BASE` (UI dev server, real rules engine). Source cards show the original passage (tagged with its language) and Harsh's machine translation below it, labelled; "Translation not available" when missing. Answer badge knows Marathi/Tamil. Scheme id taken from `chunk_id` per DATA_FORMAT (`<scheme>:<section>:<lang>`); this fixed a duplicate eligibility button. Voice now plays sentence by sentence.
+- Environment (this laptop): team requirements in `C:/Users/vaidu/ys-venv` (Python 3.11; pins resolved unchanged), IndicLID in `models/indiclid/` (169 + 229 MB, sizes match GitHub), multilingual-e5-small (~471 MB) auto-downloaded. `.env` keys loaded by Harsh's loader (`llm: "up"`).
+- How to run (3 terminals, repo root): `USE_MOCKS=false C:/Users/vaidu/ys-venv/Scripts/python -m uvicorn src.api.main:app --port 8000`; `python src/ui/dev_server.py`; `C:/Users/vaidu/indic-tts/.venv/Scripts/python -m src.tts.server`. Open http://127.0.0.1:5500/src/ui/.
+- Tested: API direct: en 5.1 s / hi 9.1 s / gu 7.5 s / Hinglish 1.6 s, all answered in the asker's language with citations; passport refused instantly. Chrome: Gujarati question -> Gujarati answer in 2.1 s, status "Live", 2 cited passages, one eligibility button -> real widow-pension rules (age asked; 4 rules "verify at office" for lack of questions, Jaya's pending request). Voice: a real 7-sentence Gujarati answer took 36 s to synthesise whole (page gave up at 20 s); now first word after 4.9 s, 0 s gaps between sentences (measured per sentence). `tests/ui`, `tests/tts`, `tests/eligibility` -> OK.
+- Open: no passage translations yet (`data/processed/translations.jsonl` missing, Vandan/PARAM); 3 asks to Harsh above; eligibility questions for Jaya's new fields.
+- Next step: eligibility questions for `state`, `citizen_of_india`, `annual_family_income`, `social_category`, `applicant_type`.
 
 ### 2026-10-27 18:30 · 10. Final output: UI plays the IndicTTS voice · Vaidehi/claude
 - Changed: the Listen button now plays the team's IndicTTS service (`src/tts`, port 5600) with the voices chosen by ear (Hindi male, Hinglish via Devanagari), shows "Preparing audio…" then "Stop"; a question asked with the mic gets its answer read aloud automatically (typed ones don't). FALLBACK: service off/slow or language not supported (e.g. mr, ta) → browser voice; no browser voice → clear message. Knobs in `config/ui.js`: `USE_INDIC_TTS`, `TTS_BASE`, `TTS_TIMEOUT_MS`, `AUTO_SPEAK_SPOKEN_QUESTIONS`.
