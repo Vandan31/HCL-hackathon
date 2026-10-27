@@ -76,6 +76,6 @@ Chunk `text` is the clean passage; retrieval adds scheme name + section to the s
 | Market stats in pitch | Sourced (links in PLAN.md) | docs/PLAN.md §1 |
 | Cost per 1,000 questions | Estimated (formula; prices filled on the day) | docs/PLAN.md §4.5 |
 | All accuracy/latency numbers | Not measured yet | scripts/eval.py |
-| Scheme `source_url` = "not available" (26 schemes) | MOCK (team decision, D-008) | config/ingest.py, data/schemes/*.json |
+| Scheme `source_url` = myScheme search page, not the scheme's own page (26 schemes) | MOCK (team decision, D-008) | config/ingest.py, data/schemes/*.json |
 | Eval questions `mock-001`..`mock-098` written by us, not the organisers' 100 | MOCK | data/eval/questions.jsonl |
 | Scheme text is English only (no hi/gu sections yet) | Known gap | data/schemes/*.json |
