@@ -9,10 +9,19 @@ PANEL NOTE: LLMs sometimes drift to Hindi or English; a rule catches it and we r
 import re
 from typing import Callable
 
+from config.answer import HINGLISH_MARKERS, HINGLISH_MIN_MARKERS
+
 # WHY: Unicode blocks are fixed by the standard, so script detection is free and deterministic.
 SCRIPT_RANGES = {"Deva": (0x0900, 0x097F), "Gujr": (0x0A80, 0x0AFF), "Taml": (0x0B80, 0x0BFF)}
 EXPECTED_SCRIPT = {"hi": "Deva", "mr": "Deva", "gu": "Gujr", "ta": "Taml", "en": "Latn"}
 CITE_RE = re.compile(r"\[S\d+\]")
+WORD_RE = re.compile(r"[a-z]+")
+
+
+def looks_hinglish(text: str) -> bool:
+    """Latin script plus enough Hindi function words (ke, hai, liye...) to rule out plain English."""
+    words = WORD_RE.findall(CITE_RE.sub("", text).lower())
+    return dominant_script(text) == "Latn" and sum(w in HINGLISH_MARKERS for w in words) >= HINGLISH_MIN_MARKERS
 
 
 def dominant_script(text: str) -> str | None:
@@ -31,10 +40,15 @@ def dominant_script(text: str) -> str | None:
 def language_matches(answer_text: str, lang: str, code_mixed: bool,
                      detector: Callable[[str], dict] | None = None) -> bool:
     """True if the answer is in the asker's language (Hinglish = hi + code_mixed, Roman script)."""
+    if lang == "hi" and code_mixed:
+        # WHY: Hinglish answers keep scheme words in English, so detectors often call them English (seen live
+        # 2026-10-27). Hindi function words in Latin script are the reliable signal; plain English has none.
+        return looks_hinglish(answer_text)
     if detector is not None:
-        d = detector(answer_text)
+        # WHY: [S1] markers aren't words in any language; don't let them sway the detector.
+        d = detector(CITE_RE.sub("", answer_text))
         # WHY: only the detector can tell Hindi from Marathi (same script) or English from Hinglish.
         return d["lang"] == lang and (lang != "hi" or d["code_mixed"] == code_mixed)
     # FALLBACK: src/lang not merged yet -> script check only. It cannot tell hi from mr, or en from Hinglish.
-    expected = "Latn" if (lang == "hi" and code_mixed) else EXPECTED_SCRIPT.get(lang)
+    expected = EXPECTED_SCRIPT.get(lang)
     return expected is None or dominant_script(answer_text) == expected

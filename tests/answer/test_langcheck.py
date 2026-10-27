@@ -44,3 +44,33 @@ def test_detector_catches_english_for_hinglish():
 def test_detector_agrees():
     fake = lambda t: {"lang": "mr", "script": "Deva", "code_mixed": False, "confidence": 0.9}
     assert language_matches("तुम्ही अर्ज करू शकता", "mr", False, detector=fake)
+
+
+# ---- Live finding 2026-10-27: real Hinglish answers carry many English words ----
+LIVE_HINGLISH = ("PM-KISAN ke liye landholding farmer families eligible hoti hain, lekin yeh kuch exclusions "
+                 "ke adheen (subject to exclusions) hai [S1].")
+
+
+def test_english_heavy_hinglish_passes_even_if_detector_says_english():
+    says_en = lambda t: {"lang": "en", "script": "Latn", "code_mixed": False, "confidence": 0.5}
+    assert language_matches(LIVE_HINGLISH, "hi", True, detector=says_en)
+
+
+def test_pure_english_for_hinglish_fails_with_detector():
+    says_en = lambda t: {"lang": "en", "script": "Latn", "code_mixed": False, "confidence": 0.5}
+    assert not language_matches("Landholding farmer families are eligible for PM-KISAN [S1].", "hi", True,
+                                detector=says_en)
+
+
+def test_pure_english_for_hinglish_fails_in_script_mode():
+    assert not language_matches("Landholding farmer families are eligible for PM-KISAN [S1].", "hi", True)
+    assert language_matches(LIVE_HINGLISH, "hi", True)
+
+
+def test_detector_sees_text_without_citation_markers():
+    seen = []
+    def spy(t):
+        seen.append(t)
+        return {"lang": "mr", "script": "Deva", "code_mixed": False, "confidence": 0.9}
+    language_matches("तुम्ही अर्ज करू शकता [S1][S2]", "mr", False, detector=spy)
+    assert "[S" not in seen[0]

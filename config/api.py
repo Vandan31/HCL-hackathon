@@ -12,6 +12,10 @@ import os
 # Flip to False once the real components are merged at integration (PLAN §5.3, 2:45).
 USE_MOCKS = os.getenv("USE_MOCKS", "true").lower() == "true"
 
+# DEMO-KNOB: True = answer every question from the fixed smoke-test passage (src/api/mocks.py), even when
+# real retrieval is installed. For local UI testing without the 2 GB embedding model.
+USE_MOCK_SEARCH = os.getenv("USE_MOCK_SEARCH", "false").lower() == "true"
+
 # DEMO-KNOB: True = serve cached demo answers, no LLM call (Wi-Fi-off safety net on stage).
 OFFLINE_MODE = os.getenv("OFFLINE_MODE", "false").lower() == "true"
 

@@ -18,7 +18,8 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from config.answer import GEMINI_MODEL, GROQ_MODEL, KEY_COOLDOWN_S, LLM_TIMEOUT_S, TRANSLATIONS_PATH
-from config.api import AUDIT_PATH, CACHE_PATH, CORS_ORIGINS, OFFLINE_MODE, RECORD_CACHE, USE_MOCKS
+from config.api import (AUDIT_PATH, CACHE_PATH, CORS_ORIGINS, OFFLINE_MODE, RECORD_CACHE, USE_MOCK_SEARCH,
+                        USE_MOCKS)
 from src.answer.generate import answer as answer_fn
 from src.answer.llm_pool import KeyPool, LLMUnavailable, entries_from_env, load_env_file
 from src.answer.translations import build_citation, load_translations
@@ -37,6 +38,9 @@ try:
     from src.retrieval.search import search
 except ImportError:
     # MOCK: src/retrieval not merged yet -> one fixed PM-KISAN passage.
+    search = mock_search
+if USE_MOCK_SEARCH:
+    # MOCK: forced by the knob -> the smoke-test passage, real retrieval is skipped (local UI testing).
     search = mock_search
 
 # WHY: built once at startup; keys come only from .env / environment, never from code or config.

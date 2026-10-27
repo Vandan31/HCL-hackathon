@@ -133,3 +133,19 @@ def test_recorded_cache_is_gitignored():
     import subprocess
     rc = subprocess.run(["git", "check-ignore", "-q", "data/cache/demo_answers.json"]).returncode
     assert rc == 0
+
+
+def test_use_mock_search_switch_forces_test_paragraph(monkeypatch):
+    # WHY: after merging real retrieval, local UI testing on the smoke-test passage needs an explicit switch.
+    import importlib
+    import config.api
+    from src.api import mocks
+    monkeypatch.setenv("USE_MOCK_SEARCH", "true")
+    importlib.reload(config.api)
+    m = importlib.reload(main)
+    try:
+        assert m.search is mocks.mock_search
+    finally:
+        monkeypatch.delenv("USE_MOCK_SEARCH")
+        importlib.reload(config.api)
+        importlib.reload(main)

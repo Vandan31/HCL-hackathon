@@ -42,6 +42,14 @@ LANG_NAMES = {
     "hinglish": "Hinglish (Roman-script Hindi-English mix, as the user wrote)",
 }
 
+# DEMO-KNOB: Hindi function words that mark a Latin-script answer as Hinglish rather than English. Real
+# Hinglish answers keep scheme words in English ("landholding farmer families eligible hain"), which can make a
+# language detector call them English; these words never appear in plain English. Add a word to loosen the check.
+HINGLISH_MARKERS = {"hai", "hain", "ke", "ki", "ka", "ko", "se", "mein", "liye", "aur", "lekin", "ya", "jo",
+                    "yeh", "ye", "woh", "kar", "sakte", "sakti", "hota", "hoti", "hote", "milta", "milti",
+                    "nahi", "nahin", "apne", "aap", "kya", "kaise", "kitna", "kitne", "par", "bhi", "tak"}
+HINGLISH_MIN_MARKERS = 2  # DEMO-KNOB: how many marker words a Hinglish answer needs
+
 # DEMO-KNOB: the instruction sent to the LLM with every question. {language}, {passages}, {query} are filled
 # in by src/answer/prompting.py; doubled braces {{ }} are literal JSON braces.
 # PANEL: prompt injection? -> passages are fenced as DATA and the reply must be JSON with checked ids.
