@@ -26,7 +26,7 @@
 | 2 | Language detection | `src/lang/`, `config/lang.py` | C. Vandan | TODO | Unicode script rules (Deva/Gujr/Latn) + Hinglish word list + tests |
 | 3 | Retrieval | `src/retrieval/`, `config/retrieval.py` | C. Vandan | TODO | BM25 + BGE-M3 + RRF over `data/processed/`; MOCK chunks until ingest is ready |
 | 4 | Answer engine | `src/answer/`, `config/answer.py` | A. Harsh | TODO | Prompt → JSON {answer, citations, answerable}; citation check; refusal templates en/hi/gu/Hinglish |
-| 5 | API | `src/api/` | A. Harsh | TODO | FastAPI `/api/ask`, `/api/eligibility`, `/api/health` returning MOCKs first |
+| 5 | API | `src/api/`, `config/api.py` | A. Harsh | IN PROGRESS | MOCK skeleton WORKING (6 tests pass, branch `harsh`). Next: wire `/api/ask` to lang → retrieval → answer at integration; add JSONL audit log |
 | 6 | UI + voice | `src/ui/`, `config/ui.js` | D. Vaidehi | TODO | Chat + passage cards + language badge against MOCK API; Web Speech mic/TTS as bonus |
 | 7 | Eligibility checklist | `src/eligibility/`, `config/eligibility.py` | D. Vaidehi | TODO | Rules engine over `criteria` in scheme JSON; next-question logic |
 | 8 | Evaluation | `scripts/eval.py`, `data/eval/` | C. Vandan | TODO | Label sample questions with scheme ids; 20 unanswerable questions; metrics table (PLAN §6) |
@@ -69,3 +69,5 @@ Data files: `data/schemes/<id>.json` (template in PLAN §4.4) · `data/processed
 | Market stats in pitch | Sourced (links in PLAN.md) | docs/PLAN.md §1 |
 | Cost per 1,000 questions | Estimated (formula; prices filled on the day) | docs/PLAN.md §4.5 |
 | All accuracy/latency numbers | Not measured yet | scripts/eval.py |
+| `/api/ask` and `/api/eligibility` responses | MOCK (fixture data, `USE_MOCKS` knob) | src/api/mocks.py |
+| `/api/health` index_chunks/llm | MOCK (reports 0 chunks, llm "down") | src/api/main.py |

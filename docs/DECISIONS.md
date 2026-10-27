@@ -43,3 +43,10 @@
 - **Decision:** Gujarati unless the organisers' 100 sample questions use another language.
 - **Why:** team location (Gujarat), IndicQA has Gujarati, demo story with a Gujarat citizen.
 - **Change if:** sample questions are in another language. It's one config value plus documents.
+
+## D-006 · API ships MOCK-first; missing/blank query → 400 not 422 · api · 2026-10-27
+- **Decision:** `/api/*` return fixture data (`src/api/mocks.py`) until real components merge; request fields default to "" so the API returns the contract's `400 {"error":"empty_query"}` instead of FastAPI's 422.
+- **Alternatives:** wait for lang/retrieval/answer before exposing endpoints (blocks the UI for ~2 h).
+- **Evidence:** Measured: `pytest tests/api` → 6 passed on 2026-10-27.
+- **Panel answer:** "We froze the API contract first and served mock answers, so the UI and the AI were built in parallel and plugged together at integration."
+- **Change if:** never for the contract; the mock is removed once `USE_MOCKS=false` works end to end.
