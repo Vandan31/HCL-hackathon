@@ -7,7 +7,6 @@
 
 | Component | Agent / person | Branch | Started (date time) | Files touched |
 |-----------|----------------|--------|---------------------|---------------|
-| 6. UI (Gujarati examples: 3 demo + 1 out of scope) | Vaidehi/claude | `Vaidehi` | 2026-10-27 20:10 | `config/ui.js` |
 | C: language + retrieval + eval | Vandan/claude | `comp/retrieval` | 2026-10-27 | `src/lang/`, `src/retrieval/`, `scripts/eval.py`, `data/eval/`, `config/lang.py`, `config/retrieval.py`, `tests/lang/`, `tests/retrieval/` |
 
 ## Shared-file change notices
@@ -84,6 +83,13 @@ _Announce here before editing shared files (config, requirements, API contracts)
 - Broken / open issues: ...
 - Next step: ...
 -->
+
+### 2026-10-27 20:20 · 6. UI (Gujarati demo examples) · Vaidehi/claude
+- Changed: Gujarati example questions = 3 the documents answer (no age proof / widow pension; SC woman, which loan; twin sister /
+  single-girl scholarship) + 1 out of scope (passport), which the system refuses ("not in my scheme documents"). The passport
+  refusal is a real pipeline output, recorded in the API's offline cache (now 9 entries, this laptop only).
+- How to run the demo: API with `USE_MOCKS=false OFFLINE_MODE=true` (+ UI dev server + TTS service), Gujarati page, tap the examples.
+- Tested: Chrome, all 4 examples: 3 answers (2, 4 and 1 sources) + 1 refusal, each instant; no console errors; `tests/ui` OK.
 
 ### 2026-10-27 19:10 · 6 + 10. UI connected to Harsh's API · Vaidehi/claude
 - Note: this work was started without a claim row on the board (missed); no one else was editing `src/ui/` at the time.
