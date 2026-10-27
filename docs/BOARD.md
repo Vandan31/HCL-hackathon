@@ -7,7 +7,6 @@
 
 | Component | Agent / person | Branch | Started (date time) | Files touched |
 |-----------|----------------|--------|---------------------|---------------|
-| 10. Final output: UI plays IndicTTS voice | Vaidehi/claude | `Vaidehi` | 2026-10-27 18:10 | `src/ui/`, `config/ui.js`, `tests/ui/` |
 | C: language + retrieval + eval | Vandan/claude | `comp/retrieval` | 2026-10-27 | `src/lang/`, `src/retrieval/`, `scripts/eval.py`, `data/eval/`, `config/lang.py`, `config/retrieval.py`, `tests/lang/`, `tests/retrieval/` |
 | API + answer engine (#4, #5) | harsh/claude | `harsh` | 2026-10-27 11:19 | `src/api/`, `src/answer/`, `config/api.py`, `config/answer.py`, `tests/api/`, `tests/answer/`, `requirements.txt`, `pytest.ini` |
 
@@ -84,6 +83,13 @@ _Announce here before editing shared files (config, requirements, API contracts)
 - Broken / open issues: ...
 - Next step: ...
 -->
+
+### 2026-10-27 18:30 · 10. Final output: UI plays the IndicTTS voice · Vaidehi/claude
+- Changed: the Listen button now plays the team's IndicTTS service (`src/tts`, port 5600) with the voices chosen by ear (Hindi male, Hinglish via Devanagari), shows "Preparing audio…" then "Stop"; a question asked with the mic gets its answer read aloud automatically (typed ones don't). FALLBACK: service off/slow or language not supported (e.g. mr, ta) → browser voice; no browser voice → clear message. Knobs in `config/ui.js`: `USE_INDIC_TTS`, `TTS_BASE`, `TTS_TIMEOUT_MS`, `AUTO_SPEAK_SPOKEN_QUESTIONS`.
+- Why: after the merge with Harsh the voice "didn't work": the page had never been connected to IndicTTS (it used browser voices: none for Gujarati, an American voice for English). Nothing in Harsh's merge broke it.
+- How to run: start both `python src/ui/dev_server.py` and `%USERPROFILE%\indic-tts\.venv\Scripts\python -m src.tts.server` (repo root), open http://127.0.0.1:5500/src/ui/.
+- Tested: `tests/ui`, `tests/tts`, `tests/eligibility` → OK; Chrome with real clicks: gu, hi, Hinglish, en all played via IndicTTS (HTTP 200, audio playing, Stop works, back to Listen when done); service down → English via browser voice, Gujarati → "no voice" message; spoken question → answer auto-played, typed → not; no console errors.
+- Next step: point `API_BASE` at Harsh's API and set `USE_MOCK: false` (end-to-end with real answers).
 
 ### 2026-10-27 17:50 · 6. UI (mic-side language dropdown) · Vaidehi/claude
 - Changed: the language dropdown beside the mic now switches the whole page (same as the header dropdown, both kept in sync; fresh conversation; the mic listens in that language). Its label is now "Language for the page and your voice" (en/hi/gu). Options come from `UI_LANGUAGES`.
