@@ -27,10 +27,11 @@
 | 3 | Retrieval | `src/retrieval/`, `config/retrieval.py` | C. Vandan | TODO | BM25 + BGE-M3 + RRF over `data/processed/`; MOCK chunks until ingest is ready |
 | 4 | Answer engine | `src/answer/`, `config/answer.py` | A. Harsh | TODO | Prompt → JSON {answer, citations, answerable}; citation check; refusal templates en/hi/gu/Hinglish |
 | 5 | API | `src/api/` | A. Harsh | TODO | FastAPI `/api/ask`, `/api/eligibility`, `/api/health` returning MOCKs first |
-| 6 | UI + voice | `src/ui/`, `config/ui.js` | D. Vaidehi | TODO | Chat + passage cards + language badge against MOCK API; Web Speech mic/TTS as bonus |
-| 7 | Eligibility checklist | `src/eligibility/`, `config/eligibility.py` | D. Vaidehi | TODO | Rules engine over `criteria` in scheme JSON; next-question logic |
+| 6 | UI + voice | `src/ui/`, `config/ui.js` | D. Vaidehi | WORKING (tested, MOCK API; accessibility pass done) | Set `USE_MOCK: false` in `config/ui.js` once `/api/ask` is live; test en/hi/gu/Hinglish end to end; test mic + voices on the demo laptop |
+| 7 | Eligibility checklist | `src/eligibility/`, `config/eligibility.py` | D. Vaidehi | WORKING (tested, MOCK criteria) | Add questions for Jaya's new fields: `state`, `citizen_of_india`, `annual_family_income`, `social_category`, `applicant_type` (BOARD notice, D-011); criteria are drafts (`verified: false`) until a human checks; Harsh wires `/api/eligibility` to `next_question` |
 | 8 | Evaluation | `scripts/eval.py`, `data/eval/` | C. Vandan | TODO | Label sample questions with scheme ids; 20 unanswerable questions; metrics table (PLAN §6) |
-| 9 | Demo & pitch | `docs/pitch/` | D. Vaidehi + A. Harsh | TODO | Deck draft; 90-s demo script (PLAN §9); offline mode + backup video |
+| 9 | Demo & pitch | `docs/pitch/` | D. Vaidehi + A. Harsh | IN PROGRESS (architecture diagram done: `docs/pitch/architecture.svg`) | Deck draft; 90-s demo script (PLAN §9); offline mode + backup video |
+| 10 | Final output: text + speech (IndicTTS) | `src/tts/`, `config/tts.py`, `src/ui/` | D. Vaidehi | IN PROGRESS: speech backend WORKING (tested, real models: gu, hi, English, Hinglish); UI wiring waits for teammates | UI: auto-play `/api/tts` audio when the question was spoken, Listen otherwise, browser-voice fallback on 422/503; Harsh to confirm `/api/tts` (BOARD) |
 
 ## Interfaces (contracts between components): freeze at 0:45
 
@@ -80,3 +81,6 @@ Chunk `text` is the clean passage; retrieval adds scheme name + section to the s
 | Eval set = 98 questions written by our team (organisers' 100 not provided; team decision D-010) | Disclosed: ours, not the organisers' | data/eval/questions.jsonl |
 | Eligibility `criteria`: agent drafts from scheme text, not yet human-checked (`verified: false`) | Draft (D-011) | data/schemes/*.json |
 | Scheme text is English only; answers translated by the LLM at answer time (D-009) | Design choice | data/schemes/*.json |
+| `/api/ask` answers in the UI | MOCK (`CONFIG.USE_MOCK`, "Mock data" label on screen) | src/ui/mock_api.js, src/ui/mock/ask_fixtures.json |
+| Eligibility criteria for 3 schemes | MOCK (simplified, not verified) | src/eligibility/mock_schemes.json |
+| `/api/eligibility` route | MOCK dev stand-in until comp/api | src/ui/dev_server.py |
