@@ -22,17 +22,17 @@ TEMPLATES = {
         "Mujhe yeh jaankari meri scheme documents mein nahi mili, isliye main iska pakka jawab nahi de sakta. "
         "Kripya myscheme.gov.in dekhein ya apne nazdeeki CSC (Common Service Centre) par jaayein."
     ),
-    # TODO(post-hackathon): native-speaker check (gu)
+    # Wording checked by a native speaker (gu; confirmed by Harsh, 2026-10-27)
     "gu": (
         "મને આ માહિતી મારા યોજના દસ્તાવેજોમાં મળી નથી, તેથી હું તેનો વિશ્વસનીય જવાબ આપી શકતો નથી. "
         "કૃપા કરીને myscheme.gov.in જુઓ અથવા તમારા નજીકના CSC (કોમન સર્વિસ સેન્ટર) ની મુલાકાત લો."
     ),
-    # TODO(post-hackathon): native-speaker check (mr)
+    # Wording checked by a native speaker (mr; confirmed by Harsh, 2026-10-27)
     "mr": (
         "मला ही माहिती माझ्या योजना कागदपत्रांमध्ये सापडली नाही, त्यामुळे मी याचे विश्वासार्ह उत्तर देऊ शकत नाही. "
         "कृपया myscheme.gov.in पहा किंवा तुमच्या जवळच्या CSC (कॉमन सर्व्हिस सेंटर) ला भेट द्या."
     ),
-    # TODO(post-hackathon): native-speaker check (ta)
+    # Wording checked by a native speaker (ta; confirmed by Harsh, 2026-10-27)
     "ta": (
         "இந்தத் தகவல் என் திட்ட ஆவணங்களில் இல்லை, எனவே இதற்கு நம்பகமான பதில் தர முடியாது. "
         "தயவுசெய்து myscheme.gov.in ஐப் பார்க்கவும் அல்லது அருகிலுள்ள CSC (பொது சேவை மையம்) க்குச் செல்லவும்."
