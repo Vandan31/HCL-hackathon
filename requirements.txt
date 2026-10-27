@@ -18,13 +18,13 @@
 # Python 3.10, which conflicts with torch below, so never install both into one environment.
 
 # --- API (Harsh) ---
-fastapi==0.158.0
+fastapi==0.162.0              # Harsh's tested version (his branch)
 uvicorn[standard]==0.54.0      # WHY [standard]: uvloop/httptools for faster request handling
 pydantic==2.14.1
 httpx==0.28.1                  # FastAPI TestClient + outbound HTTP
 
 # --- Answer engine (Harsh) ---
-anthropic==2.3.0               # Claude API client
+# (no LLM SDK: src/answer calls Gemini/Groq over httpx, D-017; `anthropic` removed: imported nowhere)
 
 # --- Language detection (Vandan) ---
 fasttext-predict==0.9.2.4      # WHY not `fasttext`: no Windows/Python 3.13 wheel; this prediction-only build runs IndicLID

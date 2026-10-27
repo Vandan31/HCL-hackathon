@@ -147,3 +147,17 @@
 - **Panel answer:** "It's decoration, so it's optional: no WebGL, no library or 'reduce motion' simply means a calm, plain page, and it switches off the moment you pick a language."
 - **Change if:** it stutters on the demo phone → lower `LANDING_GLYPH_COUNT` or set `ENABLE_3D_LANDING: false`.
 
+## D-016 · API ships MOCK-first; missing/blank query → 400 not 422 · api · 2026-10-27
+- **Decision:** `/api/*` return fixture data (`src/api/mocks.py`) until real components merge; request fields default to "" so the API returns the contract's `400 {"error":"empty_query"}` instead of FastAPI's 422.
+- **Alternatives:** wait for lang/retrieval/answer before exposing endpoints (blocks the UI for ~2 h).
+- **Evidence:** Measured: `pytest tests/api` → 6 passed on 2026-10-27.
+- **Panel answer:** "We froze the API contract first and served mock answers, so the UI and the AI were built in parallel and plugged together at integration."
+- **Change if:** never for the contract; the mock is removed once `USE_MOCKS=false` works end to end.
+
+## D-017 · LLM = Gemini (free tier) first, Groq fallback, round-robin key pool · answer · 2026-10-27
+- **Decision:** answers are written by Gemini Flash (free tier); Groq is the fallback provider. 4 keys (2 Gemini, 2 Groq) in `.env`, round-robin with cooldown on 429/quota/timeout. Replaces Claude from D-002.
+- **Alternatives:** Claude (no free tier), Sarvam (small one-time credits), Groq only (weaker Gujarati/Marathi/Tamil, Hypothesized).
+- **Evidence:** Sourced (web, 2026-10-27, third-party, conflicting): Gemini Flash free tier ~20–1,500 req/day; Groq ~1,000–14,400 req/day; both limit per project/account, not per key. Quality on our languages: not measured yet.
+- **Panel answer:** "Free-tier Gemini writes the answer, Groq takes over if Gemini is rate-limited, and if both fail we still show the source passages; on stage, recorded answers cover the demo questions."
+- **Models (Measured 2026-10-27):** `gemini-3.5-flash-lite` (1.7 s) because `gemini-3.8-flash` timed out / returned 503 "high demand"; Groq `openai/gpt-oss-120b`. A failed call retries on the *other* provider.
+- **Change if:** eval shows poor mr/ta quality, or free-tier limits break the demo.

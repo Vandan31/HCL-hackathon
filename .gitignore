@@ -1,6 +1,7 @@
 # Secrets: never commit
 .env
 .env.*
+!.env.example
 *.key
 *.pem
 secrets/
@@ -39,3 +40,9 @@ Thumbs.db
 models/
 *.bin
 .cache/
+
+# Audit log (no personal data, but never needed in git)
+data/logs/
+
+# Offline demo cache: holds recorded question text, never commit
+data/cache/

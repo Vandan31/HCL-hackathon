@@ -8,6 +8,7 @@
 | Component | Agent / person | Branch | Started (date time) | Files touched |
 |-----------|----------------|--------|---------------------|---------------|
 | C: language + retrieval + eval | Vandan/claude | `comp/retrieval` | 2026-10-27 | `src/lang/`, `src/retrieval/`, `scripts/eval.py`, `data/eval/`, `config/lang.py`, `config/retrieval.py`, `tests/lang/`, `tests/retrieval/` |
+| API + answer engine (#4, #5) | harsh/claude | `harsh` | 2026-10-27 11:19 | `src/api/`, `src/answer/`, `config/api.py`, `config/answer.py`, `tests/api/`, `tests/answer/`, `requirements.txt`, `pytest.ini` |
 
 ## Shared-file change notices
 _Announce here before editing shared files (config, requirements, API contracts)._
@@ -39,6 +40,22 @@ _Announce here before editing shared files (config, requirements, API contracts)
   `chunk_id` prefix before `#`); (2) `next_question(scheme_id, answers, lang="en")`, so `/api/eligibility` passes
   its `lang` through; (3) question `options` are `[{"value", "label"}]`, and `[]` means "type a number";
   (4) unknown scheme → `404 {"error": "unknown_scheme"}`. Dev stand-in: `src/ui/dev_server.py`.
+
+- 2026-10-27 · harsh (integrator) · **contract update, please read**:
+  - **Vandan (lang):** `detect_language` now returns `lang` ∈ en/hi/gu/mr/ta and `script` adds `Taml`. Marathi vs Hindi (same script) needs more than script rules. The answer engine also calls your detector on the ANSWER text.
+  - **Vandan (retrieval):** `score` must be 0–1 dense cosine (higher = better); RRF only orders. IndicQA goes in a separate test index, never the answer index.
+  - **Vandan (PARAM):** need `data/processed/translations.jsonl` from IndicTrans2, rows `{"chunk_id","lang","text","model"}` for targets en/hi/gu/mr/ta.
+  - **Vaidehi (UI/TTS):** citations gain `passage_lang`, `translation`, `translation_lang` (show original, translation below, labelled machine translation). 503 `fallback_passages` use the same card shape. Hinglish = `lang:"hi"` + `code_mixed:true`. IndicTTS reads `answer` in `lang`.
+
+- 2026-10-27 11:19 · harsh (integrator): creating root `requirements.txt` (fastapi, uvicorn, pytest, httpx) and `pytest.ini`. Others: post new packages here and Harsh adds them.
+
+- **2026-10-27 · Vaidehi → Harsh: merged `harsh` into `Vaidehi` (on top of Vandan's + Jaya's main). Please check:**
+  (1) your decisions renumbered to avoid clashes with main: D-006 → **D-016** (API mock-first), D-007 → **D-017**
+  (Gemini/Groq); references updated in your text. (2) `requirements.txt`: Vandan's full list kept, `fastapi` set to
+  your tested **0.162.0** (was 0.158.0), `anthropic` line removed (imported nowhere; you call Gemini/Groq over httpx).
+  (3) COMPONENTS `detect_language`: kept Vandan's newer signature (any ISO code + `source`, `supported`,
+  `speech_hint`) plus a line with your en/hi/gu/mr/ta + `Taml`; please confirm it's what you two agreed.
+  (4) Your `src/__init__.py` / `tests/__init__.py` are kept; Vaidehi's suites still pass with them.
 
 ## Handoff log (newest on top)
 
@@ -131,6 +148,21 @@ _Announce here before editing shared files (config, requirements, API contracts)
   received). English text only. FAQ blocks dropped (questions without answers). Data conflict in the source
   page: National Savings Time Deposit says minimum ₹1,000 (benefits) and ₹500 (how to apply).
 - Next step: @Vandan run eval on `comp/ingest`; replace MOCK questions with the organisers' 100; paste URLs.
+
+### 2026-10-27 13:50 · answer engine (#4) + API (#5) · harsh/claude
+- Changed: `src/answer/` (refusals, translations, llm_pool, prompting, langcheck, generate), `config/answer.py`; `/api/ask` wired detect → search → answer with offline cache (`src/api/cache.py`), audit log without question text (`src/api/audit.py`), 503 fallback passages; `.env.example`; contracts in COMPONENTS.md.
+- How to run: `cp .env.example .env` (paste keys) → set `GEMINI_MODEL` / `GROQ_MODEL` in `config/answer.py` → `USE_MOCKS=false .venv/bin/uvicorn src.api.main:app --reload`
+- Tested: `.venv/bin/pytest -q` → 74 passed (LLM faked; no network). Live server with no model names: health `llm:"down"`, Gujarati question → 503 with passage, audit line has no query text.
+- Broken / open issues: no live LLM call made yet; gu/mr/ta refusals need a native speaker; lang check is script-only until src/lang merges; search is a MOCK passage until src/retrieval merges.
+- Next step: Harsh fills model names + `.env`, runs one live question per language; then record demo answers with `RECORD_CACHE=true`. Claim stays active.
+
+### 2026-10-27 11:35 · API (#5) · harsh/claude
+- Changed: FastAPI skeleton `src/api/main.py` with MOCK `/api/ask`, `/api/eligibility`, `/api/health` (contract shapes from COMPONENTS.md); fixtures in `src/api/mocks.py`; knobs in `config/api.py`; root `requirements.txt`, `pytest.ini`.
+- How to run: `python3 -m venv .venv && .venv/bin/pip install -r requirements.txt && .venv/bin/uvicorn src.api.main:app --reload` → http://127.0.0.1:8000/docs
+- Tested: `.venv/bin/pytest -q` → 6 passed; curl smoke test on a live server (health 200, ask 200 with citation, empty query 400).
+- For Vaidehi (UI): build against this now. Any query containing "passport" / "income tax" returns a refusal (`refused: true`, no citations).
+- Broken / open issues: mocks only; no audit log yet; starlette warns `httpx` is deprecated for TestClient (harmless).
+- Next step: answer engine (`src/answer/`): citation check + refusal templates, tests first. Claim stays active.
 
 ### 2026-10-26 · setup · Vandan
 - Changed: created CLAUDE.md, AGENTS.md, docs/ (COMPONENTS, BOARD, DECISIONS, TEAM_WORKFLOW), installed skills into `.claude/skills/`.
