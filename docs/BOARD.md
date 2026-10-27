@@ -7,6 +7,7 @@
 
 | Component | Agent / person | Branch | Started (date time) | Files touched |
 |-----------|----------------|--------|---------------------|---------------|
+| 6. UI (mic input fix) | Vaidehi/claude | `Vaidehi` | 2026-10-27 17:00 | `src/ui/`, `config/ui.js`, `tests/ui/` |
 | C: language + retrieval + eval | Vandan/claude | `comp/retrieval` | 2026-10-27 | `src/lang/`, `src/retrieval/`, `scripts/eval.py`, `data/eval/`, `config/lang.py`, `config/retrieval.py`, `tests/lang/`, `tests/retrieval/` |
 
 ## Shared-file change notices
