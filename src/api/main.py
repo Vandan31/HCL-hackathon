@@ -10,6 +10,7 @@ Run       : USE_MOCKS=false .venv/bin/uvicorn src.api.main:app --reload   (then 
 """
 import os
 import time
+from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 
 from fastapi import FastAPI
@@ -53,7 +54,21 @@ if RECORD_CACHE:
     # questions, the cache folder is gitignored, and this warning prints at every start.
     print("WARNING: RECORD_CACHE=true -> questions are being saved to", CACHE_PATH, "(turn off after recording)")
 
-app = FastAPI(title="Yojana Saathi API")
+@asynccontextmanager
+async def lifespan(_app):
+    """Load the language-ID and embedding models before the first request (runs once at server start)."""
+    if not USE_MOCKS:
+        try:
+            # WHY: without this the first citizen waits ~16 s (IndicLID) + the embedding model load (D-012).
+            detect("warm up")
+            search("warm up", "en")
+        except Exception as e:  # noqa: BLE001
+            # FALLBACK: a missing model must not stop the server; that request path has its own fallbacks.
+            print("WARNING: model warm-up failed:", type(e).__name__, e)
+    yield
+
+
+app = FastAPI(title="Yojana Saathi API", lifespan=lifespan)
 # WHY: the UI is a static HTML page on a different origin/port, so the browser needs CORS to call us.
 app.add_middleware(CORSMiddleware, allow_origins=CORS_ORIGINS, allow_methods=["*"], allow_headers=["*"])
 

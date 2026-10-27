@@ -162,3 +162,9 @@ def test_missing_or_null_score_refuses_instead_of_crashing():
 def test_empty_reply_from_safety_block_is_bad_output():
     llm = FakeLLM("", "")
     assert answer("q", GU, [chunk("a")], llm=llm)["refusal_reason"] == "bad_output"
+
+
+def test_answer_gate_knob_has_unambiguous_name():
+    # WHY: config/retrieval.py also has MIN_SCORE (the real dial); two knobs with one name invite live mistakes.
+    import config.answer as ca
+    assert hasattr(ca, "ANSWER_MIN_SCORE") and not hasattr(ca, "MIN_SCORE")

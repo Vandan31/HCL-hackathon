@@ -7,9 +7,10 @@ DEPENDS ON: nothing
 PANEL NOTE: Stricter refusals, a different model or a shorter timeout are each a one-line edit here.
 """
 
-# DEMO-KNOB: refuse without calling the LLM when the best passage scores below this (0–1 dense cosine).
-# Raise it to make the assistant refuse more often; tuned on the eval set (scripts/eval.py).
-MIN_SCORE = 0.35
+# DEMO-KNOB (safety net only): refuse without calling the LLM when the best passage scores below this.
+# The REAL refusal dial is MIN_SCORE in config/retrieval.py (Vandan): search() already returns [] unless the
+# best score >= 0.81 and stands out (D-013). Named ANSWER_MIN_SCORE so nobody edits the wrong one live.
+ANSWER_MIN_SCORE = 0.35
 
 # DEMO-KNOB: seconds to wait for one LLM call before moving to the next key.
 LLM_TIMEOUT_S = 6
