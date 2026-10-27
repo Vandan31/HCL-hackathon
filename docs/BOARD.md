@@ -78,6 +78,18 @@ _Announce here before editing shared files (config, requirements, API contracts)
   (2) wire `/api/eligibility` to `src/eligibility/rules.next_question(scheme_id, answers, lang)`: until then the UI sends
   eligibility to the UI dev server (`ELIGIBILITY_BASE: ""`), which runs the real rules engine; (3) `/api/health` `index_chunks` reads 0.
 
+- **2026-10-27 · Vaidehi → Vandan (retrieval): Gujarati is wrongly refused.** Measured on the 32 Gujarati eval questions with the real
+  API: 21/26 answerable answered, 5 refused (mahila-samruddhi, pcardb-power-tiller, krishi-vigyan, rti-fellowship, widow-pension).
+  In 4 of them the RIGHT scheme is ranked first, but the gate blocks it: z = 2.35-2.73 < `MIN_Z` 2.8. Gujarati z runs lower than
+  hi/en (answerable gu 2.35-4.05, hi 2.68-5.18, en 3.66-5.78), since gu questions are matched to English-only chunks. End to end
+  (no file changed, test process only) a Gujarati-only `MIN_Z` = 2.5 gave 24/26 answered and still 6/6 unanswerable refused
+  (the answer step refuses the rest). Proposal: per-language gate, e.g. `MIN_Z_BY_LANG = {"gu": 2.5}` in `passes_gate`.
+- **2026-10-27 · Vaidehi → Harsh (answer): two Gujarati answers are wrong in 3/3 runs** even with the right passages:
+  "80% disability, am I eligible?" answers about pension amounts by AGE instead of the "more than 80%" vs "80% and more"
+  conflict; "I am 22, can I join Agnipath?" opens with "yes" (true only for 2022; now 17.5-21). Also: some Gujarati answers
+  mix in Devanagari/Tamil letters ("પुलिस", "લோન"). Demo cache: 8 verified real answers recorded with `CACHE.put` from
+  test-process runs (Gujarati gate 2.5) into `data/cache/demo_answers.json` (gitignored, this laptop only).
+
 ## Handoff log (newest on top)
 
 <!--
