@@ -76,7 +76,7 @@ class TestTTSServer(unittest.TestCase):
         self.assertEqual(headers["Content-Type"], "audio/wav")
         self.assertEqual(body, FAKE_WAV)
         self.assertEqual(headers["X-TTS-Cache"], "miss")
-        self.assertEqual(self.engine.last, ("ખેડૂત સહાય", "gu", "female"))   # default speaker applied
+        self.assertEqual(self.engine.last, ("ખેડૂત સહાય", "gu", None))   # no speaker sent -> engine picks the default
 
     def test_errors_match_contract(self):
         cases = [

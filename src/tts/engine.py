@@ -19,8 +19,8 @@ from collections import OrderedDict
 
 import soundfile as sf
 
-from config.tts import (CACHE_DIR, CHECKPOINT_DIR, DEFAULT_SPEAKER, HINGLISH_VOICE, LANGS, LATIN_MODEL,
-                        MEMORY_CACHE_ITEMS, MODEL_FOR_LANG, WARM_UP)
+from config.tts import (CACHE_DIR, CHECKPOINT_DIR, DEFAULT_SPEAKER, HINGLISH_DEFAULT_SPEAKER, HINGLISH_VOICE, LANGS,
+                        LATIN_MODEL, MEMORY_CACHE_ITEMS, MODEL_FOR_LANG, VOICE_FOR_LANG, WARM_UP)
 from src.tts.normalize import is_speakable, normalize
 
 WARM_UP_TEXT = {"gu": "નમસ્તે.", "hi": "नमस्ते.", "en+hi": "Namaste. Hello."}
@@ -107,12 +107,21 @@ class TTSEngine:
                 out.extend(c for c in unicodedata.normalize("NFD", ch) if c in vocab)
         return "".join(out)
 
-    def synthesize(self, text: str, lang: str, speaker: str = DEFAULT_SPEAKER):
-        """Return (wav_bytes, cache_hit). Raises UnsupportedLanguage or ValueError for unknown speaker."""
+    def default_speaker(self, text: str, lang: str) -> str:
+        """Voice to use when the request names none (chosen by ear: see VOICE_FOR_LANG in config/tts.py)."""
+        routed = self.route(text, lang)
+        if routed and routed[0] == LATIN_MODEL and lang == "hi":
+            return HINGLISH_DEFAULT_SPEAKER
+        return VOICE_FOR_LANG.get(lang, DEFAULT_SPEAKER)
+
+    def synthesize(self, text: str, lang: str, speaker: str | None = None):
+        """Return (wav_bytes, cache_hit). speaker=None -> the language's default voice.
+        Raises UnsupportedLanguage, or ValueError for an unknown speaker."""
         routed = self.route(text, lang)
         if routed is None:
             raise UnsupportedLanguage(lang)
         model, rule_lang = routed
+        speaker = speaker or self.default_speaker(text, lang)
         if model == LATIN_MODEL and lang == "hi":
             speaker = HINGLISH_VOICE.get(speaker, speaker)   # Hinglish -> the Hindi-accented voice of the en+hi model
         if speaker not in self.models[model].tts_model.speaker_manager.name_to_id:

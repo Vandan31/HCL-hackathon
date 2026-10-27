@@ -14,7 +14,7 @@ import json
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-from config.tts import ALLOWED_ORIGINS, DEFAULT_SPEAKER, HOST, MAX_CHARS, PORT
+from config.tts import ALLOWED_ORIGINS, HOST, MAX_CHARS, PORT
 
 # Contract (proposed to comp/api on docs/BOARD.md):
 #   POST /api/tts  {"text": str, "lang": "gu"|"hi"|"en", "speaker"?: "female"|"male"}
@@ -70,7 +70,7 @@ def make_handler(engine):
                 length = int(self.headers.get("Content-Length", 0))
                 req = json.loads(self.rfile.read(length) or b"{}")
                 text, lang = str(req.get("text", "")).strip(), str(req.get("lang", ""))
-                speaker = str(req.get("speaker") or DEFAULT_SPEAKER)
+                speaker = str(req["speaker"]) if req.get("speaker") else None   # None = the language's default voice
             except (ValueError, json.JSONDecodeError, AttributeError):
                 return self._json(400, {"error": "bad_json"})
             if not text:
@@ -83,7 +83,7 @@ def make_handler(engine):
             if engine.route(text, lang) is None:
                 # FALLBACK: Latin-letter text (English/Hinglish) while the en+hi model isn't loaded -> browser voice.
                 return self._json(422, {"error": "unsupported_script", "supported": engine.langs})
-            if speaker not in engine.speakers(lang):
+            if speaker is not None and speaker not in engine.speakers(lang):
                 return self._json(400, {"error": "unknown_speaker", "speakers": engine.speakers(lang)})
             t0 = time.perf_counter()
             try:

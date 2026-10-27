@@ -25,7 +25,11 @@ LATIN_MODEL = "en+hi"             # WHY: any answer mostly in Latin letters (Eng
 # DEMO-KNOB: the en+hi model has four voices (female, male, hindifemale, hindimale). Hinglish sounds more natural in
 # the Hindi-accented ones, so a Hinglish request for "female" uses "hindifemale". English keeps female/male.
 HINGLISH_VOICE = {"female": "hindifemale", "male": "hindimale"}
-DEFAULT_SPEAKER = "female"        # DEMO-KNOB: "female" or "male" (the two voices in each AI4Bharat model)
+DEFAULT_SPEAKER = "female"        # used for warm-up and any language not listed below
+# DEMO-KNOB: voice used when a request doesn't name one. Picked by ear on 2026-10-27 from A/B samples:
+# Hindi sounded most natural with the Hindi model's male voice; Hinglish with a female voice.
+VOICE_FOR_LANG = {"gu": "female", "hi": "male", "en": "female"}
+HINGLISH_DEFAULT_SPEAKER = "female"   # DEMO-KNOB
 MAX_CHARS = 1200                  # DEMO-KNOB: longer text is refused (a typical answer is 150–400 characters)
 MEMORY_CACHE_ITEMS = 200          # DEMO-KNOB: how many recent answers to keep as audio in memory
 WARM_UP = True                    # DEMO-KNOB: speak one dummy sentence at start; the first real call is otherwise ~2x slower

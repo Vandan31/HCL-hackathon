@@ -12,7 +12,6 @@ import json
 import time
 from pathlib import Path
 
-from config.tts import DEFAULT_SPEAKER
 from src.tts.engine import TTSEngine
 
 FIXTURES = Path(__file__).resolve().parents[1] / "ui" / "mock" / "ask_fixtures.json"
@@ -37,7 +36,7 @@ def main():
     engine = TTSEngine()
     for lang, text in demo_texts(engine.langs):
         t0 = time.perf_counter()
-        _, hit = engine.synthesize(text, lang, DEFAULT_SPEAKER)
+        _, hit = engine.synthesize(text, lang)   # each language's default voice, as the UI will request it
         print(f"{lang} {'cached' if hit else 'made'} in {time.perf_counter() - t0:.2f}s: {text[:40]}…", flush=True)
 
 
