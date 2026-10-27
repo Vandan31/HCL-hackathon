@@ -8,7 +8,6 @@
 | Component | Agent / person | Branch | Started (date time) | Files touched |
 |-----------|----------------|--------|---------------------|---------------|
 | C: language + retrieval + eval | Vandan/claude | `comp/retrieval` | 2026-10-27 | `src/lang/`, `src/retrieval/`, `scripts/eval.py`, `data/eval/`, `config/lang.py`, `config/retrieval.py`, `tests/lang/`, `tests/retrieval/` |
-| 1: Data + ingestion | Jaya/claude | `comp/ingest` | 2026-10-27 | `data/schemes/`, `data/processed/`, `src/ingest/`, `config/ingest.py`, `tests/ingest/`, `data/eval/questions.jsonl` (new file only) |
 
 ## Shared-file change notices
 _Announce here before editing shared files (config, requirements, API contracts)._
@@ -31,6 +30,20 @@ _Announce here before editing shared files (config, requirements, API contracts)
 - Broken / open issues: ...
 - Next step: ...
 -->
+
+### 2026-10-27 · 1: Data + ingestion · Jaya/claude
+- Changed (branch `comp/ingest`, not merged yet): `src/ingest/convert_txt.py` (pasted pages in
+  `docs/schemes/*.txt` → `data/schemes/<id>.json`), `src/ingest/build_chunks.py` (→ `data/processed/chunks.jsonl`),
+  `config/ingest.py` (ids, `MAX_WORDS` DEMO-KNOB), `tests/ingest/`, 26 scheme files, 137 chunks,
+  `data/eval/questions.jsonl` (98 MOCK questions: 78 over all 26 schemes in en/hi/gu incl. Hinglish + 20 null).
+- How to run: `python -m src.ingest.convert_txt` → `python -m src.ingest.build_chunks` → `python scripts/validate_data.py`
+- Tested: `python scripts/validate_data.py` → `0 errors, 53 warnings` (52 = no hi/gu text yet; 1 = MDA benefits
+  text really starts with the scheme name on myScheme, left as is). `python -m pytest tests/ingest` → `6 passed`.
+  `python scripts/eval.py data/eval/questions.jsonl --bm25-only` → NOT RUN: `rank_bm25` not installed here.
+- Broken / open issues: `source_url` is "not available" (MOCK, D-008). Questions are MOCK (organisers' 100 not
+  received). English text only. FAQ blocks dropped (questions without answers). Data conflict in the source
+  page: National Savings Time Deposit says minimum ₹1,000 (benefits) and ₹500 (how to apply).
+- Next step: @Vandan run eval on `comp/ingest`; replace MOCK questions with the organisers' 100; paste URLs.
 
 ### 2026-10-26 · setup · Vandan
 - Changed: created CLAUDE.md, AGENTS.md, docs/ (COMPONENTS, BOARD, DECISIONS, TEAM_WORKFLOW), installed skills into `.claude/skills/`.
