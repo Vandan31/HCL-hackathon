@@ -57,3 +57,25 @@
 - **Panel answer:** "Free rules settle most queries instantly; the IndicLID model only judges the scripts
   several languages share, and we measured where it fails and guard against it."
 - **Change if:** eval on the organisers' questions shows the guards reject correct model answers.
+
+## D-007 · Ingest: pasted pages → fixed-id scheme files → one chunk per section · data · 2026-10-27
+- **Decision:** `src/ingest/convert_txt.py` structures hand-pasted myScheme pages (`docs/schemes/*.txt`)
+  into `data/schemes/<id>.json`; `src/ingest/build_chunks.py` writes one chunk per scheme × section ×
+  language. Scheme ids come from a fixed map in `config/ingest.py`, not auto-slugs. FAQ blocks are dropped
+  (the pasted pages hold FAQ questions only, no answers). Sections over `MAX_WORDS` (400) are split into
+  the same number of parts in every language, at line/sentence ends.
+- **Why:** ids are permanent (eval labels and citations point at them); a FAQ question without its answer
+  is not a fact; same-count splits let retrieval pair `eligibility#2:en` with `eligibility#2:hi`.
+- **Evidence:** Measured: 26 schemes → 137 chunks, 2 sections split; `validate_data.py` 0 errors;
+  `tests/ingest` 6 passed.
+- **Panel answer:** "Every passage is a named section of a named, dated scheme page that a person copied by
+  hand, so every answer can be traced back to it."
+- **Change if:** pages arrive with FAQ answers (map them to a section after asking Vandan), or hi/gu text
+  is added (paste it into the JSON; re-run `build_chunks`).
+
+## D-008 · source_url = "not available" for now · data · 2026-10-27
+- **Decision:** team chose (Jaya, 2026-10-27) to write `"not available"` as `source_url.en` because none of
+  the 26 pasted pages included its URL and agents may not look them up (D-001). Tagged `MOCK` in config.
+- **Panel answer:** "The links were not captured on collection day; the passage and scheme name are still
+  shown, and the links are a one-line fix per scheme file."
+- **Change if:** someone pastes the real myScheme URLs into `data/schemes/<id>.json` (converter keeps them).
