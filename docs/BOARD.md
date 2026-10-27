@@ -90,6 +90,13 @@ _Announce here before editing shared files (config, requirements, API contracts)
   mix in Devanagari/Tamil letters ("પुलिस", "લோન"). Demo cache: 8 verified real answers recorded with `CACHE.put` from
   test-process runs (Gujarati gate 2.5) into `data/cache/demo_answers.json` (gitignored, this laptop only).
 
+- **2026-10-27 · Vaidehi → Harsh: small change in YOUR files (with Vaidehi's approval, demo pressure), on branch `Vaidehi`.**
+  New knob `CACHE_FIRST` in `config/api.py` (default false) and `src/api/main.py` serves a cache hit when
+  `OFFLINE_MODE or CACHE_FIRST`. Why: with `OFFLINE_MODE=true` every unrecorded question came back as passages only
+  (audit log: `offline_cache_miss` for all recent en/hi/gu questions). Demo now runs `CACHE_FIRST=true OFFLINE_MODE=false`:
+  recorded demo answers instant, everything else live. Your `pytest tests/api tests/answer` → 103 passed after the change.
+  Please review or rewrite it your way when you merge `Vaidehi`.
+
 ## Handoff log (newest on top)
 
 <!--
