@@ -36,8 +36,22 @@ git switch -c comp/<your-component>
 git push -u origin comp/<your-component>
 ```
 
-Then open Claude Code in the folder and say: **"start session, I own component <name>"**.
-The agent reads `CLAUDE.md` and follows these rules. It commits locally; **you push**.
+Then open Claude Code **or** Antigravity in the folder and say:
+**"start session, I own component <name>"**. Claude Code reads `CLAUDE.md`; Antigravity reads
+`AGENTS.md` (which includes CLAUDE.md). Both follow these rules, commit locally, and **you push**.
+
+### 2b. Running Claude Code AND Antigravity on the same laptop
+
+Never point both agents at the same folder. Give the second one its own worktree (a second
+folder on its own branch, sharing the same git history):
+
+```bash
+# from the main repo folder; example: Claude does the API, Antigravity tests the UI
+git worktree add ../HCL-hackathon-ui comp/ui          # existing branch
+# or for a new branch:  git worktree add -b comp/ui ../HCL-hackathon-ui origin/main
+```
+Open Claude Code in `HCL-hackathon/` and Antigravity in `HCL-hackathon-ui/`. Each folder gets
+its own board claim. Remove it when done: `git worktree remove ../HCL-hackathon-ui`.
 
 ---
 

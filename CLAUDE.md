@@ -144,7 +144,18 @@ meanwhile. Always pull `main` before reading the board. Full team procedure: `do
 - Changing a contract = stop-and-ask (§1) + update the doc in the same commit.
 - Build against a `MOCK:` of a missing component instead of waiting for it.
 
-### 3.3 Subagents
+### 3.3 Mixed tools (Claude Code + Antigravity + others)
+- Claude Code reads `CLAUDE.md`; Antigravity auto-loads `AGENTS.md`, which includes this file.
+  Same rules for both. Skills are shared via `.agents/skills.json` → `.claude/skills/`.
+- Tools never talk to each other directly. They coordinate **only** via `docs/BOARD.md`, git
+  branches and handoff notes. Sign claims as `<name>/claude` or `<name>/antigravity`.
+- **One agent per working folder.** Two agents (even of different tools) must never edit the same
+  checkout at the same time: they'd overwrite each other and share one branch. If one person runs
+  both tools, give the second agent its own git worktree (see `docs/TEAM_WORKFLOW.md` §2b).
+- Before editing, re-read any file another tool may have changed (`git pull`, `git status`).
+  Never assume your memory of a file is current.
+
+### 3.4 Subagents
 - When the main session spawns subagents, give each **one component** and its claimed files,
   and tell it to read this CLAUDE.md. Two subagents never edit the same file.
 - Subagents report back: files changed, commands run plus real output, open issues.
