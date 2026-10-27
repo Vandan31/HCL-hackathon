@@ -80,4 +80,5 @@ Search space = the 20–30 myScheme pages ONLY. IndicQA is for retrieval testing
 | detect_language / search inside the API | MOCK until src/lang, src/retrieval merge (script-only detector, one fixed passage) | src/api/mocks.py |
 | gu / mr / ta refusal templates | Not yet checked by a native speaker | src/answer/refusals.py |
 | Answer-language check | Script-only until src/lang merges (can't tell hi from mr) | src/answer/langcheck.py |
+| Answer-engine stress test | Measured 2026-10-27, one run: 26/26 hard cases passed (16 answerable in all 5 langs + Hinglish, 7 must-refuse, 3 prompt-injection); LLM p50 1.2 s, p95 3.2 s; 5 concurrent all answered (2.8 s wall). Passages are paraphrased MOCK text, graded by script, not by native speakers. Re-run: `.venv/bin/python scripts/stress_answer.py` | scripts/stress_answer.py |
 | LLM answers on real questions | Measured 2026-10-27: 1 live question per language (en/hi/Hinglish/gu/mr/ta) answered in the right language with [S1], out-of-scope refused; 0.8–1.9 s; against ONE mock passage, not real retrieval | config/answer.py |
