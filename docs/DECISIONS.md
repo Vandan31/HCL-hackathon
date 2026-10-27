@@ -115,7 +115,7 @@
 - **Panel answer:** "Every rule quotes the sentence it came from, and a person ticks it off before it's trusted."
 - **Change if:** a human reviewer corrects a rule (edit the JSON, set `verified: true`).
 
-## D-012 · Retrieval runs on multilingual-e5-small with MIN_SCORE = 0.82 · retrieval/eval · 2026-10-27
+## D-012 · Retrieval runs on multilingual-e5-small (threshold superseded by D-013) · retrieval/eval · 2026-10-27
 - **Decision:** `EMBED_MODEL = intfloat/multilingual-e5-small`, refusal threshold `MIN_SCORE = 0.82`
   (config/retrieval.py). The threshold is calibrated for this model only.
 - **Alternatives:** BGE-M3 (planned in D-003): crashed out of memory (segfault on first encode; 5.9 GB RAM,
@@ -131,3 +131,22 @@
   a measured sweep, keeping false refusals under 10%."
 - **Change if:** a machine with ≥ 16 GB RAM is available (re-test BGE-M3 and re-sweep), or Hindi/Gujarati queries
   are translated to English before search (expected to sharpen the score gap; not measured).
+
+## D-013 · BM25 only for languages with documents + "stands-out" refusal gate · retrieval · 2026-10-27
+- **Decision:** (1) BM25 joins the RRF fusion only when the question's language has chunks (`BM25_SAME_LANG_ONLY`);
+  Hindi/Gujarati questions use dense search alone while chunks are English-only (D-009). (2) A question gets
+  passages only if the best chunk scores ≥ `MIN_SCORE` 0.81 **and** stands ≥ `MIN_Z` 2.8 standard deviations above
+  the average chunk; otherwise `search()` returns `[]`. (3) English function-word rule before IndicLID.
+- **Alternatives tested (Measured, same 98 questions):** hubness corrections (mean-centering, CSLS): no gain
+  (right-scheme-first 0.936–0.962 vs 0.974 baseline); absolute score only (D-012): refusal 0.60 at false refusal 0.090.
+- **Evidence:** Measured, `scripts/eval.py data/eval/questions.jsonl --sweep` (e5-small, IndicLID on):
+  recall@5 0.936, right scheme first 0.923, false refusal 0.064, refusal recall 0.75, language accuracy 1.0,
+  p50 29 ms / p95 41 ms. Per language: en 1.0/1.0/0.0/0.714 · hi 0.962/0.962/0.038/0.714 · gu 0.846/0.808/0.154/0.833
+  (recall / first / false refusal / refusal). Before (D-012 config): recall 0.910, refusal 0.60, first ≈0.60.
+  Refusal signal separation (AUC): z-score 0.947 vs raw top score 0.886.
+- **Caveat:** thresholds were tuned and measured on the same 98 team-written questions (no held-out set), so
+  expect lower numbers on the organisers' questions. z depends on corpus size: re-run the sweep if chunks change a lot.
+- **Panel answer:** "Keyword search can't match a Hindi question to English text, so we only use it where it can
+  help; and we refuse when no passage clearly stands out, which caught 75% of off-topic questions before any AI call."
+- **Change if:** chunks get Hindi/Gujarati text (BM25 turns back on automatically), or the organisers' questions
+  show a different trade-off in the sweep.

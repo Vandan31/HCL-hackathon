@@ -8,10 +8,11 @@ PANEL NOTE: Fast tests run BM25-only; set RUN_DENSE_TESTS=1 to also test cross-l
 """
 import os
 
+import numpy as np
 import pytest
 
 from config import retrieval as cfg
-from src.retrieval.search import Retriever, load_chunks, tokenize
+from src.retrieval.search import Retriever, load_chunks, passes_gate, tokenize
 
 CHUNKS = load_chunks(cfg.MOCK_CHUNKS_PATH)
 FIELDS = {"chunk_id", "scheme_id", "scheme_name", "section", "text", "lang", "source_url",
@@ -69,6 +70,39 @@ def test_scheme_name_is_searchable_even_if_passage_omits_it():
     assert r and r[0]["scheme_id"] == "jal" and r[0]["text"] == chunk["text"]  # card text unchanged
 
 
+def _stub_dense(chunks, dense_scores):
+    """A Retriever with fixed 'dense' scores instead of a model (no download, no RAM)."""
+    r = Retriever(chunks, use_dense=False)
+    r.embeddings = np.zeros((len(chunks), 1))           # marks dense mode as on
+    r._dense_scores = lambda query: np.array(dense_scores, dtype=float)
+    return r
+
+
+def test_bm25_skipped_when_question_language_has_no_documents():
+    # English-only chunks. Dense prefers chunk 1; BM25 (word "Ujjwala") prefers chunk 0.
+    en = [c for c in CHUNKS if c["lang"] == "en"][:3]
+    r = _stub_dense(en, [0.50, 0.90, 0.10])
+    q = f"{en[0]['scheme_name']} {en[0]['text']}"
+    assert r.rank(q, "hi")[0][0] == 1          # Hindi: no Hindi docs -> dense ranking only
+    assert r.rank(q, "hi")[0] == [1, 0, 2]
+    assert len(r.rank(q, "en")[0]) == 3         # English: BM25 + dense fused (both lists used)
+
+
+@pytest.mark.parametrize("stats, ok", [
+    ({"top": 0.90, "z": 4.0}, True),           # clear peak, high score -> answer
+    ({"top": 0.90, "z": 2.0}, False),          # high score but flat (off-topic) -> refuse
+    ({"top": 0.70, "z": 4.0}, False),          # peak but weak score -> refuse
+])
+def test_refusal_gate(stats, ok):
+    assert passes_gate(stats, dense=True, min_score=0.81, min_z=2.8) is ok
+
+
+def test_flat_scores_return_nothing():
+    # Every chunk equally similar = off-topic question -> [] (answer engine refuses).
+    r = _stub_dense(CHUNKS, [0.85] * len(CHUNKS))
+    assert r.search("anything", "en") == []
+
+
 def test_respects_k(bm25_only):
     assert len(bm25_only.search("scheme eligibility documents apply", "en", k=2)) <= 2
 
@@ -80,19 +114,20 @@ dense = pytest.mark.skipif(os.environ.get("RUN_DENSE_TESTS") != "1",
 
 @pytest.fixture(scope="module")
 def hybrid():
-    # The small model keeps the test quick; the live app uses cfg.EMBED_MODEL (BGE-M3).
     return Retriever(CHUNKS, use_dense=True, model_name=os.environ.get(
         "DENSE_TEST_MODEL", cfg.FALLBACK_EMBED_MODEL))
 
 
+# WHY rank() and not search(): these test cross-language RANKING. The refusal gate's z-score needs a
+# realistic corpus (137 chunks); on 12 mock chunks z can't reach MIN_Z, so search() would refuse.
 @dense
 def test_gujarati_question_finds_scheme(hybrid):
-    r = hybrid.search("દીકરી માટે ખાતું કેવી રીતે ખોલવું?", "gu")
-    assert r and r[0]["scheme_id"] == "ssy"
+    order = hybrid.rank("દીકરી માટે ખાતું કેવી રીતે ખોલવું?", "gu")[0]
+    assert CHUNKS[order[0]]["scheme_id"] == "ssy"
 
 
 @dense
 def test_cross_language_hindi_to_english_only_scheme(hybrid):
     # PM-JAY documents exist only in English; a Hindi question must still find them.
-    r = hybrid.search("आयुष्मान कार्ड के लिए कौन से कागज़ चाहिए?", "hi")
-    assert any(c["chunk_id"] == "pmjay:documents:en" for c in r)
+    order = hybrid.rank("आयुष्मान कार्ड के लिए कौन से कागज़ चाहिए?", "hi")[0]
+    assert any(CHUNKS[i]["chunk_id"] == "pmjay:documents:en" for i in order[:5])

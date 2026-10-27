@@ -44,10 +44,21 @@ RRF_K = 60
 
 # DEMO-KNOB: refusal threshold on dense cosine similarity (0-1). Passages below it are dropped;
 # if none survive, search returns [] and the answer engine refuses.
-# Tune on the eval set (scripts/eval.py): it trades wrong answers against false refusals.
-# Measured (D-012, e5-small, 98 questions): 0.82 -> recall@5 0.910, false refusal 0.090,
-# refusal recall 0.60. 0.83 -> 0.885 / 0.115 / 0.75. e5 scores sit in 0.77-0.93, so 0.45 never refused.
-MIN_SCORE = 0.82
+# Tune on the eval set (scripts/eval.py --sweep): it trades wrong answers against false refusals.
+# e5 scores sit in 0.77-0.93, so the old 0.45 never refused. Used together with MIN_Z below (D-013).
+MIN_SCORE = 0.81
+
+# DEMO-KNOB: second refusal gate: how many standard deviations the best chunk must stand above the
+# average chunk for this question. Off-topic questions score evenly against everything.
+# Measured (D-013, 98 questions): MIN_Z 2.8 + MIN_SCORE 0.81 -> recall@5 0.936, false refusal 0.064,
+# refusal recall 0.75. Raise MIN_Z -> refuses more (3.05: refusal 0.90 but false refusal 0.13).
+# NOTE: z grows with corpus size; re-tune with the sweep if the number of chunks changes a lot (137 now).
+MIN_Z = 2.8
+
+# DEMO-KNOB: use BM25 only when the question's language has documents. WHY: measured (D-013), a Hindi or
+# Gujarati question against English-only chunks gets a noise BM25 ranking that pushed the wrong scheme
+# to 1st place (right-scheme-first 0.603 -> 0.974 with this on).
+BM25_SAME_LANG_ONLY = True
 
 # DEMO-KNOB: same idea when running BM25-only (USE_DENSE=False or the model failed to load).
 # BM25 scores aren't 0-1, so this is a separate, rougher threshold.

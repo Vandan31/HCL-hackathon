@@ -54,6 +54,18 @@ def load_chunks(path=None):
         return [json.loads(line) for line in f if line.strip()]
 
 
+def passes_gate(stats, dense=True, min_score=None, min_z=None):
+    """Should this question get passages at all? False -> search returns [] -> the answer engine refuses.
+
+    stats comes from Retriever.rank(). min_score/min_z override config (used by the eval sweep).
+    """
+    if not dense:
+        return stats["top"] >= cfg.BM25_MIN_SCORE
+    min_score = cfg.MIN_SCORE if min_score is None else min_score
+    min_z = cfg.MIN_Z if min_z is None else min_z
+    return stats["top"] >= min_score and stats["z"] >= min_z
+
+
 class Retriever:
     """Holds the BM25 index and (optionally) the dense embeddings for one set of chunks."""
 
@@ -67,6 +79,8 @@ class Retriever:
         # matches words in its own language, which is exactly what we want from BM25).
         from rank_bm25 import BM25Okapi
         self.bm25 = BM25Okapi([tokenize(index_text(c)) for c in chunks]) if chunks else None
+        # Languages the documents are written in: BM25 only helps queries in one of these.
+        self.langs = {c["lang"] for c in chunks}
 
         if use_dense and chunks:
             self._load_dense(model_name)
@@ -109,38 +123,58 @@ class Retriever:
                               show_progress_bar=False)[0]
         return self.embeddings @ q
 
-    def search(self, query, lang, k=cfg.TOP_K):
-        """Return up to k relevant chunks for `query`; [] means the documents don't cover it."""
-        if not self.chunks or not (query or "").strip():
-            return []
+    def rank(self, query, lang):
+        """Rank chunks for `query` with NO refusal gate (search() and scripts/eval.py share this).
 
+        Returns (chunk indices best first, per-chunk score, rrf scores, gate stats).
+        """
         bm25 = self.bm25.get_scores(tokenize(query))
         dense = self._dense_scores(query) if self.embeddings is not None else None
 
         # Each method nominates its top CANDIDATES; RRF gives 1/(RRF_K + rank) per list.
         # PANEL: Why RRF and not a weighted sum? -> BM25 scores (0..~20) and cosine (0..1) aren't
         # on the same scale; RRF only uses ranks, so no fragile weight tuning.
-        rrf = {}
-        rankings = [np.argsort(-bm25)[:cfg.CANDIDATES]]
+        rankings = []
+        # WHY the language check: BM25 only matches words, and a Hindi question shares no words with
+        # English chunks, so its BM25 ranking is noise that RRF would weight equally. Measured (D-013):
+        # right scheme ranked 1st 0.603 with it vs 0.974 without.
+        if dense is None or not cfg.BM25_SAME_LANG_ONLY or lang in self.langs:
+            rankings.append(np.argsort(-bm25)[:cfg.CANDIDATES])
         if dense is not None:
             rankings.append(np.argsort(-dense)[:cfg.CANDIDATES])
+        rrf = {}
         for ranking in rankings:
             for rank, i in enumerate(ranking):
                 rrf[int(i)] = rrf.get(int(i), 0.0) + 1.0 / (cfg.RRF_K + rank + 1)
 
+        scores = dense if dense is not None else bm25
+        if dense is None:
+            stats = {"top": float(bm25.max()), "z": None}
+        else:
+            # z = how far the best chunk stands out from all chunks. WHY: an off-topic question is
+            # "a bit similar" to everything (flat scores); a real one has a clear peak. Measured
+            # (D-013): separates answerable from unanswerable better than the raw score (AUC 0.947 vs 0.886).
+            stats = {"top": float(dense.max()),
+                     "z": float((dense.max() - dense.mean()) / (dense.std() or 1e-9))}
+        return sorted(rrf, key=rrf.get, reverse=True), scores, rrf, stats
+
+    def search(self, query, lang, k=cfg.TOP_K):
+        """Return up to k relevant chunks for `query`; [] means the documents don't cover it."""
+        if not self.chunks or not (query or "").strip():
+            return []
+
+        order, scores, rrf, stats = self.rank(query, lang)
+        # Refusal gate on the whole question. RRF can't do this (the best of a bad bunch still
+        # ranks 1st), so we use the dense score + how much it stands out.
+        if not passes_gate(stats, dense=self.embeddings is not None):
+            return []
+
         results = []
-        for i in sorted(rrf, key=rrf.get, reverse=True):
-            # Refusal gate: drop passages that aren't actually relevant. RRF can't do this
-            # (the best of a bad bunch still ranks 1st), so we use an absolute score.
-            if dense is not None:
-                score = float(dense[i])
-                if score < cfg.MIN_SCORE:
-                    continue
-            else:
-                score = float(bm25[i])
-                if score < cfg.BM25_MIN_SCORE:
-                    continue
-            results.append({**self.chunks[i], "score": round(score, 4),
+        for i in order:
+            # BM25-only mode keeps a per-passage floor (no dense score to gate the question on).
+            if self.embeddings is None and scores[i] < cfg.BM25_MIN_SCORE:
+                continue
+            results.append({**self.chunks[i], "score": round(float(scores[i]), 4),
                             "rrf_score": round(rrf[i], 6)})
 
         if cfg.PREFER_USER_LANG:
