@@ -50,3 +50,10 @@
 - **Evidence:** Measured: `pytest tests/api` → 6 passed on 2026-10-27.
 - **Panel answer:** "We froze the API contract first and served mock answers, so the UI and the AI were built in parallel and plugged together at integration."
 - **Change if:** never for the contract; the mock is removed once `USE_MOCKS=false` works end to end.
+
+## D-007 · LLM = Gemini (free tier) first, Groq fallback, round-robin key pool · answer · 2026-10-27
+- **Decision:** answers are written by Gemini Flash (free tier); Groq is the fallback provider. 4 keys (2 Gemini, 2 Groq) in `.env`, round-robin with cooldown on 429/quota/timeout. Replaces Claude from D-002.
+- **Alternatives:** Claude (no free tier), Sarvam (small one-time credits), Groq only (weaker Gujarati/Marathi/Tamil, Hypothesized).
+- **Evidence:** Sourced (web, 2026-10-27, third-party, conflicting): Gemini Flash free tier ~20–1,500 req/day; Groq ~1,000–14,400 req/day; both limit per project/account, not per key. Quality on our languages: not measured yet.
+- **Panel answer:** "Free-tier Gemini writes the answer, Groq takes over if Gemini is rate-limited, and if both fail we still show the source passages; on stage, recorded answers cover the demo questions."
+- **Change if:** eval shows poor mr/ta quality, or free-tier limits break the demo.
