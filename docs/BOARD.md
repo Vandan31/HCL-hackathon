@@ -79,6 +79,28 @@ _Announce here before editing shared files (config, requirements, API contracts)
 - Next step: ...
 -->
 
+### 2026-10-27 15:30 · API + answer engine ← retrieval/lang integration · harsh/claude
+- Changed: merged `main` (D-012, D-013) into `harsh`; warm-up `detect("warm up"); search("warm up","en")` in the server
+  startup hook (not at import, so tests don't load models; failure = warning, server still starts); `config/answer.py`
+  `MIN_SCORE` → `ANSWER_MIN_SCORE` (safety net; `config/retrieval.py` MIN_SCORE is the real dial). Vaidehi's TTS/UI
+  decisions renumbered D-012–D-015 → **D-018–D-021** (clashed with Vandan's D-012/D-013, which code references).
+- Environment (macOS, Python 3.14): `multilingual-e5-small` loaded; **IndicLID models not installed** (disk) → detection
+  on rules. Server ready 12 s after start (warm-up included).
+- Tested: `.venv/bin/pytest -q` → 210 passed, 33 skipped. Real pipeline, `USE_MOCKS=false`, live Gemini:
+  | Question | Result | Cites | latency_ms |
+  |---|---|---|---|
+  | What is the age limit to join as an Agniveer under Agnipath? | en answer: "17.5 to 23 years (2022 intake) … 17.5 to 21 years" | agnipath:eligibility:en | 1789 |
+  | अग्निवीर को चार साल बाद सेवा निधि में कितना पैसा मिलेगा? | hi answer: "लगभग ₹11.71 लाख का 'सेवा निधि' पैकेज" | agnipath:benefits:en | 1424 |
+  | અગ્નિપથ યોજનામાં અગ્નિવીરને કેટલું જીવન વીમા કવચ મળે છે? | gu answer: "₹૪૮ લાખનું … જીવન વીમા કવચ" | agnipath:benefits:en | 1068 |
+  | What are the new income tax slabs for this year? | refused by search (`[]`, low_score) | – | 17 |
+  | How do I link my PAN card with Aadhaar? | refused by LLM check (not_in_documents) | – | 1176 |
+  | Will the government increase old-age pension next year? | refused by LLM check (not_in_documents) | – | 1231 |
+  | इनकम टैक्स रिटर्न भरने की आखिरी तारीख क्या है? | refused by search (`[]`), Hindi template | – | 36 |
+  | Driving licence kaise banwaye? | refused by LLM check, Hinglish template | – | 1084 |
+  Answer language = question language in all 8; the 3 answers' numbers (17.5/23/21, 11.71, 48) verified present in the cited chunk text.
+- For Vandan: detect()/search() behaved as described. ITR question was caught by search here (you listed it as LLM-caught).
+- Open: IndicLID not tested on this machine; `source_url` still placeholder (D-008); IndicTrans2 card translations still need `translations.jsonl`.
+
 ### 2026-10-27 16:30 · 6. UI (3D syllables on landing page) · Vaidehi/claude
 - Changed: small syllables of English, Hindi and Gujarati float in 3D behind the language card (`src/ui/landing3d.js`). Three.js r170 (MIT) saved in `src/ui/vendor/three/` (675 KB + LICENSE) so it works offline; loaded only on the landing page. Letters drawn with the browser's text engine (Three.js 3D text can't shape Devanagari/Gujarati). Knobs: `ENABLE_3D_LANDING`, `LANDING_GLYPH_COUNT`, `LANDING_GLYPHS` in `config/ui.js`. D-021.
 - Safeguards: no Three.js / no WebGL → plain landing page; hidden from screen readers; one still frame under "reduce motion"; pauses when the tab is hidden; fully stopped and GPU memory freed once a language is chosen.
