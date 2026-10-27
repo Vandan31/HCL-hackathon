@@ -151,7 +151,7 @@
 - **Change if:** chunks get Hindi/Gujarati text (BM25 turns back on automatically), or the organisers' questions
   show a different trade-off in the sweep.
 
-## D-014 · Speech output with AI4Bharat IndicTTS (FastPitch + HiFi-GAN), own service · tts · 2026-10-27
+## D-018 · Speech output with AI4Bharat IndicTTS (FastPitch + HiFi-GAN), own service · tts · 2026-10-27
 - **Decision:** a separate speech service (`src/tts/`, port 5600) runs AI4Bharat IndicTTS FastPitch + HiFi-GAN for Gujarati and Hindi on the laptop CPU, with a memory + disk cache and pre-spoken demo answers. Answers are always shown as text; spoken automatically when the question was spoken.
 - **Alternatives considered:** browser voices (this laptop's Chrome has Hindi only, online, no Gujarati: Measured); Indic Parler-TTS (~0.9B, autoregressive, GPU preferred: slower); Sarvam/Bhashini APIs (keys, network dependence).
 - **Why:** lowest latency of the IndicTTS options; free and open (code MIT); works offline once downloaded.
@@ -159,7 +159,7 @@
 - **Panel answer:** "We use AI4Bharat's open IndicTTS: FastPitch speaks a whole sentence in one pass, so it runs on a plain laptop CPU about three times faster than real time, and demo answers are pre-spoken."
 - **Change if:** English/Hinglish speech is needed (add `en+hi.zip`), a GPU is available, or a native speaker finds the voice quality poor.
 
-## D-015 · English and Hinglish speech via AI4Bharat's code-mixed en+hi model · tts · 2026-10-27
+## D-019 · English and Hinglish speech via AI4Bharat's code-mixed en+hi model · tts · 2026-10-27
 - **Decision:** add `en+hi.zip`; route English and any Latin-letter answer (Hinglish) to it, using its Hindi-accent voice for Hinglish.
 - **Alternatives considered:** `en.zip` (English only, no Hinglish); browser voice (no Indian-English voice on this laptop: Measured).
 - **Why:** one 1.5 GB model covers both English and Hinglish; same fast FastPitch architecture.
@@ -167,7 +167,7 @@
 - **Panel answer:** "Hinglish isn't an afterthought: AI4Bharat trained a code-mixed English-Hindi voice, and we send any romanised answer to it automatically."
 - **Change if:** listeners find the Hinglish voice unclear → try the plain "female"/"male" voices via HINGLISH_VOICE in config/tts.py.
 
-## D-016 · Voices chosen by ear; Hinglish spoken via Devanagari · tts · 2026-10-27
+## D-020 · Voices chosen by ear; Hinglish spoken via Devanagari · tts · 2026-10-27
 - **Decision:** Hindi uses the Hindi model's male voice; Hinglish is converted to Devanagari (fixed word list + hindi-xlit) and read by the Hindi model's female voice.
 - **Alternatives considered:** 8 A/B samples (Hindi: hi female/male, en+hi Hindi female/male; Hinglish: Latin with Hindi-accent or English voice, Devanagari with hi or en+hi voice). Converters: AI4Bharat ai4bharat-transliteration (needs fairseq, hard on Windows), rule-based indic-transliteration (misspells casual Hinglish), LLM-provided Devanagari (depends on comp/api).
 - **Why:** a teammate listened and found the Latin-letter Hinglish and the female Hindi voice off in accent; samples B (Hindi) and C (Hinglish) sounded right.
@@ -175,7 +175,7 @@
 - **Panel answer:** "Romanised Hindi read letter by letter sounds foreign, so we first convert it to Devanagari and let the Hindi voice read it; we picked the voices by listening, not by guessing."
 - **Change if:** the answer engine starts returning a Devanagari copy of Hinglish answers (use that instead), or listeners prefer another sample.
 
-## D-017 · Three.js for the landing-page decoration, vendored locally · ui · 2026-10-27
+## D-021 · Three.js for the landing-page decoration, vendored locally · ui · 2026-10-27
 - **Decision:** add Three.js r170 (MIT, 675 KB) in `src/ui/vendor/three/`, loaded only on the language page, to float small syllables of all three languages behind the card.
 - **Alternatives considered:** loading from a CDN (breaks the offline demo); a 3D globe (replaced by syllables at the team's request); Three.js 3D text (cannot shape Devanagari/Gujarati).
 - **Why:** a memorable first screen that shows "three languages" at a glance, without touching the chat screen's speed or accessibility.
