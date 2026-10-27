@@ -1,0 +1,78 @@
+{
+  "id": "rti-fellowship",
+  "name": {
+    "en": "Right To Information Fellowship"
+  },
+  "source_url": {
+    "en": "https://www.myscheme.gov.in/search"
+  },
+  "collected_on": "2026-10-27",
+  "collected_by": "Jaya",
+  "sections": {
+    "details": {
+      "en": "The Department of Personnel and Training (DOPT), Ministry of Personnel, Public Grievances and Pensions, Government of India, is the nodal Ministry for the Right to Information Act. The primary goal of the \"Right to Information Fellowship\" scheme is to contribute towards more accountable and transparent government and it has several components including programmes for awareness generation, training and e-governance initiatives for RTI for achieving the purpose. Under this scheme, DOPT proposes to offer 4(Four) short-term fellowships to researchers from the field of media / Civil Society professionals / RTI Trainers to conduct field-based research on themes relating to RTI. It is hoped that the research output will enhance the understanding of the status of the implementation of the act, including its successes, constraints in its implementation and how those are being / could be overcome and what more needs to be done to help achieve the objectives of the Act."
+    },
+    "benefits": {
+      "en": "Stipend\nA stipend of ₹ 50,000/- per month for three months.\n(subject to tax deduction at source)\nAdditional Grant\n₹ 50,000/- for books, research material, travel, printing, production of creatives etc., sanctioned on the basis of the research proposal and released on production of actual bills."
+    },
+    "eligibility": {
+      "en": "The applicant should be a professional in the field of journalism (newspaper/ magazine/ radio/ TV), Civil Society and research and training in the field of RTI.\nThe applicant should be between 25 and 40 years of age.\nThe applicant should have proven credentials in his / her professional area.\nThe applicant should have some prior experience of work relating to the Right to Information.\nThe applicant should have an aptitude for research."
+    },
+    "documents": {
+      "en": "A comprehensive proposal (not more than 6-8 A4 size pages) outlining the subject to be researched, the research plan and final deliverable.\nCurriculum vitae (no more than 3 A4 sheets) along with a photograph.\nA brief statement of work done in the field of RTI.\nTwo references from professionals familiar with the applicant’s work from his /her professional field.\nA no-objection from the present employer.\nPassport Sized Photograph.\nNOTE: The proposal should clearly indicate the output that will be delivered at the end of the fellowship. It could be in the nature of a monograph of 10,000 words which is ready for publication, or features/news stories /investigative stories that could be printed / published as a journalistic piece in national /international media or, in the case of professionals from the field of audio-video media, it could even be short video films or stories."
+    },
+    "how_to_apply": {
+      "en": "Offline\nFive sets of the application with enclosures in the prescribed proforma may be sent by post to:\nUnder Secretary (IR), Department of Personnel and Training, Government of India, North Block, New Delhi - 110 001"
+    }
+  },
+  "criteria": [
+    {
+      "field": "rti_field_professional",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must be a professional in journalism (newspaper, magazine, radio, TV), civil society, or RTI research/training",
+      "source_text": "The applicant should be a professional in the field of journalism (newspaper/ magazine/ radio/ TV), Civil Society and research and training in the field of RTI.",
+      "verified": false
+    },
+    {
+      "field": "age",
+      "op": "gte",
+      "value": 25,
+      "text_en": "Must be at least 25 years old",
+      "source_text": "The applicant should be between 25 and 40 years of age.",
+      "verified": false
+    },
+    {
+      "field": "age",
+      "op": "lte",
+      "value": 40,
+      "text_en": "Must be 40 years old or younger",
+      "source_text": "The applicant should be between 25 and 40 years of age.",
+      "verified": false
+    },
+    {
+      "field": "proven_credentials",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must have proven credentials in their professional area",
+      "source_text": "The applicant should have proven credentials in his / her professional area.",
+      "verified": false
+    },
+    {
+      "field": "rti_experience",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must have some prior experience of work on the Right to Information",
+      "source_text": "The applicant should have some prior experience of work relating to the Right to Information.",
+      "verified": false
+    },
+    {
+      "field": "research_aptitude",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must have an aptitude for research",
+      "source_text": "The applicant should have an aptitude for research.",
+      "verified": false
+    }
+  ]
+}

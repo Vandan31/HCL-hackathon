@@ -1,0 +1,70 @@
+{
+  "id": "education-loan-interest-subsidy",
+  "name": {
+    "en": "Interest Subsidy Scheme on Education Loan"
+  },
+  "source_url": {
+    "en": "https://www.myscheme.gov.in/search"
+  },
+  "collected_on": "2026-10-27",
+  "collected_by": "Jaya",
+  "sections": {
+    "details": {
+      "en": "The scheme \"Interest Subsidy Scheme on Education Loan\" by the Education Department, Government of Gujarat, aims to provide complete financial relief to students through 100% interest subsidy on education loans for the entire moratorium period. This includes the study period and 1 additional year after course completion."
+    },
+    "benefits": {
+      "en": "Interest Subsidy Assistance: 100% interest subsidy on education loans up to ₹10,00,000/- for the moratorium period (course duration + 1 year)."
+    },
+    "eligibility": {
+      "en": "The applicant must be a resident of Gujarat.\nThe applicant must be a student.\nThe applicant must have passed HSC (Higher Secondary Certificate) with at least 60 percentile.\nThe applicant must have taken an education loan from a recognized bank for pursuing higher education in India or abroad.\nThe applicant must have a family income not exceeding ₹6,00,000/- per year."
+    },
+    "documents": {
+      "en": "For Fresh Application:\nPassport Size Photograph (Max 50 KB).\nSignature (Max 50 KB).\nMarksheet of Standard 12 / Diploma.\nAadhaar Card.\nRation Card.\nIncome Certificate (Certified by Talati-cum-Mantri / Mamlatdar / TDO).\nProof of Residence (Passport / Driving License / Bank Statement / Ration Card / Telephone Bill / Electricity Bill / Voter ID – any one).\nCopy of Education Loan Agreement (Signed and Stamped by Bank Manager).\nCopy of Education Loan Sanction Letter (As per KCG format, signed and stamped by Bank Manager).\nCopy of Education Loan Disbursement Letter (As per KCG format, signed and stamped by Bank Manager).\nStatement of Education Loan Account from first withdrawal date till current date (Signed and Stamped by Bank Manager).\nBank Interest Certificate (Signed and Stamped by Bank Manager).\nCopy of First Page of Savings Account Passbook / Bank Statement / Cancelled Cheque (Any one).\nAdmission Letter (On College/University Letterhead with Signature and Stamp).\nFee Receipts of First Year / First Two Semesters.\nSelf-Declaration Certificate stating “No benefit from other scheme” (As per KCG format available on website).\nPassport Copy (Only for Students Studying Abroad).\nVisa or Visa Letter Copy (Only for Students Studying Abroad).\nPower of Attorney (Only for Students Studying Abroad).\nFor Renewal Application:\nAadhaar Card.\nRation Card.\nIncome Certificate (Certified by Talati-cum-Mantri / Mamlatdar / TDO).\nStatement of Education Loan Account (From first withdrawal date till current date, signed and stamped by Bank Manager).\nCopy of Education Loan Disbursement Letter (As per KCG format, signed and stamped by Bank Manager).\nBank Interest Certificate (Signed and Stamped by Bank Manager).\nMarksheet of All Passed Years / Semesters.\nFee Receipts of All Years / Semesters."
+    },
+    "how_to_apply": {
+      "en": "Online\nRegistration Process:\nStep 1: Visit https://isel.guj.nic.in and register using your mobile number and email ID.\nStep 2: Log in with OTP and change the password.\nStep 3: Enter name, Aadhaar number, Ration Card number, and enrollment details correctly.\nStep 4: Provide parent/guardian contact details and complete registration.\nApplication Process:\nStep 1: Log in to https://isel.guj.nic.in and click “Apply.”\nStep 2: Enter course details and fill out the online form.\nStep 3: Upload all required documents in the specified format.\nStep 4: Visit the designated help center within 7 days for document verification and submit the application set and collect the acknowledgement receipt. (For students abroad – parent/guardian with Power of Attorney signs and submits documents).\nContact Us:\nKcg E-Mail Id: isel-kcg[at]gujgov[dot]edu[dot]in\nHelpline No: 9909039380 (10:30 AM to 6:00 PM)"
+    }
+  },
+  "criteria": [
+    {
+      "field": "state",
+      "op": "eq",
+      "value": "gujarat",
+      "text_en": "Must be a resident of Gujarat",
+      "source_text": "The applicant must be a resident of Gujarat.",
+      "verified": false
+    },
+    {
+      "field": "occupation",
+      "op": "eq",
+      "value": "student",
+      "text_en": "Must be a student",
+      "source_text": "The applicant must be a student.",
+      "verified": false
+    },
+    {
+      "field": "hsc_percentile",
+      "op": "gte",
+      "value": 60,
+      "text_en": "Must have passed HSC (Class 12) with at least 60 percentile",
+      "source_text": "The applicant must have passed HSC (Higher Secondary Certificate) with at least 60 percentile.",
+      "verified": false
+    },
+    {
+      "field": "has_education_loan",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must have an education loan from a recognised bank for higher education in India or abroad",
+      "source_text": "The applicant must have taken an education loan from a recognized bank for pursuing higher education in India or abroad.",
+      "verified": false
+    },
+    {
+      "field": "annual_family_income",
+      "op": "lte",
+      "value": 600000,
+      "text_en": "Family income must not exceed ₹6,00,000 per year",
+      "source_text": "The applicant must have a family income not exceeding ₹6,00,000/- per year.",
+      "verified": false
+    }
+  ]
+}

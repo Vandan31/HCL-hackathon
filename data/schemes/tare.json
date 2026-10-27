@@ -1,0 +1,79 @@
+{
+  "id": "tare",
+  "name": {
+    "en": "Teachers Associateship for Research Excellence"
+  },
+  "source_url": {
+    "en": "https://www.myscheme.gov.in/search"
+  },
+  "collected_on": "2026-10-27",
+  "collected_by": "Jaya",
+  "sections": {
+    "details": {
+      "en": "The scheme “Teachers Associateship for Research Excellence (TARE)” was launched by the Science and Engineering Research Board, Department of Science & Technology, Government of India which aims to facilitate the mobility of faculty members working in a regular capacity in State Universities / Colleges and in private Academic Institutions to carry out research work in an established public-funded central institution such as IITs, IISc, IISERS, National Institutions (NITs, CSIR, ICAR, ICMR labs and other central institutions) and Central Universities, located preferably nearer to the institution where the faculty member is working. Research work will be carried out in such a manner to ensure that the PI continues to work in the host institute as well as his / her parent institute on mutually agreed terms between the PI and Mentor.\nAreas Covered under the scheme:\nThe scheme covers areas under Life Sciences, Physical Sciences, Chemical Sciences, Engineering Sciences, Earth and Atmospheric Sciences, and Mathematical Sciences, including interdisciplinary areas.\nDuration of Support:\nThe duration of support is three years."
+    },
+    "benefits": {
+      "en": "Research fellowship of ₹60,000/- per year (in addition to the researcher’s own salary) will be provided subject to completion of a minimum of 90 days of research work per year in the host institution.\nResearch grant of ₹5 lakhs per annum (50% each to host and parent institution) and overheads (as per SERB norms) will be provided."
+    },
+    "eligibility": {
+      "en": "Indian citizens residing in India holding a Ph.D. degree in Science/Engineering or MS/MD in Medicine are eligible to apply.\nThe applicant(s) must hold a regular academic/research position in State Universities/ Colleges and private Academic Institutions.\nApplicant should not hold any ongoing research projects or any fellowship at the time of submission of application.\nThe upper age limit for the award is 45 years at the time of the submission of the application. Age relaxation of 5 (five) years will be given to candidates belonging to SC/ST/OBC/Physically Challenged & Women candidates.\nMentor should be at the level of Associate Professor/Scientist E, or higher level.\nOnly one candidate will be allowed to work with a mentor at any given point of time."
+    },
+    "documents": {
+      "en": "1.\tPassport size photograph\n2.\tBiodata of the applicant (under the user profile section)\n3.\tOther technical details of the proposal\n4.\tCertificate from the Investigator\n5.\tEndorsement certificate from the Head of Parent Institution\n6.\tEndorsement Letter from the Head of the host Institution\n7.\tCV of the Mentor\n8.\tCategory certificate\n9.\tAge proof certificate\n10.\tJoining report\n11.\tMandatory 90 days attendance certificate by the end of the financial year\n12.\tPlagiarism undertaking"
+    },
+    "how_to_apply": {
+      "en": "Online\nStep 01: The call for proposals will be notified through the website www.serbonline.in and www.serb.gov.in\nStep 02: Applicant(s) should first register on the online website.  Click here to register\nStep 03: After login, the applicant(s) are required to fill all the mandatory fields in the Profile Detail section under User Profile, which includes Bio-data, Photo, and Institute Address, etc.\nStep 04: Summary of the project proposal; Project Title (max 500 characters), Abstract of the proposed work (max 3000 characters), Keywords (max 6), Objectives of the project (max 1500 characters), Expected output and outcome of the proposal (max 1500 characters), have to be entered at the time of proposal submission.\nStep 05: Other relevant information of the proposal must be uploaded in a single PDF file not more than 10 MB as other technical documents (OTD).\nNote: The proposals will be evaluated through peer review processes as per SERB guidelines."
+    }
+  },
+  "criteria": [
+    {
+      "field": "citizen_of_india",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must be an Indian citizen",
+      "source_text": "Indian citizens residing in India holding a Ph.D. degree in Science/Engineering or MS/MD in Medicine are eligible to apply.",
+      "verified": false
+    },
+    {
+      "field": "resident_of_india",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must be living in India",
+      "source_text": "Indian citizens residing in India holding a Ph.D. degree in Science/Engineering or MS/MD in Medicine are eligible to apply.",
+      "verified": false
+    },
+    {
+      "field": "has_phd_science_or_ms_md",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must hold a Ph.D. in Science/Engineering or an MS/MD in Medicine",
+      "source_text": "Indian citizens residing in India holding a Ph.D. degree in Science/Engineering or MS/MD in Medicine are eligible to apply.",
+      "verified": false
+    },
+    {
+      "field": "regular_position_state_or_private",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must hold a regular academic/research post at a State University/College or private academic institution",
+      "source_text": "The applicant(s) must hold a regular academic/research position in State Universities/ Colleges and private Academic Institutions.",
+      "verified": false
+    },
+    {
+      "field": "has_ongoing_project_or_fellowship",
+      "op": "eq",
+      "value": false,
+      "text_en": "Must not hold any ongoing research project or fellowship when applying",
+      "source_text": "Applicant should not hold any ongoing research projects or any fellowship at the time of submission of application.",
+      "verified": false
+    },
+    {
+      "field": "age",
+      "op": "lte",
+      "value": 50,
+      "text_en": "Must be 45 or younger (50 for SC/ST/OBC, physically challenged and women)",
+      "source_text": "The upper age limit for the award is 45 years at the time of the submission of the application.",
+      "verified": false,
+      "review_note": "Engine has no per-category rule: drafted at the relaxed limit so nobody is wrongly rejected; check the category before relying on it."
+    }
+  ]
+}

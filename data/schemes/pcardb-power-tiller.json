@@ -1,0 +1,54 @@
+{
+  "id": "pcardb-power-tiller",
+  "name": {
+    "en": "Primary Cooperative Agriculture and Rural Development Bank: For Power Tiller"
+  },
+  "source_url": {
+    "en": "https://www.myscheme.gov.in/search"
+  },
+  "collected_on": "2026-10-27",
+  "collected_by": "Jaya",
+  "sections": {
+    "details": {
+      "en": "The \"Primary Cooperative Agriculture and Rural Development Bank: Power Tiller\" scheme launched by the Co-operation, Food and Consumer Protection Department, Tamil Nadu, aims to provide financial assistance to farmers for purchasing a power tiller, with up to 90% of the cost covered through a loan. This initiative aims to support agricultural productivity by making essential farming equipment more accessible. The interest rate on the loan ranges from 11% to 12.25%."
+    },
+    "benefits": {
+      "en": "Access to Loan: Up to 90% of the cost of a power tiller.\nInterest Rate: 11% to 12.25% (subject to change)."
+    },
+    "eligibility": {
+      "en": "The beneficiary should be a resident of Tamil Nadu.\nThe beneficiary should be a farmer.\nThe beneficiary should be engaged in agricultural activities.\nThe beneficiary should be interested in availing of a loan for purchasing power tiller.\nThe beneficiary should have the intention to use the loan specifically for purchasing power tiller."
+    },
+    "documents": {
+      "en": "Identity proof (Aadhaar, PAN card, etc.).\nAddress proof.\nProof of Farming (if required).\nAny other documents (if required)."
+    },
+    "how_to_apply": {
+      "en": "Offline\nStep 1: The interested applicant should collect the application form by contacting the Secretary/ Special Officer of the Primary Cooperative Agriculture and Rural Development Bank.\nStep 2: In the application form, fill in all the mandatory fields, paste the passport-sized photograph (signed across, if required), and attach copies of all the mandatory documents (self-attest, if required).\nStep 3: Submit the duly filled and signed application form along with the documents to the concerned authority.\nStep 4: Request a receipt or acknowledgment from the concerned authority to whom the application has been submitted. Ensure that the receipt contains essential details such as the date and time of submission, and a unique identification number (if applicable)."
+    }
+  },
+  "criteria": [
+    {
+      "field": "state",
+      "op": "eq",
+      "value": "tamil nadu",
+      "text_en": "Must be a resident of Tamil Nadu",
+      "source_text": "The beneficiary should be a resident of Tamil Nadu.",
+      "verified": false
+    },
+    {
+      "field": "occupation",
+      "op": "eq",
+      "value": "farmer",
+      "text_en": "Must be a farmer",
+      "source_text": "The beneficiary should be a farmer.",
+      "verified": false
+    },
+    {
+      "field": "loan_for_power_tiller",
+      "op": "eq",
+      "value": true,
+      "text_en": "The loan must be used only to buy a power tiller",
+      "source_text": "The beneficiary should have the intention to use the loan specifically for purchasing power tiller.",
+      "verified": false
+    }
+  ]
+}

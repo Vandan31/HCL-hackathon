@@ -1,0 +1,63 @@
+{
+  "id": "national-post-doctoral-fellowship",
+  "name": {
+    "en": "National Post Doctoral Fellowship"
+  },
+  "source_url": {
+    "en": "https://www.myscheme.gov.in/search"
+  },
+  "collected_on": "2026-10-27",
+  "collected_by": "Jaya",
+  "sections": {
+    "details": {
+      "en": "The “National Post Doctoral Fellowship (N-PDF)” was launched by the Science and Engineering Research Board, Government of India to identify motivated young researchers and provide them support for doing research in frontier areas of science and engineering. The fellows will work under a mentor, and it is hoped that this training will provide them with a platform to develop as independent researchers.\nDuration of fellowship:\nThe fellowship is purely a temporary assignment and is tenable for a period of 2 years."
+    },
+    "benefits": {
+      "en": "The fellows will be entitled to receive the grants as given below:\nSl. No.\tBudget Head\tAmount\n1\tFellowship\t₹55,000/- per month (consolidated) and ₹35,000/- per month for candidates who have submitted the thesis but degree not awarded\n2\tResearch Grant\t₹2,00,000/- per annum\n3\tOverheads\t₹1,00,000/- per annum\nNote 01: Research grants can be used for minor equipment, consumables, contingencies, and domestic travel. There is no provision for providing research personnel support under this scheme. The Fellow is expected to undertake the research objectives by himself/herself during the entire duration of the fellowship.\nNote 02: The fellows are not eligible to receive any other fellowship from any Government or Non-Governmental source during the tenure of the fellowship.\nNote 03: The fellows must seek the consent of SERB if he/she intends to be away from the implementing institute (except for field work related to the project) continuously for a period of more than eight weeks.\nLeave:\nSERB PDFs are entitled to leave as per the rules of the host institution. Participation in scientific workshops held in India or abroad will be treated as on duty. Maternity leave as per the Govt. of India instructions issued from time to time would be available to female candidates in all categories."
+    },
+    "eligibility": {
+      "en": "The applicant should be an Indian citizen.\nThe applicant must have obtained PhD/M.D/M.S degree from a recognized University. Those who have submitted their PhD/M.D/M.S. thesis and are awaiting the award of the degree are also eligible to apply. However, such candidates, if selected, will be offered a lower fellowship amount till they qualify for the eligible degree.\nThe upper age limit for the fellowship is 35 years at the time of the submission of the application, age will be calculated by taking the date of closure of the respective call. Age relaxation of 5 (five) years will be given to candidates belonging to SC/ST/OBC/Physically Challenged & Women candidates.\nNPDF can be availed only once by a candidate in his/her career.\nThe mentor must hold a regular academic/research position in a recognized institution in India. Should hold a Ph.D. degree in Science or Engineering.\nA mentor shall not have more than two SERB NPDF fellows at any given time.\nNote 01: The fellowship is tenable only in India and can be implemented in any of the recognized academic institutions, national laboratories, and other recognized R&D institutions. The host institution should provide the necessary administrative and infrastructural support.\nNote 02: The fellows will not be allowed to work with the Ph.D. guide/co-guide. It is also normally not availed at the same Department/institution where the candidates have earned their PhD/M.S./M.D degree."
+    },
+    "documents": {
+      "en": "Bio-data (under user profile section)\nAge Proof Certificate\nQualification Certificate\nCategory Certificate (in case of Age Relaxation)\nUndertaking Certificate by the applicant\nEndorsement Certificate from the Mentor & Host Institute\nShort CV of the mentor (see online portal for its format)\nCV of Mentor\nPlagiarism undertaking"
+    },
+    "how_to_apply": {
+      "en": "Online\nApplication Process:\nStep 01: The call for applications for SERB-N PDF will be notified through the website www.serbonline.in and https://serb.gov.in/\nStep 02: The application form along with a research proposal highlighting the objectives of the research work to be undertaken should be submitted online through the website www.serbonline.in\nStep 03: Applicants should first register on the online website, click here to register\nStep 04: After login, applicants are required to fill all the mandatory fields in the Profile Detail section under User Profile. which includes Bio-data, Photos, Institute Address, etc.\nStep 05: Please ensure that your proposed Mentor is registered into the system by following the same procedure. After login, the Mentor is required to fill all the mandatory fields in the Profile Detail section under User Profile. which includes Bio-data, Photo, Institute Address, etc.\nStep 06: Details including Project Title (max 500 characters), Project summary (max 3000 characters), Keywords (max 6), Objectives of the project (max 1500 characters), Expected output and outcome of the proposal (max 1500 characters) should be provided online at the time of submission of the application.\nStep 07: Work Methodology and Research plan has to be uploaded in a single PDF file not more than 3 pages (max 10 MB).\nNote 01: Please ensure that your proposed Mentor is registered into the system by following the same procedure as PI. After login, the Mentor is required to fill all the mandatory fields in the Profile Detail section under User Profile which includes Bio-data, Photo, Institute Address, etc.\nNote 02: Applicants of NPDF can submit their proposal only once in a calendar year in any of these schemes.\nSelection Process:\nThe selection will be based on the recommendations of an Expert Committee that will be constituted by the Board. If required, the applicants may be called for personal interviews.\nTermination of the Fellowship:\nIf any fellow wishes to terminate the fellowship, he/she shall inform the SERB through the mentor and host institute immediately. The implementing institute should not incur any expenditure from the date of termination of the project or the date of resignation of the PI. The institute will also arrange for the submission of the documents mentioned above.\nSERB reserves the right to terminate the Fellowship at any stage if it is convinced that appropriate progress is not being made or the grant has not been utilized properly.\nComplete guidelines for Principal Investigator for SERB-online system"
+    }
+  },
+  "criteria": [
+    {
+      "field": "citizen_of_india",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must be an Indian citizen",
+      "source_text": "The applicant should be an Indian citizen.",
+      "verified": false
+    },
+    {
+      "field": "has_phd_or_thesis_submitted",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must have a PhD/MD/MS degree, or have submitted the thesis",
+      "source_text": "The applicant must have obtained PhD/M.D/M.S degree from a recognized University.",
+      "verified": false
+    },
+    {
+      "field": "age",
+      "op": "lte",
+      "value": 40,
+      "text_en": "Must be 35 or younger (40 for SC/ST/OBC, physically challenged and women)",
+      "source_text": "The upper age limit for the fellowship is 35 years at the time of the submission of the application",
+      "verified": false,
+      "review_note": "Engine has no per-category rule: drafted at the relaxed limit so nobody is wrongly rejected; check the category before relying on it."
+    },
+    {
+      "field": "availed_npdf_before",
+      "op": "eq",
+      "value": false,
+      "text_en": "Must not have held an NPDF before (only once per career)",
+      "source_text": "NPDF can be availed only once by a candidate in his/her career.",
+      "verified": false
+    }
+  ]
+}

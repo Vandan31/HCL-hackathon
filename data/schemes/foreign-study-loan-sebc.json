@@ -1,0 +1,87 @@
+{
+  "id": "foreign-study-loan-sebc",
+  "name": {
+    "en": "Loan For Foreign Study (S.E.B.C.)"
+  },
+  "source_url": {
+    "en": "https://www.myscheme.gov.in/search"
+  },
+  "collected_on": "2026-10-27",
+  "collected_by": "Jaya",
+  "sections": {
+    "details": {
+      "en": "The scheme \"Loan for Foreign Study (S.E.B.C.)\" was launched by the Social Justice and Empowerment Department, Government of Gujarat. The scheme aims to provide students belonging to the Socially and Educationally Backward Class (S.E.B.C.) with financial assistance for higher education abroad. The scheme provides a maximum loan of ₹15,00,000/- (Rupees Fifteen Lakh) for higher studies in foreign countries. The applications for this scheme are accepted online via the official website https://esamajkalyan.gujarat.gov.in/."
+    },
+    "benefits": {
+      "en": "Financial Assistance\nA maximum Foreign Study Loan of ₹15,00,000/- is provided for higher education abroad.\nThe loan is offered at a simple annual interest rate of 4%.\nThe loan covers costs such as air tickets, registration fees, tuition fees, education fees, hostel fees, books, and other expenses associated with the first year of the course abroad.\nDisbursement Conditions\nThe full loan amount of ₹15,00,000/- will be disbursed to the student in a single installment.\nThe money will be deposited into the student's bank account after the submission of the original registered mortgage deed.\nPost-Selection Obligations\nAfter the sanction order is received, the student's parent or guardian must obtain the prescribed mortgage deed form from the District Office.\nThe property presented by the student's parent/guardian or the guarantor must be registered as a mortgage in favor of the government.\nThe loan repayment must begin one year after the completion of the student's study.\nThe loan must be repaid in monthly or quarterly installments.\nThe principal loan amount must be fully repaid within a maximum period of 10 years.\nThe interest amount must be fully repaid within a maximum period of 2 years.\nThe student must ensure all required documentation is completed within the prescribed time limit."
+    },
+    "eligibility": {
+      "en": "The applicant must belong to the Socially and Educationally Backward Class (S.E.B.C.).\nThe applicant's family annual income must be less than ₹10,00,000/- (Rupees Ten Lakh).\nThe applicant must have secured a minimum of 60% or more marks in 12th standard.\nThe applicant must have secured a minimum of 50% marks if they belong to Notified Tribes/De-notified Tribes (NT/DNT), More Backward, or Extremely Backward categories.\nThe applicant must be pursuing higher education abroad.\nThe applicant must be pursuing a Diploma, Graduate, Post Graduate, Post Graduate Diploma, Doctor of Philosophy (Ph.D.), or higher-level courses in any field.\nThe course must be for a minimum duration of 1 (one) academic year or more, or at least two semesters.\nThe applicant must apply before traveling abroad or within six months of arriving abroad.\nThe applicant must submit one solvent guarantor."
+    },
+    "documents": {
+      "en": "During Application\n• Caste Certificate.\n• Family Income Certificate.\n• Income Tax Return.\n• Form-16.\n• Mark Sheet.\n• Degree Certificate.\n• Offer Letter from Foreign University (Offer Letter/Letter of Acceptance).\n• Copy of Student’s Passport.\n• Copy of Student’s Visa (of the Foreign Country).\n• Copy of Air Ticket.\n• Parents’/Guardian’s Property Documents (And Valuation Report).\nFor Loan Disbursement\n• Registered Mortgage Deed (Original) (Required after approval for loan disbursement)."
+    },
+    "how_to_apply": {
+      "en": "Online\nRegistration\nStep 1: Visit the Official Website of eSamajkalyan.\nStep 2: In the right pane of the home page, click \"New User? Please Register Here!\".\nYou will be taken to the Registration Form.\nStep 3: In the form, provide all the mandatory fields, fill in the captcha code, and click \"Submit\" to complete the registration process. A popup will appear acknowledging successful registration and displaying your User ID for Login.\nApplication\nStep 1: Visit the Official Website of eSamajkalyan. In the \"Citizen Login\" section provided in the right pane of the home page, provide your User ID and Password, fill in the Captcha Code, then click \"Login\".\nStep 2: In the ribbon provided at the top of the website, click the \"Corporation\" menu, then click \"Gujarat State Divyangjan Finance and Development Corporation\". A list of schemes will be displayed. Select the scheme you intend to apply for.\nStep 3: You will be taken to the online application form of the scheme. In the form, provide all the mandatory fields and upload all the mandatory documents in the specified format and size. Carefully review all the information provided and the documents uploaded. Make corrections, if any.\nStep 4: Click \"Submit\" to submit your application. You'll receive a confirmation message. Note down your Application Number for future reference. You can also take a printout of the submitted application form.\nStep 5: Following the successful online submission, the applicant must take a printout of the final application form. Two identical physical copies of the complete application set, along with attached enclosures of all uploaded documents, must be prepared. These two copies must then be deposited at the respective District Office (District Social Welfare Officer (Developing Castes)) applicable to the student."
+    }
+  },
+  "criteria": [
+    {
+      "field": "social_category",
+      "op": "eq",
+      "value": "sebc",
+      "text_en": "Must belong to the Socially and Educationally Backward Class (S.E.B.C.)",
+      "source_text": "The applicant must belong to the Socially and Educationally Backward Class (S.E.B.C.).",
+      "verified": false
+    },
+    {
+      "field": "annual_family_income",
+      "op": "lt",
+      "value": 1000000,
+      "text_en": "Family annual income must be less than ₹10,00,000",
+      "source_text": "The applicant's family annual income must be less than ₹10,00,000/- (Rupees Ten Lakh).",
+      "verified": false
+    },
+    {
+      "field": "class12_percent",
+      "op": "gte",
+      "value": 50,
+      "text_en": "Must have at least 60% in Class 12 (50% for NT/DNT, More Backward or Extremely Backward categories)",
+      "source_text": "The applicant must have secured a minimum of 60% or more marks in 12th standard.",
+      "verified": false,
+      "review_note": "Drafted at 50% so nobody is wrongly rejected; 50-59% is only valid for NT/DNT, More Backward or Extremely Backward categories."
+    },
+    {
+      "field": "studying_abroad",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must be pursuing higher education abroad",
+      "source_text": "The applicant must be pursuing higher education abroad.",
+      "verified": false
+    },
+    {
+      "field": "course_duration_years",
+      "op": "gte",
+      "value": 1,
+      "text_en": "Course must last at least one academic year (or two semesters)",
+      "source_text": "The course must be for a minimum duration of 1 (one) academic year or more, or at least two semesters.",
+      "verified": false
+    },
+    {
+      "field": "applied_within_6_months_abroad",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must apply before travelling abroad or within six months of arriving",
+      "source_text": "The applicant must apply before traveling abroad or within six months of arriving abroad.",
+      "verified": false
+    },
+    {
+      "field": "has_solvent_guarantor",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must provide one solvent guarantor",
+      "source_text": "The applicant must submit one solvent guarantor.",
+      "verified": false
+    }
+  ]
+}

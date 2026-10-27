@@ -1,0 +1,47 @@
+{
+  "id": "padma-awards",
+  "name": {
+    "en": "Padma Awards"
+  },
+  "source_url": {
+    "en": "https://www.myscheme.gov.in/search"
+  },
+  "collected_on": "2026-10-27",
+  "collected_by": "Jaya",
+  "sections": {
+    "details": {
+      "en": "The “Padma Awards” has been launched by the Ministry of Home Affairs, Government of India. Under this scheme, civilian honours in the form of Padma Vibhushan, Padma Bhushan, and Padma Shri are provided to individuals for their outstanding contributions. The awards emphasize excellence combined with public service across disciplines such as art, science, literature, sports, medicine, and social work."
+    },
+    "benefits": {
+      "en": "Tangible Benefits\nConferment of Padma Vibhushan, Padma Bhushan, or Padma Shri.\nSanad (Certificate) signed by the President of India.\nMedallion along with a miniature replica for ceremonial use.\nNational recognition and prestige.\nPublication of awardee’s name in the Gazette of India.\nMode of Disbursement\nPhysical conferment of certificate and medallion at Rashtrapati Bhavan.\nAnnounced annually on 26th January (Republic Day).\nPresentation ceremony is usually held in March or April."
+    },
+    "eligibility": {
+      "en": "The applicant can be any person without distinction of race, occupation, position, or gender.\nThe applicant should have rendered distinguished or exceptional service in any field.\nThe applicant should demonstrate “excellence plus,” meaning excellence combined with public service.\nThe applicant may belong to fields such as Art, Social Work, Public Affairs, Science & Engineering, Trade & Industry, Medicine, Literature & Education, Civil Service, Sports, or others.\nThe applicant should not be a serving Government employee; however, doctors and scientists are exempted.\nThe applicant may be considered posthumously only in rare and highly deserving cases within 1 year of demise.\nThe applicant should have a minimum gap of 5 years for receiving a higher category award.\nThe applicant should not misuse the award as a title."
+    },
+    "documents": {
+      "en": "Detailed Citation Of Achievements\nSupporting Documents/Evidence Of Work\nIdentity Proof (Aadhaar Card/PAN Card/Passport)\nRecommendation Letters\nPublications/Media Coverage\nSelf-Nomination Details"
+    },
+    "how_to_apply": {
+      "en": "Online\nNominations are invited between 15th March and 31st July each year.\nStep 01: The applicant visits the\nofficial Padma Awards Portal.\nStep 02: Register/Login using official credentials of the recommending authority\nStep 03: Fill in the nomination form with complete details\nStep 04: Upload required documents, including citation and verification certificate\nStep 05: Ensure accurate entry of nominee details (including Hindi name) and submit the application online before the deadline.\nPost-Application Process\nStep 01: The Committee evaluates candidates based on merit, impact, and public service contribution.\nStep 02: Recommendations are submitted to the Prime Minister and the President of India.\nStep 03: Final approval is granted by the President of India.\nStep 04: Awards are announced on Republic Day and presented at Rashtrapati Bhavan."
+    }
+  },
+  "criteria": [
+    {
+      "field": "distinguished_service",
+      "op": "eq",
+      "value": true,
+      "text_en": "Must have rendered distinguished or exceptional service in any field",
+      "source_text": "The applicant should have rendered distinguished or exceptional service in any field.",
+      "verified": false
+    },
+    {
+      "field": "serving_govt_employee",
+      "op": "eq",
+      "value": false,
+      "text_en": "Must not be a serving government employee (doctors and scientists are exempt)",
+      "source_text": "The applicant should not be a serving Government employee; however, doctors and scientists are exempted.",
+      "verified": false,
+      "review_note": "The exemption for doctors and scientists can't be written as a rule here."
+    }
+  ]
+}

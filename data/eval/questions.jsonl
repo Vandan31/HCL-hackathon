@@ -1,0 +1,98 @@
+{"id": "mock-001", "question": "What is the age limit to join as an Agniveer under Agnipath?", "lang": "en", "expected_scheme": "agnipath"}
+{"id": "mock-002", "question": "अग्निवीर को चार साल बाद सेवा निधि में कितना पैसा मिलेगा?", "lang": "hi", "expected_scheme": "agnipath"}
+{"id": "mock-003", "question": "અગ્નિપથ યોજનામાં અગ્નિવીરને કેટલું જીવન વીમા કવચ મળે છે?", "lang": "gu", "expected_scheme": "agnipath"}
+{"id": "mock-004", "question": "Is there an interest subsidy on my education loan if I live in Gujarat?", "lang": "en", "expected_scheme": "education-loan-interest-subsidy"}
+{"id": "mock-005", "question": "Education loan par interest subsidy ke liye HSC mein kitne percentile chahiye?", "lang": "hi", "expected_scheme": "education-loan-interest-subsidy"}
+{"id": "mock-006", "question": "શિક્ષણ લોન પર વ્યાજ સહાય માટે ઓનલાઈન અરજી ક્યાં કરવી?", "lang": "gu", "expected_scheme": "education-loan-interest-subsidy"}
+{"id": "mock-007", "question": "How much loan can SEBC students get for studying abroad and at what interest?", "lang": "en", "expected_scheme": "foreign-study-loan-sebc"}
+{"id": "mock-008", "question": "विदेश में पढ़ाई के लिए SEBC लोन लेने के लिए परिवार की आय सीमा क्या है?", "lang": "hi", "expected_scheme": "foreign-study-loan-sebc"}
+{"id": "mock-009", "question": "વિદેશ અભ્યાસ લોન માટે 12મા ધોરણમાં કેટલા ટકા જોઈએ?", "lang": "gu", "expected_scheme": "foreign-study-loan-sebc"}
+{"id": "mock-010", "question": "How much money is given to build a house under the Halpati Housing Scheme?", "lang": "en", "expected_scheme": "halpati-housing"}
+{"id": "mock-011", "question": "Halpati awas yojana ka form kahan milega?", "lang": "hi", "expected_scheme": "halpati-housing"}
+{"id": "mock-012", "question": "હળપતિ આવાસ યોજના માટે કયા જિલ્લાના લોકો અરજી કરી શકે?", "lang": "gu", "expected_scheme": "halpati-housing"}
+{"id": "mock-013", "question": "I am a 65-year-old disabled artist in Gujarat. Can I get financial help?", "lang": "en", "expected_scheme": "helpless-artists-assistance"}
+{"id": "mock-014", "question": "असहाय कलाकारों को सहायता के लिए मासिक आय सीमा कितनी है?", "lang": "hi", "expected_scheme": "helpless-artists-assistance"}
+{"id": "mock-015", "question": "નિરાધાર કલાકારોને આર્થિક સહાય માટે અરજી ક્યાં જમા કરાવવી?", "lang": "gu", "expected_scheme": "helpless-artists-assistance"}
+{"id": "mock-016", "question": "How much disability pension does a person aged 80 or above get per month?", "lang": "en", "expected_scheme": "igndps"}
+{"id": "mock-017", "question": "विकलांग पेंशन के लिए कितने प्रतिशत विकलांगता होनी चाहिए?", "lang": "hi", "expected_scheme": "igndps"}
+{"id": "mock-018", "question": "ઇન્દિરા ગાંધી રાષ્ટ્રીય વિકલાંગ પેન્શન માટે UMANG એપથી અરજી કેવી રીતે કરવી?", "lang": "gu", "expected_scheme": "igndps"}
+{"id": "mock-019", "question": "What stipend does the Lokpal of India internship pay?", "lang": "en", "expected_scheme": "lokpal-internship"}
+{"id": "mock-020", "question": "Lokpal internship ke liye 12th mein kitne marks chahiye?", "lang": "hi", "expected_scheme": "lokpal-internship"}
+{"id": "mock-021", "question": "લોકપાલ ઇન્ટર્નશિપ માટે કયા વિષયના વિદ્યાર્થીઓ અરજી કરી શકે?", "lang": "gu", "expected_scheme": "lokpal-internship"}
+{"id": "mock-022", "question": "What is the interest rate on the Mahila Samruddhi Yojana loan?", "lang": "en", "expected_scheme": "mahila-samruddhi-daadc"}
+{"id": "mock-023", "question": "महिला समृद्धि योजना में कितना लोन मिलता है और मासिक किस्त कितनी है?", "lang": "hi", "expected_scheme": "mahila-samruddhi-daadc"}
+{"id": "mock-024", "question": "મહિલા સમૃદ્ધિ યોજના માટે કુટુંબની વાર્ષિક આવક મર્યાદા કેટલી છે?", "lang": "gu", "expected_scheme": "mahila-samruddhi-daadc"}
+{"id": "mock-025", "question": "How much Market Development Assistance is paid per tonne of fermented organic manure?", "lang": "en", "expected_scheme": "market-development-assistance"}
+{"id": "mock-026", "question": "जैविक खाद के लिए बाजार विकास सहायता किसे मिल सकती है?", "lang": "hi", "expected_scheme": "market-development-assistance"}
+{"id": "mock-027", "question": "માર્કેટ ડેવલપમેન્ટ આસિસ્ટન્સ માટે કયા પોર્ટલ પર નોંધણી કરવી?", "lang": "gu", "expected_scheme": "market-development-assistance"}
+{"id": "mock-028", "question": "How much of the caravan price does the Meghalaya government pay as down payment support?", "lang": "en", "expected_scheme": "meghalaya-motorcaravan"}
+{"id": "mock-029", "question": "Meghalaya motorcaravan scheme ke liye kitne saal ka tourism experience chahiye?", "lang": "hi", "expected_scheme": "meghalaya-motorcaravan"}
+{"id": "mock-030", "question": "મેઘાલય મોટરકારવાન યોજના માટે ઉંમર મર્યાદા શું છે?", "lang": "gu", "expected_scheme": "meghalaya-motorcaravan"}
+{"id": "mock-031", "question": "How much incentive does an Assam OBC student get for scoring 80% in Class 10?", "lang": "en", "expected_scheme": "mobc-meritorious-students"}
+{"id": "mock-032", "question": "असम में ग्रेजुएशन में 70% लाने पर कितनी प्रोत्साहन राशि मिलती है?", "lang": "hi", "expected_scheme": "mobc-meritorious-students"}
+{"id": "mock-033", "question": "આસામમાં MOBC મેધાવી વિદ્યાર્થી પ્રોત્સાહન માટે અરજી કેવી રીતે કરવી?", "lang": "gu", "expected_scheme": "mobc-meritorious-students"}
+{"id": "mock-034", "question": "What is the monthly fellowship amount under the National Post Doctoral Fellowship?", "lang": "en", "expected_scheme": "national-post-doctoral-fellowship"}
+{"id": "mock-035", "question": "क्या थीसिस जमा करने के बाद डिग्री मिलने से पहले NPDF के लिए आवेदन कर सकते हैं?", "lang": "hi", "expected_scheme": "national-post-doctoral-fellowship"}
+{"id": "mock-036", "question": "નેશનલ પોસ્ટ ડોક્ટરલ ફેલોશિપમાં વાર્ષિક સંશોધન અનુદાન કેટલું છે?", "lang": "gu", "expected_scheme": "national-post-doctoral-fellowship"}
+{"id": "mock-037", "question": "Can a minor open a National Savings Time Deposit account?", "lang": "en", "expected_scheme": "national-savings-time-deposit"}
+{"id": "mock-038", "question": "पोस्ट ऑफिस टाइम डिपॉजिट में 1 साल की ब्याज दर कितनी है?", "lang": "hi", "expected_scheme": "national-savings-time-deposit"}
+{"id": "mock-039", "question": "ટાઈમ ડિપોઝિટ ખાતું ખોલવા કયા દસ્તાવેજો જોઈએ?", "lang": "gu", "expected_scheme": "national-savings-time-deposit"}
+{"id": "mock-040", "question": "Who can apply for the One District One Product (ODOP) Awards?", "lang": "en", "expected_scheme": "odop-awards"}
+{"id": "mock-041", "question": "ODOP पुरस्कार जीतने पर क्या मिलता है?", "lang": "hi", "expected_scheme": "odop-awards"}
+{"id": "mock-042", "question": "ODOP એવોર્ડ માટે ઓનલાઈન નોંધણી કેવી રીતે કરવી?", "lang": "gu", "expected_scheme": "odop-awards"}
+{"id": "mock-043", "question": "When are nominations for the Padma Awards accepted each year?", "lang": "en", "expected_scheme": "padma-awards"}
+{"id": "mock-044", "question": "Padma award milne par kya kya milta hai?", "lang": "hi", "expected_scheme": "padma-awards"}
+{"id": "mock-045", "question": "પદ્મ પુરસ્કાર માટે કોણ નામાંકિત થઈ શકે?", "lang": "gu", "expected_scheme": "padma-awards"}
+{"id": "mock-046", "question": "How much of the cost of a power tiller can a Tamil Nadu farmer get as a loan?", "lang": "en", "expected_scheme": "pcardb-power-tiller"}
+{"id": "mock-047", "question": "पावर टिलर लोन पर ब्याज दर कितनी है?", "lang": "hi", "expected_scheme": "pcardb-power-tiller"}
+{"id": "mock-048", "question": "પાવર ટિલર લોનનું અરજીપત્રક ક્યાંથી મળે?", "lang": "gu", "expected_scheme": "pcardb-power-tiller"}
+{"id": "mock-049", "question": "How much is the PG Indira Gandhi scholarship for a single girl child per year?", "lang": "en", "expected_scheme": "pg-scholarship-single-girl-child"}
+{"id": "mock-050", "question": "क्या जुड़वां बेटियां सिंगल गर्ल चाइल्ड स्कॉलरशिप के लिए आवेदन कर सकती हैं?", "lang": "hi", "expected_scheme": "pg-scholarship-single-girl-child"}
+{"id": "mock-051", "question": "એકલ દીકરી શિષ્યવૃત્તિ માટે મહત્તમ ઉંમર કેટલી છે?", "lang": "gu", "expected_scheme": "pg-scholarship-single-girl-child"}
+{"id": "mock-052", "question": "What is the age limit for the skilling component of PM VIKAS?", "lang": "en", "expected_scheme": "pm-virasat-ka-samvardhan"}
+{"id": "mock-053", "question": "पीएम विकास योजना में क्या लाभ मिलते हैं?", "lang": "hi", "expected_scheme": "pm-virasat-ka-samvardhan"}
+{"id": "mock-054", "question": "પીએમ વિરાસત કા સંવર્ધન માટે SIDH પોર્ટલ પર નોંધણી કેવી રીતે કરવી?", "lang": "gu", "expected_scheme": "pm-virasat-ka-samvardhan"}
+{"id": "mock-055", "question": "How many years of service are needed for the Police Medal for Meritorious Service?", "lang": "en", "expected_scheme": "police-medal-meritorious-service"}
+{"id": "mock-056", "question": "मेधावी सेवा के लिए पुलिस पदक का नामांकन कहाँ किया जाता है?", "lang": "hi", "expected_scheme": "police-medal-meritorious-service"}
+{"id": "mock-057", "question": "પોલીસ મેડલ મળવાથી શું લાભ થાય છે?", "lang": "gu", "expected_scheme": "police-medal-meritorious-service"}
+{"id": "mock-058", "question": "Who is eligible for the Rashtriya Krishi Vigyan Puraskar?", "lang": "en", "expected_scheme": "rashtriya-krishi-vigyan-puraskar"}
+{"id": "mock-059", "question": "राष्ट्रीय कृषि विज्ञान पुरस्कार में विजेताओं को क्या दिया जाता है?", "lang": "hi", "expected_scheme": "rashtriya-krishi-vigyan-puraskar"}
+{"id": "mock-060", "question": "રાષ્ટ્રીય કૃષિ વિજ્ઞાન પુરસ્કાર માટે અરજી કેવી રીતે કરવી?", "lang": "gu", "expected_scheme": "rashtriya-krishi-vigyan-puraskar"}
+{"id": "mock-061", "question": "How much stipend does the RTI Fellowship pay per month?", "lang": "en", "expected_scheme": "rti-fellowship"}
+{"id": "mock-062", "question": "RTI fellowship ke liye age limit kya hai?", "lang": "hi", "expected_scheme": "rti-fellowship"}
+{"id": "mock-063", "question": "RTI ફેલોશિપ માટે અરજી ક્યાં મોકલવી?", "lang": "gu", "expected_scheme": "rti-fellowship"}
+{"id": "mock-064", "question": "How many guarantors are needed for the DAADC small business loan?", "lang": "en", "expected_scheme": "small-business-loan-daadc"}
+{"id": "mock-065", "question": "छोटे व्यवसाय के लिए अनुसूचित जाति के लोगों को कितना लोन मिलता है?", "lang": "hi", "expected_scheme": "small-business-loan-daadc"}
+{"id": "mock-066", "question": "નાના ધંધા માટે લોન પર વ્યાજ દર કેટલો છે?", "lang": "gu", "expected_scheme": "small-business-loan-daadc"}
+{"id": "mock-067", "question": "What is the maximum financial assistance for a Tagore Cultural Complex project?", "lang": "en", "expected_scheme": "tagore-cultural-complexes"}
+{"id": "mock-068", "question": "टैगोर सांस्कृतिक परिसर योजना के लिए कौन सी संस्थाएं आवेदन कर सकती हैं?", "lang": "hi", "expected_scheme": "tagore-cultural-complexes"}
+{"id": "mock-069", "question": "ટાગોર કલ્ચરલ કોમ્પ્લેક્સ સહાય માટે અરજી ક્યાં મોકલવી?", "lang": "gu", "expected_scheme": "tagore-cultural-complexes"}
+{"id": "mock-070", "question": "How much fellowship does a TARE associate get per year?", "lang": "en", "expected_scheme": "tare"}
+{"id": "mock-071", "question": "TARE योजना के लिए कौन आवेदन कर सकता है?", "lang": "hi", "expected_scheme": "tare"}
+{"id": "mock-072", "question": "TARE માટે વાર્ષિક સંશોધન અનુદાન કેટલું મળે છે?", "lang": "gu", "expected_scheme": "tare"}
+{"id": "mock-073", "question": "How much pension does a widow get per month in Dadra & Nagar Haveli and Daman & Diu?", "lang": "en", "expected_scheme": "widow-pension-dnhdd"}
+{"id": "mock-074", "question": "Vidhwa pension band kab ho jati hai?", "lang": "hi", "expected_scheme": "widow-pension-dnhdd"}
+{"id": "mock-075", "question": "વિધવા પેન્શન માટે આવક મર્યાદા કેટલી છે?", "lang": "gu", "expected_scheme": "widow-pension-dnhdd"}
+{"id": "mock-076", "question": "What is the age limit for the Women Scientist Scheme-A?", "lang": "en", "expected_scheme": "women-scientist-scheme-a"}
+{"id": "mock-077", "question": "पीएचडी वाली महिला वैज्ञानिक को WOS-A में हर महीने कितना मिलता है?", "lang": "hi", "expected_scheme": "women-scientist-scheme-a"}
+{"id": "mock-078", "question": "મહિલા વૈજ્ઞાનિક યોજના-A માટે ઓનલાઈન અરજી ક્યાં કરવી?", "lang": "gu", "expected_scheme": "women-scientist-scheme-a"}
+{"id": "mock-079", "question": "How do I renew my passport?", "lang": "en", "expected_scheme": null}
+{"id": "mock-080", "question": "What are the new income tax slabs for this year?", "lang": "en", "expected_scheme": null}
+{"id": "mock-081", "question": "How do I link my PAN card with Aadhaar?", "lang": "en", "expected_scheme": null}
+{"id": "mock-082", "question": "How much money does PM-KISAN give farmers every year?", "lang": "en", "expected_scheme": null}
+{"id": "mock-083", "question": "Will the government increase old-age pension next year?", "lang": "en", "expected_scheme": null}
+{"id": "mock-084", "question": "How can I book a Tatkal train ticket?", "lang": "en", "expected_scheme": null}
+{"id": "mock-085", "question": "How do I apply for a new voter ID card?", "lang": "en", "expected_scheme": null}
+{"id": "mock-086", "question": "पासपोर्ट बनवाने के लिए कितनी फीस लगती है?", "lang": "hi", "expected_scheme": null}
+{"id": "mock-087", "question": "इनकम टैक्स रिटर्न भरने की आखिरी तारीख क्या है?", "lang": "hi", "expected_scheme": null}
+{"id": "mock-088", "question": "आयुष्मान भारत कार्ड से कितने रुपये तक का इलाज मुफ्त होता है?", "lang": "hi", "expected_scheme": null}
+{"id": "mock-089", "question": "Driving licence kaise banwaye?", "lang": "hi", "expected_scheme": null}
+{"id": "mock-090", "question": "Ration card mein naam kaise jodein?", "lang": "hi", "expected_scheme": null}
+{"id": "mock-091", "question": "क्या अगले बजट में किसानों के लिए नई योजना आएगी?", "lang": "hi", "expected_scheme": null}
+{"id": "mock-092", "question": "बिजली बिल ऑनलाइन कैसे भरें?", "lang": "hi", "expected_scheme": null}
+{"id": "mock-093", "question": "મારે નવો પાસપોર્ટ કેવી રીતે મેળવવો?", "lang": "gu", "expected_scheme": null}
+{"id": "mock-094", "question": "આવકવેરા રિટર્ન કેવી રીતે ભરવું?", "lang": "gu", "expected_scheme": null}
+{"id": "mock-095", "question": "આધાર કાર્ડમાં સરનામું કેવી રીતે બદલવું?", "lang": "gu", "expected_scheme": null}
+{"id": "mock-096", "question": "ઉજ્જવલા યોજનામાં મફત ગેસ કનેક્શન કોને મળે?", "lang": "gu", "expected_scheme": null}
+{"id": "mock-097", "question": "આવતા વર્ષે સરકાર કઈ નવી યોજના શરૂ કરશે?", "lang": "gu", "expected_scheme": null}
+{"id": "mock-098", "question": "GST નોંધણી કેવી રીતે કરવી?", "lang": "gu", "expected_scheme": null}
